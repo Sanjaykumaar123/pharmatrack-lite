@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Button } from './ui/button';
-import { LayoutDashboard } from 'lucide-react';
+import { LayoutDashboard, MessageCircle } from 'lucide-react';
 
 const PillIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -25,11 +25,17 @@ export default function Header() {
             </span>
           </Link>
 
-          <nav>
+          <nav className="flex items-center gap-2">
             <Link href="/medicines" passHref>
               <Button variant="ghost">
                 <LayoutDashboard className="mr-2 h-5 w-5" />
                 Medicines
+              </Button>
+            </Link>
+            <Link href="/chat" passHref>
+              <Button variant="ghost">
+                <MessageCircle className="mr-2 h-5 w-5" />
+                Chat
               </Button>
             </Link>
           </nav>
