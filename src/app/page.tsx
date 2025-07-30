@@ -26,22 +26,16 @@ export default function Home() {
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
-      <div className="max-w-2xl mx-auto text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl font-headline">
-          PharmaTrack Lite
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+        <h1 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl font-headline">
+          Your Medicines
         </h1>
-        <p className="mt-4 text-lg text-muted-foreground">
-          Your reliable partner in medicine verification. Search for a medicine by its name or batch number.
-        </p>
-      </div>
-
-      <div className="mt-8 max-w-xl mx-auto">
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
           <div className="relative flex-grow">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               type="text"
-              placeholder="Search by name or batch number..."
+              placeholder="Search medicines..."
               className="w-full pl-10"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -57,9 +51,9 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="mt-12">
+      <div>
         {filteredMedicines.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredMedicines.map((med: Medicine) => (
               <MedicineCard key={med.id} medicine={med} />
             ))}
