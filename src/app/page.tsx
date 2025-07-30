@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -14,7 +15,7 @@ export default function Home() {
 
   const filteredMedicines = useMemo(() => {
     if (!searchTerm.trim()) {
-      return [];
+      return allMedicines;
     }
     return allMedicines.filter(
       (med) =>
@@ -57,15 +58,14 @@ export default function Home() {
       </div>
 
       <div className="mt-12">
-        {searchTerm && filteredMedicines.length > 0 && (
+        {filteredMedicines.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredMedicines.map((med: Medicine) => (
               <MedicineCard key={med.id} medicine={med} />
             ))}
           </div>
-        )}
-        {searchTerm && filteredMedicines.length === 0 && (
-          <div className="text-center py-10 px-6 bg-white rounded-lg shadow-md">
+        ) : (
+          <div className="text-center py-10 px-6 bg-card rounded-lg shadow-md">
             <h3 className="text-lg font-semibold text-foreground">No Results Found</h3>
             <p className="text-muted-foreground mt-2">
               We couldn&apos;t find any medicine matching your search. Please check the spelling or try a different term.
