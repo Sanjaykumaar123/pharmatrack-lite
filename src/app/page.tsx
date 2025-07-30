@@ -14,7 +14,7 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[calc(100vh-4rem)] py-20">
             <div className="z-10">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground font-headline">
-                Create a blockchain platform for secure tracking of urban public pharmacy inventory
+                Bringing Clarity and Trust to Your Pharmacy.
               </h1>
               <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
                 Urban public pharmacies often face major challenges in tracking and managing medicine inventories.
