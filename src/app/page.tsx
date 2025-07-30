@@ -17,7 +17,7 @@ export default function Home() {
                 Bringing Clarity and Trust to Your Pharmacy.
               </h1>
               <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-                Urban public pharmacies often face major challenges in tracking and managing medicine inventories.
+                Our platform provides a transparent and efficient solution to manage your medicine inventory, ensuring safety and reliability.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row gap-4">
                 <Link href="/medicines" passHref>
