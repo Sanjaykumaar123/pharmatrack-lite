@@ -5,7 +5,7 @@ import Header from '@/components/Header';
 import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
-  title: 'PharmaTrack Lite',
+  title: 'Pharma Ledger',
   description: 'Track your medicine with ease and get AI-powered insights.',
 };
 
