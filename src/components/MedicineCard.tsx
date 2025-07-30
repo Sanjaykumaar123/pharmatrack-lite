@@ -8,7 +8,7 @@ import {
   CardContent,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, PackageCheck, PackageX, PackageWarning } from 'lucide-react';
+import { ChevronRight, PackageCheck, PackageX, AlertTriangle } from 'lucide-react';
 import type { Medicine } from '@/types';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
@@ -24,7 +24,7 @@ const stockStatusMap = {
     textColor: 'text-green-500',
   },
   'Low Stock': {
-    icon: <PackageWarning className="h-5 w-5 text-yellow-500" />,
+    icon: <AlertTriangle className="h-5 w-5 text-yellow-500" />,
     badge: <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Low Stock</Badge>,
     textColor: 'text-yellow-500',
   },

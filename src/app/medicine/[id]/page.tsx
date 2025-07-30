@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import SideEffects from '@/components/SideEffects';
-import { Calendar, Factory, Package, Pill, PackageCheck, PackageWarning, PackageX, Boxes } from 'lucide-react';
+import { Calendar, Factory, Package, Pill, PackageCheck, AlertTriangle, PackageX, Boxes } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 
@@ -15,7 +15,7 @@ const stockStatusMap = {
     bgColor: 'bg-green-100',
   },
   'Low Stock': {
-    icon: PackageWarning,
+    icon: AlertTriangle,
     textColor: 'text-yellow-600',
     bgColor: 'bg-yellow-100',
   },
