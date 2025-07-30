@@ -1,10 +1,9 @@
-
 "use client";
 
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Pill, Stethoscope, HeartPulse, BrainCircuit } from 'lucide-react';
+import { ArrowRight, PackagePlus, PackageMinus, XCircle, ShieldCheck } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
 export default function Home() {
@@ -14,26 +13,17 @@ export default function Home() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[calc(100vh-4rem)] py-20">
             <div className="z-10">
-              <div className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-semibold mb-4">
-                Your Trusted Health Partner
-              </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground font-headline">
-                Intelligent Pharmacy Management
+                Create a blockchain platform for secure tracking of urban public pharmacy inventory
               </h1>
               <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-                Seamlessly track your medicines, monitor inventory, and gain AI-powered insights. We provide a secure, professional, and intuitive platform for modern healthcare management.
+                Urban public pharmacies often face major challenges in tracking and managing medicine inventories.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row gap-4">
                 <Link href="/medicines" passHref>
                   <Button size="lg" className="font-semibold shadow-lg shadow-primary/20 transition-transform duration-300 hover:scale-105">
-                    Go to Digital Pharmacy
+                    View Pharmacy Inventory
                     <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-                 <Link href="/chat" passHref>
-                  <Button size="lg" variant="outline" className="font-semibold shadow-lg shadow-primary/10 transition-transform duration-300 hover:scale-105">
-                    Ask AI Assistant
-                    <BrainCircuit className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
               </div>
@@ -41,11 +31,11 @@ export default function Home() {
             <div className="relative h-64 lg:h-auto">
                <Image
                 src="https://placehold.co/600x400.png"
-                alt="Professional pharmacist reviewing medication"
+                alt="Pharmacist using a modern inventory system"
                 width={600}
                 height={400}
                 className="rounded-xl shadow-2xl object-cover w-full h-full"
-                data-ai-hint="pharmacist medication"
+                data-ai-hint="pharmacist inventory"
               />
             </div>
           </div>
@@ -55,48 +45,61 @@ export default function Home() {
       <section className="py-20 bg-card">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-3xl font-bold font-headline text-foreground">A New Standard in Pharmaceutical Care</h2>
+            <h2 className="text-3xl font-bold font-headline text-foreground">Key Inventory Challenges</h2>
             <p className="mt-4 text-muted-foreground text-lg">
-              Our platform offers robust features designed for safety, efficiency, and intelligence, ensuring you have the best tools at your disposal.
+              Our platform aims to solve critical issues prevalent in pharmacy management today.
             </p>
           </div>
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <Card className="text-center">
               <CardHeader>
                 <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
-                  <Pill className="h-8 w-8 text-primary" />
+                  <PackagePlus className="h-8 w-8 text-primary" />
                 </div>
-                <CardTitle className="mt-4">Medicine Tracking</CardTitle>
+                <CardTitle className="mt-4">Overstocking</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Keep a detailed inventory of all your medicines, including batch numbers and expiry dates, for full traceability.
+                  Preventing waste and financial loss from excess inventory.
                 </CardDescription>
               </CardContent>
             </Card>
             <Card className="text-center">
               <CardHeader>
                  <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
-                  <Stethoscope className="h-8 w-8 text-primary" />
+                  <PackageMinus className="h-8 w-8 text-primary" />
                 </div>
-                <CardTitle className="mt-4">Stock Management</CardTitle>
+                <CardTitle className="mt-4">Understocking</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Receive automatic alerts for low stock and expiring medicines, preventing shortages and waste.
+                  Ensuring essential medicines are always available for patients.
                 </CardDescription>
               </CardContent>
             </Card>
             <Card className="text-center">
               <CardHeader>
                  <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
-                  <HeartPulse className="h-8 w-8 text-primary" />
+                  <XCircle className="h-8 w-8 text-primary" />
                 </div>
-                <CardTitle className="mt-4">AI-Powered Insights</CardTitle>
+                <CardTitle className="mt-4">Expired Medicines</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Leverage our AI assistant to get instant information about side effects and answer your medication questions.
+                  Minimizing the risk of dispensing expired or ineffective drugs.
+                </CardDescription>
+              </CardContent>
+            </Card>
+             <Card className="text-center">
+              <CardHeader>
+                 <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
+                  <ShieldCheck className="h-8 w-8 text-primary" />
+                </div>
+                <CardTitle className="mt-4">Counterfeit Drugs</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription>
+                  Enhancing supply chain security to eliminate fake medicines.
                 </CardDescription>
               </CardContent>
             </Card>
