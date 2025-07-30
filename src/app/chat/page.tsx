@@ -56,7 +56,7 @@ export default function ChatPage() {
             <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline mb-8">
                 Chat with your Pharmacy Assistant
             </h1>
-            <Card className="flex-1 flex flex-col bg-card/50 border-border/50">
+            <Card className="flex-1 flex flex-col bg-card border">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <Bot className="text-primary"/> AI Assistant
@@ -82,7 +82,7 @@ export default function ChatPage() {
                                         <p>{message.content}</p>
                                     </div>
                                     {message.role === 'user' && (
-                                        <Avatar className="h-8 w-8">
+                                        <Avatar className="h-8 w-8 bg-secondary">
                                             <AvatarFallback><User /></AvatarFallback>
                                         </Avatar>
                                     )}
@@ -101,7 +101,7 @@ export default function ChatPage() {
                             )}
                         </div>
                     </ScrollArea>
-                    <form onSubmit={handleSendMessage} className="flex items-center gap-2 pt-4 border-t border-border/50">
+                    <form onSubmit={handleSendMessage} className="flex items-center gap-2 pt-4 border-t">
                         <Input
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
