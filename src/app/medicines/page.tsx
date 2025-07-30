@@ -1,13 +1,15 @@
 
 "use client";
 
-import { useState, useMemo, Suspense } from 'react';
+import { useState, useMemo, Suspense, useEffect } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, ScanLine, X } from 'lucide-react';
 import { MedicineCard } from '@/components/MedicineCard';
+// BLOCKCHAIN INTEGRATION POINT:
+// In a real application, you would remove this import.
 import { allMedicines } from '@/lib/data';
 import type { Medicine } from '@/types';
 
@@ -18,7 +20,33 @@ function MedicinesPageContent() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<string | null>(initialStatus);
 
+  // BLOCKCHAIN INTEGRATION POINT:
+  // The 'allMedicines' array would be replaced with state that is loaded from your blockchain API.
+  // For example:
+  // const [medicines, setMedicines] = useState<Medicine[]>([]);
+  // const [isLoading, setIsLoading] = useState(true);
+  //
+  // useEffect(() => {
+  //   const fetchMedicines = async () => {
+  //     setIsLoading(true);
+  //     try {
+  //       // This is where you would call your blockchain backend API.
+  //       const response = await fetch('https://your-blockchain-api.com/medicines');
+  //       const data = await response.json();
+  //       setMedicines(data);
+  //     } catch (error) {
+  //       console.error("Failed to fetch medicines from blockchain:", error);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+  //   fetchMedicines();
+  // }, []);
+
+
   const filteredMedicines = useMemo(() => {
+    // This filtering logic would remain the same, but it would operate on the
+    // state fetched from the API (e.g., 'medicines') instead of 'allMedicines'.
     return allMedicines.filter((med) => {
       const searchMatch =
         med.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -28,14 +56,17 @@ function MedicinesPageContent() {
 
       return searchMatch && statusMatch;
     });
-  }, [searchTerm, selectedStatus]);
+  }, [searchTerm, selectedStatus]); // Add 'medicines' to dependency array in a real implementation.
 
   const handleClearFilter = () => {
     setSelectedStatus(null);
-    // This is a bit of a hack to clear the query param from URL without a full page reload
-    // in a client component.
     window.history.pushState({}, '', '/medicines');
   }
+
+  // In a real implementation, you would add a loading state here.
+  // if (isLoading) {
+  //   return <div>Loading inventory from the ledger...</div>;
+  // }
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">

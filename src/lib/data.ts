@@ -1,5 +1,32 @@
 import type { Medicine } from '@/types';
 
+// ===================================================================================
+// BLOCKCHAIN INTEGRATION POINT
+// ===================================================================================
+// This file currently serves as a MOCK DATABASE for the prototype.
+// In a real-world application, this static array would be removed.
+//
+// Instead, the frontend would make API calls to a dedicated blockchain backend service
+// to fetch and update the medicine inventory data. The functions to interact with that
+// API would live in this 'lib' folder.
+//
+// For example, you might have functions like:
+//
+// export async function getMedicinesFromLedger() {
+//   const response = await fetch('https://your-blockchain-api.com/medicines');
+//   const medicines = await response.json();
+//   return medicines;
+// }
+//
+// export async function addMedicineToLedger(newMedicine) {
+//   await fetch('https://your-blockchain-api.com/medicines', {
+//     method: 'POST',
+//     body: JSON.stringify(newMedicine)
+//   });
+// }
+// ===================================================================================
+
+
 export const allMedicines: Medicine[] = [
   {
     id: '1',
