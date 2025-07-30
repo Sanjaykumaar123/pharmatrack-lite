@@ -57,45 +57,51 @@ export default function Home() {
             </p>
           </div>
           <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <Card className="text-center">
-              <CardHeader>
-                <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
-                  <PackagePlus className="h-8 w-8 text-primary" />
-                </div>
-                <CardTitle className="mt-4">Overstocking</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>
-                  Preventing waste and financial loss from excess inventory.
-                </CardDescription>
-              </CardContent>
-            </Card>
-            <Card className="text-center">
-              <CardHeader>
-                 <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
-                  <PackageMinus className="h-8 w-8 text-primary" />
-                </div>
-                <CardTitle className="mt-4">Understocking</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>
-                  Ensuring essential medicines are always available for patients.
-                </CardDescription>
-              </CardContent>
-            </Card>
-            <Card className="text-center">
-              <CardHeader>
-                 <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
-                  <XCircle className="h-8 w-8 text-primary" />
-                </div>
-                <CardTitle className="mt-4">Expired Medicines</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>
-                  Minimizing the risk of dispensing expired or ineffective drugs.
-                </CardDescription>
-              </CardContent>
-            </Card>
+            <Link href="/medicines?status=In+Stock">
+              <Card className="text-center h-full hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
+                    <PackagePlus className="h-8 w-8 text-primary" />
+                  </div>
+                  <CardTitle className="mt-4">Overstocking</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription>
+                    Preventing waste and financial loss from excess inventory.
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link href="/medicines?status=Low+Stock">
+              <Card className="text-center h-full hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
+                    <PackageMinus className="h-8 w-8 text-primary" />
+                  </div>
+                  <CardTitle className="mt-4">Understocking</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription>
+                    Ensuring essential medicines are always available for patients.
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            </Link>
+            <Link href="/medicines?status=Out+of+Stock">
+              <Card className="text-center h-full hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
+                    <XCircle className="h-8 w-8 text-primary" />
+                  </div>
+                  <CardTitle className="mt-4">Expired Medicines</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription>
+                    Minimizing the risk of dispensing expired or ineffective drugs.
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            </Link>
              <Card className="text-center">
               <CardHeader>
                  <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">

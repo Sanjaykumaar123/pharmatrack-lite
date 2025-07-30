@@ -1,28 +1,41 @@
 
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, ScanLine } from 'lucide-react';
+import { Search, ScanLine, X } from 'lucide-react';
 import { MedicineCard } from '@/components/MedicineCard';
 import { allMedicines } from '@/lib/data';
 import type { Medicine } from '@/types';
 
-export default function MedicinesPage() {
+function MedicinesPageContent() {
+  const searchParams = useSearchParams();
+  const initialStatus = searchParams.get('status');
+
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState<string | null>(initialStatus);
 
   const filteredMedicines = useMemo(() => {
-    if (!searchTerm.trim()) {
-      return allMedicines;
-    }
-    return allMedicines.filter(
-      (med) =>
+    return allMedicines.filter((med) => {
+      const searchMatch =
         med.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        med.batchNumber.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [searchTerm]);
+        med.batchNumber.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const statusMatch = selectedStatus ? med.stock.status === selectedStatus : true;
+
+      return searchMatch && statusMatch;
+    });
+  }, [searchTerm, selectedStatus]);
+
+  const handleClearFilter = () => {
+    setSelectedStatus(null);
+    // This is a bit of a hack to clear the query param from URL without a full page reload
+    // in a client component.
+    window.history.pushState({}, '', '/medicines');
+  }
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
@@ -50,6 +63,18 @@ export default function MedicinesPage() {
           </Link>
         </div>
       </div>
+       {selectedStatus && (
+        <div className="mb-6 flex items-center gap-4 bg-primary/10 p-4 rounded-lg">
+          <p className="font-semibold text-foreground">
+            Filtering by status: <span className="text-primary">{selectedStatus}</span>
+          </p>
+          <Button variant="ghost" size="icon" onClick={handleClearFilter} className="h-8 w-8">
+            <X className="h-5 w-5" />
+            <span className="sr-only">Clear filter</span>
+          </Button>
+        </div>
+      )}
+
 
       <div>
         {filteredMedicines.length > 0 ? (
@@ -62,11 +87,20 @@ export default function MedicinesPage() {
           <div className="text-center py-10 px-6 bg-card rounded-lg border">
             <h3 className="text-lg font-semibold text-foreground">No Results Found</h3>
             <p className="text-muted-foreground mt-2">
-              We couldn't find any medicine matching your search. Please check the spelling or try a different term.
+              We couldn't find any medicine matching your search or filter criteria. Please check the spelling or try a different term.
             </p>
           </div>
         )}
       </div>
     </div>
   );
+}
+
+
+export default function MedicinesPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <MedicinesPageContent />
+    </Suspense>
+  )
 }
