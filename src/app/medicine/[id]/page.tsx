@@ -1,3 +1,4 @@
+
 import { allMedicines } from '@/lib/data';
 import type { Medicine } from '@/types';
 import { notFound } from 'next/navigation';
@@ -69,16 +70,18 @@ export default function MedicineDetailPage({ params }: { params: { id: string } 
               <Calendar className="h-6 w-6 text-accent" />
               <div>
                 <p className="text-sm text-muted-foreground">Expiry Date</p>
-                <p className="font-semibold flex items-center gap-2">
-                  {new Date(medicine.expiryDate).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
+                <div className="font-semibold flex items-center gap-2">
+                  <span>
+                    {new Date(medicine.expiryDate).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </span>
                   {isExpired && (
                     <Badge variant="destructive">Expired</Badge>
                   )}
-                </p>
+                </div>
               </div>
             </div>
              <div className="flex items-center gap-4">
