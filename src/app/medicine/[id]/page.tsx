@@ -4,7 +4,27 @@ import { notFound } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import SideEffects from '@/components/SideEffects';
-import { Calendar, Factory, Package, Pill } from 'lucide-react';
+import { Calendar, Factory, Package, Pill, PackageCheck, PackageWarning, PackageX, Boxes } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+
+const stockStatusMap = {
+  'In Stock': {
+    icon: PackageCheck,
+    textColor: 'text-green-600',
+    bgColor: 'bg-green-100',
+  },
+  'Low Stock': {
+    icon: PackageWarning,
+    textColor: 'text-yellow-600',
+    bgColor: 'bg-yellow-100',
+  },
+  'Out of Stock': {
+    icon: PackageX,
+    textColor: 'text-red-600',
+    bgColor: 'bg-red-100',
+  },
+};
 
 export default function MedicineDetailPage({ params }: { params: { id: string } }) {
   const medicine: Medicine | undefined = allMedicines.find((m) => m.id === params.id);
@@ -14,6 +34,8 @@ export default function MedicineDetailPage({ params }: { params: { id: string } 
   }
 
   const isExpired = new Date(medicine.expiryDate) < new Date();
+  const stockInfo = stockStatusMap[medicine.stock.status];
+  const StockIcon = stockInfo.icon;
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
@@ -57,6 +79,22 @@ export default function MedicineDetailPage({ params }: { params: { id: string } 
                     <Badge variant="destructive">Expired</Badge>
                   )}
                 </p>
+              </div>
+            </div>
+             <div className="flex items-center gap-4">
+              <Boxes className="h-6 w-6 text-accent" />
+              <div>
+                <p className="text-sm text-muted-foreground">Stock Quantity</p>
+                <p className="font-semibold">{medicine.stock.quantity} units</p>
+              </div>
+            </div>
+            <div className="md:col-span-2 flex items-center gap-4 p-4 rounded-lg bg-card border">
+              <div className={cn("p-2 rounded-full", stockInfo.bgColor)}>
+                <StockIcon className={cn("h-6 w-6", stockInfo.textColor)} />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Stock Status</p>
+                <p className={cn("font-bold", stockInfo.textColor)}>{medicine.stock.status}</p>
               </div>
             </div>
           </CardContent>
