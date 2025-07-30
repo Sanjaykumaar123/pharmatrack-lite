@@ -21,7 +21,7 @@ export default function Header() {
           <Link href="/" className="flex items-center gap-2">
             <PillIcon className="h-8 w-8 text-primary" />
             <span className="text-xl font-bold text-foreground font-headline">
-              Pharma Ledger
+              PharmaTrack Lite
             </span>
           </Link>
 

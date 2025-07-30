@@ -41,7 +41,7 @@ export default function Home() {
                 <blockquote className="text-lg italic text-foreground">
                   "Transparency, trust, and technology at the heart of your pharmacy."
                 </blockquote>
-                 <p className="text-right text-muted-foreground mt-2">- Pharma Ledger</p>
+                 <p className="text-right text-muted-foreground mt-2">- PharmaTrack Lite</p>
               </div>
             </div>
           </div>
