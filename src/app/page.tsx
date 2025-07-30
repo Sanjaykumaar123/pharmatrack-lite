@@ -1,9 +1,9 @@
+
 "use client";
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, PackagePlus, PackageMinus, XCircle, ShieldCheck } from 'lucide-react';
+import { ArrowRight, PackagePlus, PackageMinus, XCircle, ShieldCheck, Quote } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
 export default function Home() {
@@ -28,15 +28,21 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-            <div className="relative h-64 lg:h-auto">
-               <Image
-                src="https://placehold.co/600x400.png"
-                alt="Pharmacist using a modern inventory system"
-                width={600}
-                height={400}
-                className="rounded-xl shadow-2xl object-cover w-full h-full"
-                data-ai-hint="pharmacist inventory"
-              />
+            <div className="relative h-64 lg:h-auto flex flex-col justify-center items-start gap-8">
+              <div className="bg-background/50 border-l-4 border-primary p-4 rounded-r-lg shadow-lg">
+                <Quote className="h-6 w-6 text-primary mb-2" />
+                <blockquote className="text-lg italic text-foreground">
+                  "He who has health, has hope; and he who has hope, has everything."
+                </blockquote>
+                <p className="text-right text-muted-foreground mt-2">- Arabian Proverb</p>
+              </div>
+               <div className="bg-background/50 border-l-4 border-primary p-4 rounded-r-lg shadow-lg ml-8">
+                <Quote className="h-6 w-6 text-primary mb-2" />
+                <blockquote className="text-lg italic text-foreground">
+                  "Transparency, trust, and technology at the heart of your pharmacy."
+                </blockquote>
+                 <p className="text-right text-muted-foreground mt-2">- Pharma Ledger</p>
+              </div>
             </div>
           </div>
         </div>
