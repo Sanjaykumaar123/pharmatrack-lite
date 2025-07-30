@@ -12,18 +12,18 @@ import { cn } from '@/lib/utils';
 const stockStatusMap = {
   'In Stock': {
     icon: PackageCheck,
-    textColor: 'text-green-600',
-    bgColor: 'bg-green-100',
+    textColor: 'text-green-400',
+    bgColor: 'bg-green-500/10',
   },
   'Low Stock': {
     icon: AlertTriangle,
-    textColor: 'text-yellow-600',
-    bgColor: 'bg-yellow-100',
+    textColor: 'text-yellow-400',
+    bgColor: 'bg-yellow-500/10',
   },
   'Out of Stock': {
     icon: PackageX,
-    textColor: 'text-red-600',
-    bgColor: 'bg-red-100',
+    textColor: 'text-red-400',
+    bgColor: 'bg-red-500/10',
   },
 };
 
@@ -41,33 +41,37 @@ export default function MedicineDetailPage({ params }: { params: { id: string } 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
-        <Card className="overflow-hidden shadow-lg">
+        <Card className="overflow-hidden border-primary/20 shadow-lg shadow-primary/5">
           <CardHeader className="bg-primary/10">
-            <CardTitle className="text-3xl font-bold text-primary flex items-center gap-3">
-              <Pill className="h-8 w-8" />
-              {medicine.name}
-            </CardTitle>
-            <CardDescription className="text-lg">
-              {medicine.description}
-            </CardDescription>
+            <div className="flex items-center gap-4">
+              <Pill className="h-10 w-10 text-primary" />
+              <div>
+                <CardTitle className="text-3xl font-bold text-foreground">
+                  {medicine.name}
+                </CardTitle>
+                <CardDescription className="text-lg text-muted-foreground">
+                  {medicine.description}
+                </CardDescription>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex items-center gap-4">
-              <Factory className="h-6 w-6 text-accent" />
+              <Factory className="h-6 w-6 text-muted-foreground" />
               <div>
                 <p className="text-sm text-muted-foreground">Manufacturer</p>
                 <p className="font-semibold">{medicine.manufacturer}</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <Package className="h-6 w-6 text-accent" />
+              <Package className="h-6 w-6 text-muted-foreground" />
               <div>
                 <p className="text-sm text-muted-foreground">Batch Number</p>
                 <p className="font-semibold">{medicine.batchNumber}</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <Calendar className="h-6 w-6 text-accent" />
+              <Calendar className="h-6 w-6 text-muted-foreground" />
               <div>
                 <p className="text-sm text-muted-foreground">Expiry Date</p>
                 <div className="font-semibold flex items-center gap-2">
@@ -85,13 +89,13 @@ export default function MedicineDetailPage({ params }: { params: { id: string } 
               </div>
             </div>
              <div className="flex items-center gap-4">
-              <Boxes className="h-6 w-6 text-accent" />
+              <Boxes className="h-6 w-6 text-muted-foreground" />
               <div>
                 <p className="text-sm text-muted-foreground">Stock Quantity</p>
                 <p className="font-semibold">{medicine.stock.quantity} units</p>
               </div>
             </div>
-            <div className="md:col-span-2 flex items-center gap-4 p-4 rounded-lg bg-card border">
+            <div className="md:col-span-2 flex items-center gap-4 p-4 rounded-lg bg-secondary">
               <div className={cn("p-2 rounded-full", stockInfo.bgColor)}>
                 <StockIcon className={cn("h-6 w-6", stockInfo.textColor)} />
               </div>

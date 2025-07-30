@@ -41,9 +41,9 @@ export default function SideEffects({ medicineName }: SideEffectsProps) {
   };
 
   return (
-    <Card>
+    <Card className="bg-secondary/50 border-secondary">
       <CardHeader>
-        <CardTitle>Potential Side Effects</CardTitle>
+        <CardTitle>AI-Powered Side Effects Information</CardTitle>
       </CardHeader>
       <CardContent>
         <p className="text-muted-foreground mb-4">
@@ -53,23 +53,23 @@ export default function SideEffects({ medicineName }: SideEffectsProps) {
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Loading...
+              Analyzing...
             </>
           ) : (
             <>
               <AlertCircle className="mr-2 h-4 w-4" />
-              Show Side Effects
+              Reveal Potential Side Effects
             </>
           )}
         </Button>
         {sideEffects && (
           <div className="mt-6">
             <Accordion type="single" collapsible defaultValue="item-1">
-              <AccordionItem value="item-1">
-                <AccordionTrigger className="text-accent hover:no-underline">
+              <AccordionItem value="item-1" className="border-border/50">
+                <AccordionTrigger className="text-primary hover:no-underline">
                   Side Effects for {medicineName}
                 </AccordionTrigger>
-                <AccordionContent className="text-base leading-relaxed">
+                <AccordionContent className="text-base leading-relaxed text-muted-foreground">
                   {sideEffects}
                 </AccordionContent>
               </AccordionItem>

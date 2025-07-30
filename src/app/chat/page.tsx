@@ -53,13 +53,13 @@ export default function ChatPage() {
 
     return (
         <div className="container mx-auto p-4 sm:p-6 lg:p-8 h-full flex flex-col">
-            <h1 className="text-3xl font-bold tracking-tight text-primary sm:text-4xl font-headline mb-8">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline mb-8">
                 Chat with your Pharmacy Assistant
             </h1>
-            <Card className="flex-1 flex flex-col">
+            <Card className="flex-1 flex flex-col bg-card/50 border-border/50">
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                        <Bot /> AI Assistant
+                        <Bot className="text-primary"/> AI Assistant
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col gap-4">
@@ -71,13 +71,13 @@ export default function ChatPage() {
                                     message.role === 'user' ? 'justify-end' : 'justify-start'
                                 )}>
                                     {message.role === 'assistant' && (
-                                        <Avatar className="h-8 w-8">
-                                            <AvatarFallback><Bot /></AvatarFallback>
+                                        <Avatar className="h-8 w-8 bg-primary/20 ring-2 ring-primary/50">
+                                            <AvatarFallback className="bg-transparent"><Bot className="text-primary"/></AvatarFallback>
                                         </Avatar>
                                     )}
                                     <div className={cn(
-                                        "p-3 rounded-lg max-w-sm",
-                                        message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'
+                                        "p-3 rounded-lg max-w-md",
+                                        message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-secondary'
                                     )}>
                                         <p>{message.content}</p>
                                     </div>
@@ -90,18 +90,18 @@ export default function ChatPage() {
                             ))}
                              {isLoading && (
                                 <div className="flex items-start gap-3 justify-start">
-                                     <Avatar className="h-8 w-8">
-                                            <AvatarFallback><Bot /></AvatarFallback>
+                                     <Avatar className="h-8 w-8 bg-primary/20 ring-2 ring-primary/50">
+                                            <AvatarFallback className="bg-transparent"><Bot className="text-primary"/></AvatarFallback>
                                      </Avatar>
-                                     <div className="p-3 rounded-lg bg-muted flex items-center gap-2">
-                                        <Loader2 className="h-5 w-5 animate-spin" />
+                                     <div className="p-3 rounded-lg bg-secondary flex items-center gap-2">
+                                        <Loader2 className="h-5 w-5 animate-spin text-primary" />
                                         <span>Thinking...</span>
                                      </div>
                                 </div>
                             )}
                         </div>
                     </ScrollArea>
-                    <form onSubmit={handleSendMessage} className="flex items-center gap-2 pt-4 border-t">
+                    <form onSubmit={handleSendMessage} className="flex items-center gap-2 pt-4 border-t border-border/50">
                         <Input
                             value={input}
                             onChange={(e) => setInput(e.target.value)}

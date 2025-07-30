@@ -19,19 +19,19 @@ interface MedicineCardProps {
 
 const stockStatusMap = {
   'In Stock': {
-    icon: <PackageCheck className="h-5 w-5 text-green-500" />,
-    badge: <Badge variant="secondary" className="bg-green-100 text-green-800">In Stock</Badge>,
-    textColor: 'text-green-500',
+    icon: <PackageCheck className="h-5 w-5 text-green-400" />,
+    badge: <Badge variant="secondary" className="bg-green-500/10 text-green-400 border-green-500/20">In Stock</Badge>,
+    textColor: 'text-green-400',
   },
   'Low Stock': {
-    icon: <AlertTriangle className="h-5 w-5 text-yellow-500" />,
-    badge: <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Low Stock</Badge>,
-    textColor: 'text-yellow-500',
+    icon: <AlertTriangle className="h-5 w-5 text-yellow-400" />,
+    badge: <Badge variant="secondary" className="bg-yellow-500/10 text-yellow-400 border-yellow-500/20">Low Stock</Badge>,
+    textColor: 'text-yellow-400',
   },
   'Out of Stock': {
-    icon: <PackageX className="h-5 w-5 text-red-500" />,
-    badge: <Badge variant="destructive">Out of Stock</Badge>,
-    textColor: 'text-red-500',
+    icon: <PackageX className="h-5 w-5 text-red-400" />,
+    badge: <Badge variant="destructive" className="bg-red-500/10 text-red-400 border-red-500/20">Out of Stock</Badge>,
+    textColor: 'text-red-400',
   },
 };
 
@@ -41,9 +41,9 @@ export function MedicineCard({ medicine }: MedicineCardProps) {
 
   return (
     <Link href={`/medicine/${medicine.id}`} className="group">
-      <Card className={cn("h-full flex flex-col transition-all duration-300 ease-in-out group-hover:shadow-lg group-hover:border-primary", isOutOfStock && "bg-muted/50")}>
+      <Card className={cn("h-full flex flex-col transition-all duration-300 ease-in-out group-hover:shadow-lg group-hover:border-primary/50 group-hover:shadow-primary/10", isOutOfStock && "bg-secondary/50 opacity-60 hover:opacity-100")}>
         <CardHeader>
-          <CardTitle className="text-primary group-hover:text-primary-dark transition-colors">
+          <CardTitle className="text-foreground group-hover:text-primary transition-colors">
             {medicine.name}
           </CardTitle>
           <CardDescription>Batch: {medicine.batchNumber}</CardDescription>
