@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { Button } from './ui/button';
+import { LayoutDashboard } from 'lucide-react';
 
 const PillIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -22,6 +24,15 @@ export default function Header() {
               PharmaTrack Lite
             </span>
           </Link>
+
+          <nav>
+            <Link href="/medicines" passHref>
+              <Button variant="ghost">
+                <LayoutDashboard className="mr-2 h-5 w-5" />
+                Medicines
+              </Button>
+            </Link>
+          </nav>
         </div>
       </div>
     </header>

@@ -8,7 +8,7 @@ import {
   CardContent,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, PackageCheck, PackageX, AlertTriangle } from 'lucide-react';
+import { ChevronRight, PackageCheck, AlertTriangle, PackageX } from 'lucide-react';
 import type { Medicine } from '@/types';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
