@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Button } from './ui/button';
-import { LayoutDashboard, MessageCircle, BrainCircuit } from 'lucide-react';
+import { LayoutDashboard, BrainCircuit, LogIn, UserPlus } from 'lucide-react';
 
 const PillIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -38,6 +38,20 @@ export default function Header() {
                 AI Assistant
               </Button>
             </Link>
+             <div className="flex items-center gap-2 ml-4">
+                <Link href="/login" passHref>
+                    <Button variant="ghost">
+                        <LogIn className="mr-2 h-5 w-5" />
+                        Login
+                    </Button>
+                </Link>
+                <Link href="/signup" passHref>
+                    <Button>
+                        <UserPlus className="mr-2 h-5 w-5" />
+                        Sign Up
+                    </Button>
+                </Link>
+            </div>
           </nav>
         </div>
       </div>
