@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, PackagePlus, PackageMinus, XCircle, ShieldCheck, Quote } from 'lucide-react';
+import { ArrowRight, PackagePlus, PackageMinus, XCircle, ShieldCheck, Quote, Lock, Search, GitBranch } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
 export default function Home() {
@@ -17,7 +17,7 @@ export default function Home() {
                 Bringing Clarity and Trust to Your Pharmacy.
               </h1>
               <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-                Our platform provides a transparent and efficient solution to manage your medicine inventory, ensuring safety and reliability.
+                PharmaTrack Lite provides a transparent, secure, and efficient solution to manage your medicine inventory on a decentralized ledger, ensuring safety and reliability from manufacturer to patient.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row gap-4">
                 <Link href="/medicines" passHref>
@@ -48,70 +48,51 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-20 bg-card">
+       <section className="py-20 bg-card">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-3xl font-bold font-headline text-foreground">Key Inventory Challenges</h2>
+            <h2 className="text-3xl font-bold font-headline text-foreground">A Secure Foundation for Pharmaceutical Tracking</h2>
             <p className="mt-4 text-muted-foreground text-lg">
-              Our platform aims to solve critical issues prevalent in pharmacy management today.
+             PharmaTrack Lite is built on the principles of blockchain to solve critical issues in the supply chain.
             </p>
           </div>
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <Link href="/medicines?status=In+Stock">
-              <Card className="text-center h-full hover:shadow-lg transition-shadow">
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <Card className="text-center h-full">
                 <CardHeader>
                   <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
-                    <PackagePlus className="h-8 w-8 text-primary" />
+                    <Lock className="h-8 w-8 text-primary" />
                   </div>
-                  <CardTitle className="mt-4">Overstocking</CardTitle>
+                  <CardTitle className="mt-4">Immutable Ledger</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <CardDescription>
-                    Preventing waste and financial loss from excess inventory.
+                    Every transaction is permanently recorded, creating an unchangeable and auditable history for each medicine.
                   </CardDescription>
                 </CardContent>
               </Card>
-            </Link>
-            <Link href="/medicines?status=Low+Stock">
-              <Card className="text-center h-full hover:shadow-lg transition-shadow">
+              <Card className="text-center h-full">
                 <CardHeader>
                   <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
-                    <PackageMinus className="h-8 w-8 text-primary" />
+                    <GitBranch className="h-8 w-8 text-primary" />
                   </div>
-                  <CardTitle className="mt-4">Understocking</CardTitle>
+                  <CardTitle className="mt-4">Enhanced Traceability</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <CardDescription>
-                    Ensuring essential medicines are always available for patients.
+                   Track medicines from the manufacturer to the pharmacy, ensuring authenticity and preventing counterfeit drugs.
                   </CardDescription>
                 </CardContent>
               </Card>
-            </Link>
-            <Link href="/medicines?status=Out+of+Stock">
-              <Card className="text-center h-full hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
-                    <XCircle className="h-8 w-8 text-primary" />
-                  </div>
-                  <CardTitle className="mt-4">Expired Medicines</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription>
-                    Minimizing the risk of dispensing expired or ineffective drugs.
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            </Link>
-             <Card className="text-center">
+            <Card className="text-center h-full">
               <CardHeader>
                  <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
                   <ShieldCheck className="h-8 w-8 text-primary" />
                 </div>
-                <CardTitle className="mt-4">Counterfeit Drugs</CardTitle>
+                <CardTitle className="mt-4">Increased Trust</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Enhancing supply chain security to eliminate fake medicines.
+                  A transparent system that provides confidence to regulators, pharmacists, and patients about medicine integrity.
                 </CardDescription>
               </CardContent>
             </Card>
