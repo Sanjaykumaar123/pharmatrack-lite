@@ -1,3 +1,13 @@
+// ===================================================================================
+// BACKEND (Server-Side)
+// ===================================================================================
+// This file is a "Server Action" in Next.js, indicated by the 'use server'
+// directive. This means all the code in this file, including the AI logic,
+// runs exclusively on the server (backend). It is never sent to the user's browser.
+// The frontend calls this action as if it were a simple function, but Next.js
+// handles the network request behind the scenes.
+// ===================================================================================
+
 'use server';
 /**
  * @fileOverview A chatbot AI agent for answering questions about medicines.

@@ -1,3 +1,14 @@
+// ===================================================================================
+// BACKEND (Server-Side) & FRONTEND (Client-Side)
+// ===================================================================================
+// This file demonstrates the "use client" directive in Next.js.
+// By default, all components in the Next.js App Router are Server Components,
+// meaning they run on the server (backend).
+// However, because this page requires user interactivity (like typing in a search
+// bar and filtering results), we add the "use client" directive at the top.
+// This tells Next.js to also run this component's code in the browser (frontend),
+// allowing for interactive user experiences.
+// ===================================================================================
 
 "use client";
 

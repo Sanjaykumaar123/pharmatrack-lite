@@ -1,3 +1,13 @@
+// ===================================================================================
+// BACKEND (Server-Side)
+// ===================================================================================
+// This is a "Server Component" in Next.js. By default, components in the App
+// Router run *only* on the server. This means this component's code is never
+// sent to the browser.
+// It fetches data and renders the page on the server, then sends the final HTML
+// to the client. This is efficient and secure, as data fetching logic and
+// sensitive information never leave the server environment.
+// ===================================================================================
 
 import { allMedicines } from '@/lib/data';
 import type { Medicine } from '@/types';
