@@ -2,6 +2,8 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,6 +25,22 @@ import {
 
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [role, setRole] = useState("customer");
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    // This is a simulated login. In a real app, you'd handle authentication.
+    // We'll just redirect based on the selected role.
+    if (role === 'admin') {
+      router.push('/admin/dashboard');
+    } else if (role === 'manufacturer') {
+      router.push('/manufacturer/dashboard');
+    } else {
+      router.push('/customer/dashboard');
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-full bg-background p-4 sm:p-6 lg:p-8">
       <Card className="mx-auto max-w-sm w-full">
@@ -36,10 +54,10 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4">
+          <form onSubmit={handleLogin} className="grid gap-4">
             <div className="grid gap-2">
                 <Label htmlFor="role">Your Role</Label>
-                <Select defaultValue="customer">
+                <Select value={role} onValueChange={setRole}>
                     <SelectTrigger id="role">
                         <SelectValue placeholder="Select a role" />
                     </SelectTrigger>
@@ -57,6 +75,7 @@ export default function LoginPage() {
                 type="email"
                 placeholder="m@example.com"
                 required
+                defaultValue="test@example.com"
               />
             </div>
             <div className="grid gap-2">
@@ -69,7 +88,7 @@ export default function LoginPage() {
                   Forgot your password?
                 </Link>
               </div>
-              <Input id="password" type="password" required />
+              <Input id="password" type="password" required defaultValue="password" />
             </div>
             <Button type="submit" className="w-full">
               Login
@@ -77,7 +96,7 @@ export default function LoginPage() {
             <Button variant="outline" className="w-full">
               Login with Google
             </Button>
-          </div>
+          </form>
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
             <Link href="/signup" className="underline">
