@@ -14,48 +14,37 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { LogIn, Loader2 } from "lucide-react";
-import { auth, db } from "@/lib/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { useToast } from "@/hooks/use-toast";
+import { LogIn } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+  const [role, setRole] = useState("customer");
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      // Fetch user role from Firestore
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (userDoc.exists()) {
-        const role = userDoc.data().role;
-         // We'll just redirect based on the selected role.
-        if (role === 'admin') {
-          router.push('/admin/dashboard');
-        } else if (role === 'manufacturer') {
-          router.push('/manufacturer/dashboard');
-        } else {
-          router.push('/customer/dashboard');
-        }
-      } else {
-        // Default redirect if no role found, or handle as an error
-        toast({ variant: 'destructive', title: "Login Error", description: "No role assigned to this user."});
-        router.push('/');
-      }
-    } catch (error: any) {
-       toast({ variant: 'destructive', title: "Login Failed", description: error.message });
-    } finally {
-        setIsLoading(false);
+    // This is a simulated login. In a real app, you'd handle authentication.
+    // We'll save the role to session storage to simulate a logged-in state.
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem('loggedInUserRole', role);
+      // We are manually dispatching a storage event to ensure the header updates immediately.
+      window.dispatchEvent(new Event("storage"));
+    }
+    
+    // We'll just redirect based on the selected role.
+    if (role === 'admin') {
+      router.push('/admin/dashboard');
+    } else if (role === 'manufacturer') {
+      router.push('/manufacturer/dashboard');
+    } else {
+      router.push('/customer/dashboard');
     }
   };
 
@@ -68,11 +57,24 @@ export default function LoginPage() {
             </div>
           <CardTitle className="text-2xl font-bold">Login</CardTitle>
           <CardDescription>
-            Enter your credentials to access your account.
+            Select your role to simulate logging in.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="grid gap-4">
+            <div className="grid gap-2">
+                <Label htmlFor="role">Your Role</Label>
+                <Select value={role} onValueChange={setRole}>
+                    <SelectTrigger id="role">
+                        <SelectValue placeholder="Select a role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="customer">Customer</SelectItem>
+                        <SelectItem value="manufacturer">Manufacturer</SelectItem>
+                        <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                </Select>
+            </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -80,28 +82,16 @@ export default function LoginPage() {
                 type="email"
                 placeholder="m@example.com"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
+                defaultValue="test@example.com"
+                disabled
               />
             </div>
             <div className="grid gap-2">
-              <div className="flex items-center">
                 <Label htmlFor="password">Password</Label>
-                <Link
-                  href="#"
-                  className="ml-auto inline-block text-sm underline"
-                >
-                  Forgot your password?
-                </Link>
-              </div>
-              <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} disabled={isLoading} />
+              <Input id="password" type="password" required defaultValue="password" disabled/>
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? <Loader2 className="animate-spin" /> : "Login"}
-            </Button>
-            <Button variant="outline" className="w-full" disabled={isLoading}>
-              Login with Google
+            <Button type="submit" className="w-full">
+              Login
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">

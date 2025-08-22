@@ -5,9 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
 import { LayoutDashboard, BrainCircuit, LogIn, UserPlus, LogOut, User, Factory, ShieldCheck, Loader2 } from 'lucide-react';
-import { useAuthStore } from '@/hooks/useAuthStore';
-import { auth } from '@/lib/firebase';
-import { signOut } from 'firebase/auth';
+import { useEffect, useState } from 'react';
 
 const PillIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -39,16 +37,37 @@ const roleConfig = {
 }
 
 export default function Header() {
-  const { user, role, isLoading } = useAuthStore();
+  const [loggedInRole, setLoggedInRole] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
-  const handleLogout = async () => {
-    await signOut(auth);
+  useEffect(() => {
+    // This effect runs on the client after hydration
+    // so it's safe to access sessionStorage.
+    const role = sessionStorage.getItem('loggedInUserRole');
+    setLoggedInRole(role);
+    setIsLoading(false);
+
+    const handleStorageChange = () => {
+        setLoggedInRole(sessionStorage.getItem('loggedInUserRole'));
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+        window.removeEventListener('storage', handleStorageChange);
+    };
+
+  }, []);
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('loggedInUserRole');
+    setLoggedInRole(null);
     router.push('/login');
   };
 
-  const roleKey = role as keyof typeof roleConfig;
-  const currentRole = role ? roleConfig[roleKey] : null;
+  const roleKey = loggedInRole as keyof typeof roleConfig;
+  const currentRole = loggedInRole ? roleConfig[roleKey] : null;
   const RoleIcon = currentRole?.icon;
 
 
@@ -79,7 +98,7 @@ export default function Header() {
              <div className="flex items-center gap-2 ml-4">
                 {isLoading ? (
                     <Loader2 className="h-6 w-6 animate-spin" />
-                ) : user && currentRole && RoleIcon ? (
+                ) : loggedInRole && currentRole && RoleIcon ? (
                      <>
                         <Link href={currentRole.dashboard} passHref>
                             <Button variant="outline">

@@ -1,49 +1,135 @@
-
 "use client";
 
-import { create } from 'zustand';
-import { auth, db } from '@/lib/firebase';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Button } from './ui/button';
+import { LayoutDashboard, BrainCircuit, LogIn, UserPlus, LogOut, User, Factory, ShieldCheck, Loader2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
-interface AuthState {
-  user: User | null;
-  role: string | null;
-  isLoading: boolean;
-  setUser: (user: User | null) => void;
-  setRole: (role: string | null) => void;
-  setIsLoading: (isLoading: boolean) => void;
+const PillIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    {...props}
+  >
+    <path d="M12.337 2.012a9.75 9.75 0 0 0-9.325 9.325 9.75 9.75 0 0 0 9.325 9.325 9.75 9.75 0 0 0 9.325-9.325A9.75 9.75 0 0 0 12.337 2.012ZM11.25 8.637a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 .75.75v3h3a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-3v3a.75.75 0 0 1-.75.75h-.75a.75.75 0 0 1-.75-.75v-3h-3a.75.75 0 0 1-.75-.75v-.75a.75.75 0 0 1 .75-.75h3v-3Z" />
+  </svg>
+);
+
+const roleConfig = {
+    admin: {
+        icon: ShieldCheck,
+        dashboard: '/admin/dashboard',
+        label: 'Admin'
+    },
+    manufacturer: {
+        icon: Factory,
+        dashboard: '/manufacturer/dashboard',
+        label: 'Manufacturer'
+    },
+    customer: {
+        icon: User,
+        dashboard: '/customer/dashboard',
+        label: 'Customer'
+    }
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  role: null,
-  isLoading: true,
-  setUser: (user) => set({ user }),
-  setRole: (role) => set({ role }),
-  setIsLoading: (isLoading) => set({ isLoading }),
-}));
+export default function Header() {
+  const [loggedInRole, setLoggedInRole] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
-// This function will run on the client and listen for auth state changes.
-onAuthStateChanged(auth, async (user) => {
-    useAuthStore.getState().setIsLoading(true);
-    if (user) {
-        useAuthStore.getState().setUser(user);
-        try {
-            const userDocRef = doc(db, 'users', user.uid);
-            const userDoc = await getDoc(userDocRef);
-            if (userDoc.exists()) {
-                useAuthStore.getState().setRole(userDoc.data().role);
-            } else {
-                 useAuthStore.getState().setRole(null);
-            }
-        } catch (error) {
-            console.error("Error fetching user role:", error);
-            useAuthStore.getState().setRole(null);
-        }
-    } else {
-        useAuthStore.getState().setUser(null);
-        useAuthStore.getState().setRole(null);
-    }
-    useAuthStore.getState().setIsLoading(false);
-});
+  useEffect(() => {
+    // This effect runs on the client after hydration
+    // so it's safe to access sessionStorage.
+    const role = sessionStorage.getItem('loggedInUserRole');
+    setLoggedInRole(role);
+    setIsLoading(false);
+
+    const handleStorageChange = () => {
+        setLoggedInRole(sessionStorage.getItem('loggedInUserRole'));
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+        window.removeEventListener('storage', handleStorageChange);
+    };
+
+  }, []);
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('loggedInUserRole');
+    setLoggedInRole(null);
+    router.push('/login');
+  };
+
+  const roleKey = loggedInRole as keyof typeof roleConfig;
+  const currentRole = loggedInRole ? roleConfig[roleKey] : null;
+  const RoleIcon = currentRole?.icon;
+
+
+  return (
+    <header className="bg-background/80 backdrop-blur-sm sticky top-0 z-50 border-b">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <PillIcon className="h-8 w-8 text-primary" />
+            <span className="text-xl font-bold text-foreground font-headline">
+              PharmaTrack Lite
+            </span>
+          </Link>
+
+          <nav className="hidden md:flex items-center gap-2">
+            <Link href="/medicines" passHref>
+              <Button variant="ghost">
+                <LayoutDashboard className="mr-2 h-5 w-5" />
+                Pharmacy
+              </Button>
+            </Link>
+            <Link href="/chat" passHref>
+              <Button variant="ghost">
+                <BrainCircuit className="mr-2 h-5 w-5" />
+                AI Assistant
+              </Button>
+            </Link>
+             <div className="flex items-center gap-2 ml-4">
+                {isLoading ? (
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                ) : loggedInRole && currentRole && RoleIcon ? (
+                     <>
+                        <Link href={currentRole.dashboard} passHref>
+                            <Button variant="outline">
+                                <RoleIcon className="mr-2 h-5 w-5" />
+                                {currentRole.label} Dashboard
+                            </Button>
+                        </Link>
+                        <Button onClick={handleLogout}>
+                            <LogOut className="mr-2 h-5 w-5" />
+                            Logout
+                        </Button>
+                     </>
+                ) : (
+                    <>
+                        <Link href="/login" passHref>
+                            <Button variant="ghost">
+                                <LogIn className="mr-2 h-5 w-5" />
+                                Login
+                            </Button>
+                        </Link>
+                        <Link href="/signup" passHref>
+                            <Button>
+                                <UserPlus className="mr-2 h-5 w-5" />
+                                Sign Up
+                            </Button>
+                        </Link>
+                    </>
+                )}
+            </div>
+          </nav>
+        </div>
+      </div>
+    </header>
+  );
+}

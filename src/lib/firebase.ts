@@ -1,34 +1,135 @@
+"use client";
 
-// ===================================================================================
-// FIREBASE INTEGRATION
-// ===================================================================================
-// This file initializes the Firebase SDK and exports the necessary services.
-// It uses the configuration from a .env.local file to connect to your Firebase project.
-// In a real application, you would secure your backend services with App Check and
-// proper security rules in the Firebase console.
-// ===================================================================================
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Button } from './ui/button';
+import { LayoutDashboard, BrainCircuit, LogIn, UserPlus, LogOut, User, Factory, ShieldCheck, Loader2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
-import { initializeApp, getApps } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+const PillIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    {...props}
+  >
+    <path d="M12.337 2.012a9.75 9.75 0 0 0-9.325 9.325 9.75 9.75 0 0 0 9.325 9.325 9.75 9.75 0 0 0 9.325-9.325A9.75 9.75 0 0 0 12.337 2.012ZM11.25 8.637a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 .75.75v3h3a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-3v3a.75.75 0 0 1-.75.75h-.75a.75.75 0 0 1-.75-.75v-3h-3a.75.75 0 0 1-.75-.75v-.75a.75.75 0 0 1 .75-.75h3v-3Z" />
+  </svg>
+);
 
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-};
-
-// Initialize Firebase
-let app;
-if (!getApps().length) {
-  app = initializeApp(firebaseConfig);
-} else {
-  app = getApps()[0];
+const roleConfig = {
+    admin: {
+        icon: ShieldCheck,
+        dashboard: '/admin/dashboard',
+        label: 'Admin'
+    },
+    manufacturer: {
+        icon: Factory,
+        dashboard: '/manufacturer/dashboard',
+        label: 'Manufacturer'
+    },
+    customer: {
+        icon: User,
+        dashboard: '/customer/dashboard',
+        label: 'Customer'
+    }
 }
 
-export const auth = getAuth(app);
-export const db = getFirestore(app);
+export default function Header() {
+  const [loggedInRole, setLoggedInRole] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
 
+  useEffect(() => {
+    // This effect runs on the client after hydration
+    // so it's safe to access sessionStorage.
+    const role = sessionStorage.getItem('loggedInUserRole');
+    setLoggedInRole(role);
+    setIsLoading(false);
+
+    const handleStorageChange = () => {
+        setLoggedInRole(sessionStorage.getItem('loggedInUserRole'));
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+        window.removeEventListener('storage', handleStorageChange);
+    };
+
+  }, []);
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('loggedInUserRole');
+    setLoggedInRole(null);
+    router.push('/login');
+  };
+
+  const roleKey = loggedInRole as keyof typeof roleConfig;
+  const currentRole = loggedInRole ? roleConfig[roleKey] : null;
+  const RoleIcon = currentRole?.icon;
+
+
+  return (
+    <header className="bg-background/80 backdrop-blur-sm sticky top-0 z-50 border-b">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <PillIcon className="h-8 w-8 text-primary" />
+            <span className="text-xl font-bold text-foreground font-headline">
+              PharmaTrack Lite
+            </span>
+          </Link>
+
+          <nav className="hidden md:flex items-center gap-2">
+            <Link href="/medicines" passHref>
+              <Button variant="ghost">
+                <LayoutDashboard className="mr-2 h-5 w-5" />
+                Pharmacy
+              </Button>
+            </Link>
+            <Link href="/chat" passHref>
+              <Button variant="ghost">
+                <BrainCircuit className="mr-2 h-5 w-5" />
+                AI Assistant
+              </Button>
+            </Link>
+             <div className="flex items-center gap-2 ml-4">
+                {isLoading ? (
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                ) : loggedInRole && currentRole && RoleIcon ? (
+                     <>
+                        <Link href={currentRole.dashboard} passHref>
+                            <Button variant="outline">
+                                <RoleIcon className="mr-2 h-5 w-5" />
+                                {currentRole.label} Dashboard
+                            </Button>
+                        </Link>
+                        <Button onClick={handleLogout}>
+                            <LogOut className="mr-2 h-5 w-5" />
+                            Logout
+                        </Button>
+                     </>
+                ) : (
+                    <>
+                        <Link href="/login" passHref>
+                            <Button variant="ghost">
+                                <LogIn className="mr-2 h-5 w-5" />
+                                Login
+                            </Button>
+                        </Link>
+                        <Link href="/signup" passHref>
+                            <Button>
+                                <UserPlus className="mr-2 h-5 w-5" />
+                                Sign Up
+                            </Button>
+                        </Link>
+                    </>
+                )}
+            </div>
+          </nav>
+        </div>
+      </div>
+    </header>
+  );
+}
