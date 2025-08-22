@@ -2,7 +2,7 @@
 "use client";
 
 import { useMedicineStore } from '@/hooks/useMedicineStore';
-import type { Medicine } from '@/types';
+import type { Medicine } from '@/types/medicine';
 import { notFound, useParams } from 'next/navigation';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';

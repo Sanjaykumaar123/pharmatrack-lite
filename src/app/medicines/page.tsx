@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
@@ -11,29 +11,34 @@ import { MedicineCard } from '@/components/MedicineCard';
 import { useMedicineStore } from '@/hooks/useMedicineStore';
 import type { Medicine } from '@/types/medicine';
 
-export default function MedicinesPage() {
-  const { medicines, loading, error, fetchMedicines } = useMedicineStore();
+function MedicinesPageContent() {
+  const { medicines, isInitialized } = useMedicineStore();
   const searchParams = useSearchParams();
   const initialStatus = searchParams.get('status');
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState<string | null>(initialStatus);
   
-  useEffect(() => {
-    fetchMedicines();
-  }, [fetchMedicines]);
-
   const filteredMedicines = useMemo(() => {
-    if (loading) return [];
     return medicines.filter((med) => {
       const searchMatch =
         med.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        med.batchNo.toLowerCase().includes(searchTerm.toLowerCase());
-      return searchMatch;
+        med.batchNumber.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const statusMatch = selectedStatus ? med.stock.status === selectedStatus : true;
+
+      return searchMatch && statusMatch;
     });
-  }, [searchTerm, medicines, loading]);
+  }, [searchTerm, selectedStatus, medicines]);
 
+  const handleClearFilter = () => {
+    setSelectedStatus(null);
+    const newUrl = new URL(window.location.href);
+    newUrl.searchParams.delete('status');
+    window.history.pushState({}, '', newUrl);
+  }
 
-  if (loading) {
+  if (!isInitialized) {
       return (
           <div className="flex h-full flex-col items-center justify-center">
               <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -41,18 +46,6 @@ export default function MedicinesPage() {
           </div>
       )
   }
-
-  if (error) {
-    return (
-       <div className="flex h-full flex-col items-center justify-center text-center">
-          <h2 className="text-2xl font-semibold text-destructive">Failed to Load Inventory</h2>
-          <p className="mt-2 text-muted-foreground">There was a problem connecting to the blockchain ledger.</p>
-          <p className="mt-1 text-xs text-destructive/80">{error}</p>
-          <Button onClick={fetchMedicines} className="mt-4">Try Again</Button>
-      </div>
-    )
-  }
-
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
@@ -80,6 +73,18 @@ export default function MedicinesPage() {
           </Link>
         </div>
       </div>
+       {selectedStatus && (
+        <div className="mb-6 flex items-center gap-4 bg-primary/10 p-4 rounded-lg">
+          <p className="font-semibold text-foreground">
+            Filtering by status: <span className="text-primary">{selectedStatus}</span>
+          </p>
+          <Button variant="ghost" size="icon" onClick={handleClearFilter} className="h-8 w-8">
+            <X className="h-5 w-5" />
+            <span className="sr-only">Clear filter</span>
+          </Button>
+        </div>
+      )}
+
 
       <div>
         {filteredMedicines.length > 0 ? (
@@ -99,4 +104,12 @@ export default function MedicinesPage() {
       </div>
     </div>
   );
+}
+
+export default function MedicinesPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <MedicinesPageContent />
+    </Suspense>
+  )
 }

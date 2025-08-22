@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ChevronRight, PackageCheck, AlertTriangle, PackageX } from 'lucide-react';
-import type { Medicine } from '@/types';
+import type { Medicine } from '@/types/medicine';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
 

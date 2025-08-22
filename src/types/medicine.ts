@@ -1,12 +1,13 @@
-export type Medicine = {
-  id: string; // app-level id for list rendering
+export interface Medicine {
+  id: string;
   name: string;
-  batchNo: string;
-  mfgDate: string; // ISO date
-  expDate: string; // ISO date
-  quantity: number;
   manufacturer: string;
-  onChain: boolean; // whether we’ve confirmed a ledger write
-};
-
-export type NewMedicine = Omit<Medicine, "id" | "onChain">;
+  batchNumber: string;
+  expiryDate: string;
+  description: string;
+  imageUrl: string;
+  stock: {
+    quantity: number;
+    status: 'In Stock' | 'Low Stock' | 'Out of Stock';
+  };
+}

@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { useMedicineStore } from '@/hooks/useMedicineStore';
 import { useToast } from '@/hooks/use-toast';
-import type { Medicine } from '@/types';
+import type { Medicine } from '@/types/medicine';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),

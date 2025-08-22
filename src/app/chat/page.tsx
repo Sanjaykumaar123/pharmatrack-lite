@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { useMedicineStore } from '@/hooks/useMedicineStore';
+import type { Medicine } from '@/types/medicine';
 
 interface Message {
     role: 'user' | 'assistant';
@@ -50,6 +51,7 @@ export default function ChatPage() {
                 title: 'Error',
                 description: 'Failed to get a response from the assistant. Please try again.',
             });
+            // remove the user message on error
             setMessages(prev => prev.slice(0, prev.length - 1));
         } finally {
             setIsLoading(false);
@@ -124,5 +126,3 @@ export default function ChatPage() {
         </div>
     );
 }
-
-    
