@@ -46,7 +46,7 @@ export function MedicineCard({ medicine }: MedicineCardProps) {
             alt={medicine.name}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"
-            data-ai-hint="medicine pills"
+            data-ai-hint={`${medicine.name} pills`}
           />
         </div>
         <CardHeader>

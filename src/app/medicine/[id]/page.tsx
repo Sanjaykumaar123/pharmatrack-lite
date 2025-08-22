@@ -88,7 +88,7 @@ export default function MedicineDetailPage({ params }: { params: { id: string } 
                         alt={medicine.name}
                         fill
                         className="object-cover"
-                        data-ai-hint="medicine product shot"
+                        data-ai-hint={`${medicine.name} product shot`}
                     />
                 </div>
             </Card>
