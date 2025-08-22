@@ -1,22 +1,73 @@
 
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { ScanLine } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { ScanLine, Video, VideoOff } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import { useMedicineStore } from '@/hooks/useMedicineStore';
 
 export default function ScannerPage() {
   const router = useRouter();
   const { medicines } = useMedicineStore();
+  const { toast } = useToast();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const getCameraPermission = async () => {
+      // Check if we are in a browser environment
+      if (typeof navigator !== 'undefined' && navigator.mediaDevices) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+          setHasCameraPermission(true);
+
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+        } catch (error) {
+          console.error('Error accessing camera:', error);
+          setHasCameraPermission(false);
+          toast({
+            variant: 'destructive',
+            title: 'Camera Access Denied',
+            description: 'Please enable camera permissions in your browser settings to use this feature.',
+          });
+        }
+      } else {
+        setHasCameraPermission(false);
+        toast({
+            variant: 'destructive',
+            title: 'Camera Not Supported',
+            description: 'Your browser does not support camera access.',
+        });
+      }
+    };
+
+    getCameraPermission();
+
+    // Cleanup function to stop the video stream when the component unmounts
+    return () => {
+      if (videoRef.current && videoRef.current.srcObject) {
+        const stream = videoRef.current.srcObject as MediaStream;
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [toast]);
+
 
   const handleScan = () => {
     // In a real application, you would integrate a QR code scanning library.
     // For this prototype, we simulate a scan and redirect to a random medicine page.
     if (medicines.length === 0) {
-        // Handle case where there are no medicines
-        router.push('/medicines');
-        return;
+      toast({
+        title: "No Medicines Found",
+        description: "There are no medicines in the inventory to scan for.",
+      });
+      router.push('/medicines');
+      return;
     }
     const randomMedicine = medicines[Math.floor(Math.random() * medicines.length)];
     router.push(`/medicine/${randomMedicine.id}`);
@@ -35,10 +86,18 @@ export default function ScannerPage() {
           Position the QR code within the frame to automatically scan it.
         </p>
         <div className="mt-8">
-          {/* Placeholder for camera view */}
-          <div className="w-full aspect-square bg-background rounded-lg flex items-center justify-center border-2 border-dashed">
-            <p className="text-muted-foreground">Camera view would be here</p>
+          <div className="w-full aspect-square bg-background rounded-lg flex items-center justify-center border-2 border-dashed overflow-hidden">
+             <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
           </div>
+            {hasCameraPermission === false && (
+                <Alert variant="destructive" className="mt-4 text-left">
+                  <VideoOff className="h-4 w-4" />
+                  <AlertTitle>Camera Access Required</AlertTitle>
+                  <AlertDescription>
+                    Please allow camera access in your browser to use this feature. You may need to refresh the page after granting permission.
+                  </AlertDescription>
+              </Alert>
+            )}
         </div>
         <Button onClick={handleScan} size="lg" className="mt-8 w-full">
           Simulate Successful Scan
@@ -47,5 +106,3 @@ export default function ScannerPage() {
     </div>
   );
 }
-
-    
