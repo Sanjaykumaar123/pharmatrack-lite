@@ -3,12 +3,12 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ShieldCheck, Lock, GitBranch } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Lock, GitBranch, Database, Shield, FileCheck, UserCheck } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 
 const PillIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.29 8.29l-5.58 5.58c-.39.39-1.02.39-1.41 0l-2.59-2.59c-.39-.39-.39-1.02 0-1.41l5.58-5.58c.39-.39 1.02-.39 1.41 0l2.59 2.59c.39.39.39 1.02 0 1.41z" />
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.29 8.29l-5.58 5.58c-.39.39-1.02.39-1.41 0l-2.59-2.59c-.39-.39-.39-1.02 0-1.41l5.58-5.58c.39-.39 1.02.39 1.41 0l2.59 2.59c.39.39.39 1.02 0 1.41z" />
     </svg>
 );
 
@@ -57,7 +57,7 @@ export default function Home() {
              PharmaTrack Lite is built on the principles of blockchain to solve critical issues in the supply chain.
             </p>
           </div>
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               <Card className="text-center h-full hover:shadow-xl hover:-translate-y-2 transition-all duration-300 bg-background/50 border-primary/10">
                 <CardHeader>
                   <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
@@ -94,6 +94,58 @@ export default function Home() {
               <CardContent>
                 <CardDescription>
                   A transparent system that provides confidence to regulators, pharmacists, and patients about medicine integrity.
+                </CardDescription>
+              </CardContent>
+            </Card>
+            <Card className="text-center h-full hover:shadow-xl hover:-translate-y-2 transition-all duration-300 bg-background/50 border-primary/10">
+              <CardHeader>
+                 <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
+                  <Database className="h-8 w-8 text-primary" />
+                </div>
+                <CardTitle className="mt-4">Decentralized Data</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription>
+                  No single point of failure. Data is distributed across the network, making it highly secure and resilient to tampering.
+                </CardDescription>
+              </CardContent>
+            </Card>
+             <Card className="text-center h-full hover:shadow-xl hover:-translate-y-2 transition-all duration-300 bg-background/50 border-primary/10">
+              <CardHeader>
+                 <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
+                  <Shield className="h-8 w-8 text-primary" />
+                </div>
+                <CardTitle className="mt-4">Real-Time Verification</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription>
+                  Instantly verify the authenticity and provenance of any medicine with a simple scan, protecting against counterfeits.
+                </CardDescription>
+              </CardContent>
+            </Card>
+             <Card className="text-center h-full hover:shadow-xl hover:-translate-y-2 transition-all duration-300 bg-background/50 border-primary/10">
+              <CardHeader>
+                 <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
+                  <FileCheck className="h-8 w-8 text-primary" />
+                </div>
+                <CardTitle className="mt-4">Automated Compliance</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription>
+                  Smart contracts can automate regulatory checks and reporting, reducing administrative overhead and ensuring compliance.
+                </CardDescription>
+              </CardContent>
+            </Card>
+             <Card className="text-center h-full hover:shadow-xl hover:-translate-y-2 transition-all duration-300 bg-background/50 border-primary/10">
+              <CardHeader>
+                 <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
+                  <UserCheck className="h-8 w-8 text-primary" />
+                </div>
+                <CardTitle className="mt-4">Patient Empowerment</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription>
+                  Gives patients direct access to the history of their medicine, fostering confidence and active participation in their health.
                 </CardDescription>
               </CardContent>
             </Card>
