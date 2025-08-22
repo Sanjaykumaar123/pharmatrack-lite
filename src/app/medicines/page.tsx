@@ -1,49 +1,39 @@
+
 "use client";
 
-import { useState, useMemo, Suspense, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, ScanLine, X, Loader2 } from 'lucide-react';
 import { MedicineCard } from '@/components/MedicineCard';
-import type { Medicine } from '@/types';
 import { useMedicineStore } from '@/hooks/useMedicineStore';
-import Link from 'next/link';
+import type { Medicine } from '@/types/medicine';
 
-function MedicinesPageContent() {
-  const { medicines, isInitialized } = useMedicineStore();
+export default function MedicinesPage() {
+  const { medicines, loading, error, fetchMedicines } = useMedicineStore();
   const searchParams = useSearchParams();
   const initialStatus = searchParams.get('status');
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState<string | null>(initialStatus);
   
   useEffect(() => {
-    setSelectedStatus(searchParams.get('status'));
-  }, [searchParams]);
-
+    fetchMedicines();
+  }, [fetchMedicines]);
 
   const filteredMedicines = useMemo(() => {
-    if (!isInitialized) return [];
+    if (loading) return [];
     return medicines.filter((med) => {
       const searchMatch =
         med.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        med.batchNumber.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const statusMatch = selectedStatus ? med.stock.status === selectedStatus : true;
-
-      return searchMatch && statusMatch;
+        med.batchNo.toLowerCase().includes(searchTerm.toLowerCase());
+      return searchMatch;
     });
-  }, [searchTerm, selectedStatus, medicines, isInitialized]);
+  }, [searchTerm, medicines, loading]);
 
-  const handleClearFilter = () => {
-    setSelectedStatus(null);
-    const newUrl = new URL(window.location.href);
-    newUrl.searchParams.delete('status');
-    window.history.pushState({}, '', newUrl);
-  }
 
-  if (!isInitialized) {
+  if (loading) {
       return (
           <div className="flex h-full flex-col items-center justify-center">
               <Loader2 className="h-10 w-10 animate-spin text-primary" />
@@ -51,6 +41,18 @@ function MedicinesPageContent() {
           </div>
       )
   }
+
+  if (error) {
+    return (
+       <div className="flex h-full flex-col items-center justify-center text-center">
+          <h2 className="text-2xl font-semibold text-destructive">Failed to Load Inventory</h2>
+          <p className="mt-2 text-muted-foreground">There was a problem connecting to the blockchain ledger.</p>
+          <p className="mt-1 text-xs text-destructive/80">{error}</p>
+          <Button onClick={fetchMedicines} className="mt-4">Try Again</Button>
+      </div>
+    )
+  }
+
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
@@ -78,18 +80,6 @@ function MedicinesPageContent() {
           </Link>
         </div>
       </div>
-       {selectedStatus && (
-        <div className="mb-6 flex items-center gap-4 bg-primary/10 p-4 rounded-lg">
-          <p className="font-semibold text-foreground">
-            Filtering by status: <span className="text-primary">{selectedStatus}</span>
-          </p>
-          <Button variant="ghost" size="icon" onClick={handleClearFilter} className="h-8 w-8">
-            <X className="h-5 w-5" />
-            <span className="sr-only">Clear filter</span>
-          </Button>
-        </div>
-      )}
-
 
       <div>
         {filteredMedicines.length > 0 ? (
@@ -109,13 +99,4 @@ function MedicinesPageContent() {
       </div>
     </div>
   );
-}
-
-
-export default function MedicinesPage() {
-  return (
-    <Suspense fallback={<div className="flex h-full flex-col items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-primary" /><p className="mt-4 text-lg text-muted-foreground">Loading...</p></div>}>
-      <MedicinesPageContent />
-    </Suspense>
-  )
 }
