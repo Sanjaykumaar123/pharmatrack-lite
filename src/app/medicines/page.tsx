@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useMemo, useState, Suspense } from 'react';
+import { useEffect, useMemo, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
@@ -10,41 +9,48 @@ import { Search, ScanLine, X, Loader2 } from 'lucide-react';
 import { MedicineCard } from '@/components/MedicineCard';
 import { useMedicineStore } from '@/hooks/useMedicineStore';
 import type { Medicine } from '@/types/medicine';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
 function MedicinesPageContent() {
-  const { medicines, isInitialized } = useMedicineStore();
-  const searchParams = useSearchParams();
-  const initialStatus = searchParams.get('status');
+  const { medicines, loading, error, isInitialized, fetchMedicines } = useMedicineStore();
+  
+  useEffect(() => {
+    if (!isInitialized) {
+      fetchMedicines();
+    }
+  }, [isInitialized, fetchMedicines]);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState<string | null>(initialStatus);
   
   const filteredMedicines = useMemo(() => {
     return medicines.filter((med) => {
-      const searchMatch =
-        med.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        med.batchNumber.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const statusMatch = selectedStatus ? med.stock.status === selectedStatus : true;
-
-      return searchMatch && statusMatch;
+      return med.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+             med.batchNo.toLowerCase().includes(searchTerm.toLowerCase());
     });
-  }, [searchTerm, selectedStatus, medicines]);
+  }, [searchTerm, medicines]);
 
-  const handleClearFilter = () => {
-    setSelectedStatus(null);
-    const newUrl = new URL(window.location.href);
-    newUrl.searchParams.delete('status');
-    window.history.pushState({}, '', newUrl);
-  }
-
-  if (!isInitialized) {
+  if (loading && !isInitialized) {
       return (
           <div className="flex h-full flex-col items-center justify-center">
               <Loader2 className="h-10 w-10 animate-spin text-primary" />
-              <p className="mt-4 text-lg text-muted-foreground">Loading Inventory from the Ledger...</p>
+              <p className="mt-4 text-lg text-muted-foreground">Connecting to the Ledger...</p>
           </div>
       )
+  }
+
+  if (error) {
+    return (
+        <div className="container mx-auto p-4 sm:p-6 lg:p-8">
+            <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Connection Error</AlertTitle>
+                <AlertDescription>
+                    Could not connect to the Solana devnet. Please check your connection and try again.
+                </AlertDescription>
+            </Alert>
+        </div>
+    )
   }
 
   return (
@@ -73,19 +79,7 @@ function MedicinesPageContent() {
           </Link>
         </div>
       </div>
-       {selectedStatus && (
-        <div className="mb-6 flex items-center gap-4 bg-primary/10 p-4 rounded-lg">
-          <p className="font-semibold text-foreground">
-            Filtering by status: <span className="text-primary">{selectedStatus}</span>
-          </p>
-          <Button variant="ghost" size="icon" onClick={handleClearFilter} className="h-8 w-8">
-            <X className="h-5 w-5" />
-            <span className="sr-only">Clear filter</span>
-          </Button>
-        </div>
-      )}
-
-
+      
       <div>
         {filteredMedicines.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -97,7 +91,7 @@ function MedicinesPageContent() {
           <div className="text-center py-10 px-6 bg-card rounded-lg border">
             <h3 className="text-lg font-semibold text-foreground">No Results Found</h3>
             <p className="text-muted-foreground mt-2">
-              We couldn't find any medicine matching your search or filter criteria. Please check the spelling or try a different term.
+              We couldn't find any medicine matching your search criteria.
             </p>
           </div>
         )}

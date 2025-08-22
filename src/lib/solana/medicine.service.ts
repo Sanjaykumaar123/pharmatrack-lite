@@ -1,4 +1,3 @@
-
 "use client";
 import { connection } from "./client";
 import type { Medicine, NewMedicine } from "@/types/medicine";

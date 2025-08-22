@@ -1,50 +1,57 @@
-
 "use client";
-
-import { create } from 'zustand';
-import { allMedicines as initialMedicines } from '@/lib/data';
-import type { Medicine } from '@/types/medicine';
-
-// ===================================================================================
-// BLOCKCHAIN INTEGRATION SIMULATION
-// ===================================================================================
-// This file acts as a client-side "store" to simulate a backend or blockchain ledger.
-// It uses Zustand, a small state management library, to hold the medicine data.
-//
-// In a real application:
-// - This store would not be pre-populated with static data.
-// - It would fetch initial data from your blockchain API.
-// - The `add`, `update`, and `delete` functions would make API calls to your
-//   backend to write transactions to the blockchain, instead of just
-//   modifying local state.
-//
-// This simulation allows the UI to be fully interactive and responsive, providing a
-// realistic prototype of how the final application would behave.
-// ===================================================================================
+import { create } from "zustand";
+import type { Medicine, NewMedicine } from "@/types/medicine";
+import { getMedicinesFromChain, addMedicineToChain } from "@/lib/solana/medicine.service";
 
 interface MedicineState {
   medicines: Medicine[];
+  loading: boolean;
+  error?: string;
   isInitialized: boolean;
-  initialize: () => void;
-  addMedicine: (medicine: Medicine) => void;
-  updateMedicine: (id: string, updatedMedicine: Partial<Medicine>) => void;
+
+  fetchMedicines: () => Promise<void>;
+  addMedicine: (payload: NewMedicine) => Promise<Medicine | null>;
+  // Local state updates for prototype (would be replaced by on-chain refetches)
   deleteMedicine: (id: string) => void;
+  updateMedicine: (id: string, updatedMedicine: Partial<Medicine>) => void;
 }
 
 export const useMedicineStore = create<MedicineState>((set, get) => ({
   medicines: [],
+  loading: false,
+  error: undefined,
   isInitialized: false,
-  initialize: () => {
-    // In a real app, you'd fetch from an API here.
-    // We check if it's already initialized to prevent re-populating on every render.
-    if (!get().isInitialized) {
-        // Simulate fetching data
-        set({ medicines: initialMedicines, isInitialized: true });
+
+  fetchMedicines: async () => {
+    if (get().isInitialized) return; // Prevent multiple fetches
+    try {
+      set({ loading: true, error: undefined });
+      const meds = await getMedicinesFromChain();
+      set({ medicines: meds, loading: false, isInitialized: true });
+    } catch (e: any) {
+      set({ error: e?.message ?? "Failed to load medicines", loading: false });
     }
   },
-  addMedicine: (medicine) => {
+
+  addMedicine: async (payload) => {
+    try {
+      set({ loading: true, error: undefined });
+      const created = await addMedicineToChain(payload);
+      set((state) => ({ 
+        medicines: [created, ...state.medicines], 
+        loading: false 
+      }));
+      return created;
+    } catch (e: any) {
+      set({ error: e?.message ?? "Failed to add medicine", loading: false });
+      return null;
+    }
+  },
+
+  // These are for local simulation and would be removed in a real dApp
+  deleteMedicine: (id) => {
     set((state) => ({
-      medicines: [...state.medicines, medicine],
+      medicines: state.medicines.filter((med) => med.id !== id),
     }));
   },
   updateMedicine: (id, updatedMedicine) => {
@@ -54,12 +61,7 @@ export const useMedicineStore = create<MedicineState>((set, get) => ({
       ),
     }));
   },
-  deleteMedicine: (id) => {
-    set((state) => ({
-      medicines: state.medicines.filter((med) => med.id !== id),
-    }));
-  },
 }));
 
-// Auto-initialize the store when the app loads
-useMedicineStore.getState().initialize();
+// Initialize store on app load
+useMedicineStore.getState().fetchMedicines();

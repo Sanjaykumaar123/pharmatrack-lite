@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Card,
@@ -22,9 +21,6 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Home,
-  PackageCheck,
-  AlertTriangle,
-  PackageX,
   ArrowUp,
   ArrowDown,
   PlusCircle,
@@ -32,6 +28,8 @@ import {
   Pencil,
   Trash2,
   Loader2,
+  CheckCircle,
+  Clock
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -39,68 +37,39 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ChartContainer, ChartConfig, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 import type { Medicine } from '@/types';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
-import { AddEditMedicineDialog } from '@/components/AddEditMedicineDialog';
 import { useMedicineStore } from '@/hooks/useMedicineStore';
 
-type StockStatus = Medicine['stock']['status'];
-type SortKey = keyof Pick<Medicine, 'name' | 'manufacturer'> | 'quantity' | 'expiryDate';
-
-const chartConfig = {
-  quantity: {
-    label: 'Quantity',
-    color: 'hsl(var(--primary))',
-  },
-} satisfies ChartConfig;
-
-const statusConfig: Record<
-  StockStatus,
-  { icon: React.ElementType; color: string; badge: 'default' | 'secondary' | 'destructive' }
-> = {
-  'In Stock': { icon: PackageCheck, color: 'text-green-500', badge: 'secondary' },
-  'Low Stock': { icon: AlertTriangle, color: 'text-yellow-500', badge: 'secondary' },
-  'Out of Stock': { icon: PackageX, color: 'text-red-500', badge: 'destructive' },
-};
+type SortKey = keyof Pick<Medicine, 'name' | 'manufacturer' | 'quantity' | 'expDate'>;
 
 export default function StockManagementPage() {
-  const { medicines, addMedicine, updateMedicine, deleteMedicine, isInitialized } = useMedicineStore();
-  const [filter, setFilter] = useState<StockStatus | 'All'>('All');
+  const { medicines, loading, isInitialized, fetchMedicines, deleteMedicine } = useMedicineStore();
+  
+  useEffect(() => {
+    if (!isInitialized) {
+      fetchMedicines();
+    }
+  }, [isInitialized, fetchMedicines]);
+
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'ascending' | 'descending' } | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(null);
+  
   const { toast } = useToast();
 
-
-  const summary = useMemo(() => {
-    return medicines.reduce(
-      (acc, med) => {
-        acc[med.stock.status]++;
-        acc.Total++;
-        return acc;
-      },
-      { 'In Stock': 0, 'Low Stock': 0, 'Out of Stock': 0, Total: 0 }
-    );
-  }, [medicines]);
-
-  const sortedAndFilteredMedicines = useMemo(() => {
-    let filtered =
-      filter === 'All' ? medicines : medicines.filter((med) => med.stock.status === filter);
-
+  const sortedMedicines = useMemo(() => {
+    let sortableMedicines = [...medicines];
     if (sortConfig !== null) {
-      filtered.sort((a, b) => {
+      sortableMedicines.sort((a, b) => {
         let aValue: string | number;
         let bValue: string | number;
 
         if (sortConfig.key === 'quantity') {
-          aValue = a.stock.quantity;
-          bValue = b.stock.quantity;
-        } else if (sortConfig.key === 'expiryDate') {
-          aValue = new Date(a.expiryDate).getTime();
-          bValue = new Date(b.expiryDate).getTime();
+          aValue = a.quantity;
+          bValue = b.quantity;
+        } else if (sortConfig.key === 'expDate') {
+          aValue = new Date(a.expDate).getTime();
+          bValue = new Date(b.expDate).getTime();
         } else {
             aValue = a[sortConfig.key as 'name' | 'manufacturer'].toLowerCase();
             bValue = b[sortConfig.key as 'name' | 'manufacturer'].toLowerCase();
@@ -115,9 +84,8 @@ export default function StockManagementPage() {
         return 0;
       });
     }
-
-    return filtered;
-  }, [medicines, filter, sortConfig]);
+    return sortableMedicines;
+  }, [medicines, sortConfig]);
 
   const requestSort = (key: SortKey) => {
     let direction: 'ascending' | 'descending' = 'ascending';
@@ -134,56 +102,21 @@ export default function StockManagementPage() {
     return sortConfig.direction === 'ascending' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />;
   };
 
-  const chartData = useMemo(() => {
-    return medicines
-      .filter((med) => med.stock.quantity > 0)
-      .sort((a, b) => b.stock.quantity - a.stock.quantity)
-      .slice(0, 10) // Top 10 most stocked items
-      .map((med) => ({
-        name: med.name,
-        quantity: med.stock.quantity,
-      }));
-  }, [medicines]);
-
-  const handleAddClick = () => {
-    setSelectedMedicine(null);
-    setIsDialogOpen(true);
-  };
-
-  const handleEditClick = (medicine: Medicine) => {
-    setSelectedMedicine(medicine);
-    setIsDialogOpen(true);
-  };
-
   const handleDeleteClick = (medicineId: string) => {
+    // Note: This is a local delete for the prototype.
+    // A real app would send a transaction to the chain to mark as decommissioned.
     deleteMedicine(medicineId);
     toast({
-        title: "Medicine Deleted",
-        description: "The medicine has been removed from the inventory.",
+        title: "Medicine Removed",
+        description: "The medicine has been removed from the local view.",
     });
   };
 
-  const handleDialogSave = (medicine: Medicine) => {
-    if (selectedMedicine) {
-      updateMedicine(medicine.id, medicine);
-      toast({
-        title: "Medicine Updated",
-        description: `${medicine.name} has been successfully updated.`,
-      });
-    } else {
-      addMedicine(medicine);
-      toast({
-        title: "Medicine Added",
-        description: `${medicine.name} has been successfully added to the inventory.`,
-      });
-    }
-  };
-
-  if (!isInitialized) {
+  if (loading && !isInitialized) {
       return (
           <div className="flex items-center justify-center h-full">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <p className="ml-4 text-lg">Loading Inventory...</p>
+              <p className="ml-4 text-lg">Loading Inventory from Ledger...</p>
           </div>
       )
   }
@@ -196,13 +129,15 @@ export default function StockManagementPage() {
             <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
               Stock Management
             </h1>
-            <p className="text-muted-foreground mt-1">Add, edit, and manage your pharmacy inventory.</p>
+            <p className="text-muted-foreground mt-1">Oversee the entire inventory from the simulated decentralized ledger.</p>
           </div>
           <div className="flex items-center gap-2">
-            <Button onClick={handleAddClick}>
-                <PlusCircle className="mr-2 h-5 w-5" />
-                Add Medicine
-            </Button>
+            <Link href="/manufacturer/add-medicine">
+                <Button>
+                    <PlusCircle className="mr-2 h-5 w-5" />
+                    Add Medicine
+                </Button>
+            </Link>
             <Link href="/admin/dashboard" passHref>
               <Button variant="outline">
                 <Home className="mr-2 h-5 w-5" />
@@ -212,43 +147,11 @@ export default function StockManagementPage() {
           </div>
         </div>
 
-        {/* Summary Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-          <Card onClick={() => setFilter('All')} className={cn("cursor-pointer transition-all", filter === 'All' && "ring-2 ring-primary")}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Medicines</CardTitle>
-              <PackageCheck className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{summary.Total}</div>
-            </CardContent>
-          </Card>
-          {Object.entries(summary).map(([status, count]) => {
-            if (status === 'Total') return null;
-            const config = statusConfig[status as StockStatus];
-            const Icon = config.icon;
-            return (
-              <Card key={status} onClick={() => setFilter(status as StockStatus)} className={cn("cursor-pointer transition-all", filter === status && "ring-2 ring-primary")}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">{status}</CardTitle>
-                  <Icon className={cn('h-4 w-4 text-muted-foreground', config.color)} />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">{count}</div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-
-        <div className="grid gap-8 lg:grid-cols-3">
-          {/* Inventory Table */}
-          <Card className="lg:col-span-2">
+        <Card>
             <CardHeader>
               <CardTitle>Inventory Details</CardTitle>
               <CardDescription>
-                A detailed list of all medicines in the inventory.
-                {filter !== 'All' && ` (Filtering by: ${filter})`}
+                A detailed list of all medicines recorded on the ledger.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -262,31 +165,31 @@ export default function StockManagementPage() {
                       <TableHead>
                           <Button variant="ghost" onClick={() => requestSort('manufacturer')}>Manufacturer {getSortIcon('manufacturer')}</Button>
                       </TableHead>
+                      <TableHead>Batch No.</TableHead>
                       <TableHead className="text-right">
                           <Button variant="ghost" onClick={() => requestSort('quantity')}>Quantity {getSortIcon('quantity')}</Button>
                       </TableHead>
-                      <TableHead>Status</TableHead>
                       <TableHead>
-                          <Button variant="ghost" onClick={() => requestSort('expiryDate')}>Expiry Date {getSortIcon('expiryDate')}</Button>
+                          <Button variant="ghost" onClick={() => requestSort('expDate')}>Expiry Date {getSortIcon('expDate')}</Button>
                       </TableHead>
+                      <TableHead>Status</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {sortedAndFilteredMedicines.map((med) => (
+                    {sortedMedicines.map((med) => (
                       <TableRow key={med.id}>
                         <TableCell className="font-medium">{med.name}</TableCell>
                         <TableCell>{med.manufacturer}</TableCell>
-                        <TableCell className="text-right">{med.stock.quantity}</TableCell>
+                        <TableCell>{med.batchNo}</TableCell>
+                        <TableCell className="text-right">{med.quantity}</TableCell>
+                        <TableCell>{new Date(med.expDate).toLocaleDateString()}</TableCell>
                         <TableCell>
-                          <Badge variant={statusConfig[med.stock.status].badge} className={cn(
-                              statusConfig[med.stock.status].badge === 'secondary' && statusConfig[med.stock.status].color === 'text-green-500' && 'bg-green-100 text-green-800 border-green-200',
-                              statusConfig[med.stock.status].badge === 'secondary' && statusConfig[med.stock.status].color === 'text-yellow-500' && 'bg-yellow-100 text-yellow-800 border-yellow-200'
-                          )}>
-                              {med.stock.status}
-                          </Badge>
+                           <Badge variant={med.onChain ? "secondary" : "destructive"} className={cn(med.onChain ? 'bg-green-100 text-green-800 border-green-200' : 'bg-yellow-100 text-yellow-800 border-yellow-200')}>
+                            {med.onChain ? <CheckCircle className="h-3 w-3 mr-1" /> : <Clock className="h-3 w-3 mr-1" />}
+                            {med.onChain ? 'On-Chain' : 'Pending'}
+                           </Badge>
                         </TableCell>
-                        <TableCell>{new Date(med.expiryDate).toLocaleDateString()}</TableCell>
                         <TableCell className="text-right">
                            <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -296,13 +199,13 @@ export default function StockManagementPage() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => handleEditClick(med)}>
+                              <DropdownMenuItem disabled>
                                 <Pencil className="mr-2 h-4 w-4" />
-                                <span>Edit</span>
+                                <span>Edit (Not Implemented)</span>
                               </DropdownMenuItem>
                               <DropdownMenuItem onClick={() => handleDeleteClick(med.id)} className="text-destructive focus:text-destructive">
                                 <Trash2 className="mr-2 h-4 w-4" />
-                                <span>Delete</span>
+                                <span>Delete (Local)</span>
                               </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
@@ -314,37 +217,7 @@ export default function StockManagementPage() {
               </div>
             </CardContent>
           </Card>
-
-          {/* Stock Analytics Chart */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Stock Analytics</CardTitle>
-              <CardDescription>Top 10 most stocked medicines.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-                <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ left: 10, right: 10 }}>
-                  <CartesianGrid horizontal={false} />
-                  <YAxis dataKey="name" type="category" tickLine={false} axisLine={false} tickMargin={10} width={80} className="text-xs" />
-                  <XAxis dataKey="quantity" type="number" hide />
-                  <Tooltip cursor={{fill: 'hsl(var(--muted))'}} content={<ChartTooltipContent />} />
-                  <Bar dataKey="quantity" layout="vertical" radius={5}>
-                      {chartData.map((entry, index) => (
-                          <Rectangle key={`cell-${index}`} fill="hsl(var(--primary))" />
-                      ))}
-                  </Bar>
-                </BarChart>
-              </ChartContainer>
-            </CardContent>
-          </Card>
-        </div>
       </div>
-      <AddEditMedicineDialog 
-        isOpen={isDialogOpen}
-        onClose={() => setIsDialogOpen(false)}
-        onSave={handleDialogSave}
-        medicine={selectedMedicine}
-      />
     </>
   );
 }

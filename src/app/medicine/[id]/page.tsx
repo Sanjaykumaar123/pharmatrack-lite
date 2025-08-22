@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMedicineStore } from '@/hooks/useMedicineStore';
@@ -8,33 +7,21 @@ import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import SideEffects from '@/components/SideEffects';
-import { Calendar, Factory, Package, Pill, PackageCheck, AlertTriangle, PackageX, Boxes, Loader2 } from 'lucide-react';
+import { Calendar, Factory, Package, Pill, Boxes, Loader2, CheckCircle, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 
-const stockStatusMap = {
-  'In Stock': {
-    icon: PackageCheck,
-    textColor: 'text-green-400',
-    bgColor: 'bg-green-500/10',
-  },
-  'Low Stock': {
-    icon: AlertTriangle,
-    textColor: 'text-yellow-400',
-    bgColor: 'bg-yellow-500/10',
-  },
-  'Out of Stock': {
-    icon: PackageX,
-    textColor: 'text-red-400',
-    bgColor: 'bg-red-500/10',
-  },
-};
-
 export default function MedicineDetailPage() {
-  const { medicines, isInitialized } = useMedicineStore();
+  const { medicines, isInitialized, loading, fetchMedicines } = useMedicineStore();
   const [medicine, setMedicine] = useState<Medicine | undefined>(undefined);
   const params = useParams();
   const id = params.id as string;
+  
+  useEffect(() => {
+    if (!isInitialized) {
+      fetchMedicines();
+    }
+  }, [isInitialized, fetchMedicines]);
 
   useEffect(() => {
     if (isInitialized) {
@@ -43,37 +30,29 @@ export default function MedicineDetailPage() {
     }
   }, [id, medicines, isInitialized]);
 
-  if (!isInitialized) {
+  if (loading && !isInitialized) {
     return (
         <div className="flex items-center justify-center h-full">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-4 text-lg">Loading Medicine Details...</p>
+            <p className="ml-4 text-lg">Loading Medicine Details from Ledger...</p>
         </div>
     )
   }
   
   if (isInitialized && !medicine) {
-    // We are done loading, but no medicine was found.
-    const foundMedicine = medicines.find((m) => m.id === id);
-    if (!foundMedicine) {
       notFound();
-    }
-    // if found, the useEffect will set it and re-render.
   }
 
-  // We show a loader while the medicine is being set after initialization
   if (!medicine) {
      return (
          <div className="flex items-center justify-center h-full">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-4 text-lg">Finding Medicine...</p>
+            <p className="ml-4 text-lg">Finding Medicine on Ledger...</p>
         </div>
      )
   }
 
-  const isExpired = new Date(medicine.expiryDate) < new Date();
-  const stockInfo = stockStatusMap[medicine.stock.status];
-  const StockIcon = stockInfo.icon;
+  const isExpired = new Date(medicine.expDate) < new Date();
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
@@ -119,7 +98,14 @@ export default function MedicineDetailPage() {
                   <Package className="h-6 w-6 text-muted-foreground" />
                   <div>
                     <p className="text-sm text-muted-foreground">Batch Number</p>
-                    <p className="font-semibold">{medicine.batchNumber}</p>
+                    <p className="font-semibold">{medicine.batchNo}</p>
+                  </div>
+                </div>
+                 <div className="flex items-center gap-4">
+                  <Calendar className="h-6 w-6 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">Manufacturing Date</p>
+                    <p className="font-semibold">{new Date(medicine.mfgDate).toLocaleDateString()}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -127,13 +113,7 @@ export default function MedicineDetailPage() {
                   <div>
                     <p className="text-sm text-muted-foreground">Expiry Date</p>
                     <div className="font-semibold flex items-center gap-2">
-                      <span>
-                        {new Date(medicine.expiryDate).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })}
-                      </span>
+                      <span>{new Date(medicine.expDate).toLocaleDateString()}</span>
                       {isExpired && (
                         <Badge variant="destructive">Expired</Badge>
                       )}
@@ -144,16 +124,20 @@ export default function MedicineDetailPage() {
                   <Boxes className="h-6 w-6 text-muted-foreground" />
                   <div>
                     <p className="text-sm text-muted-foreground">Stock Quantity</p>
-                    <p className="font-semibold">{medicine.stock.quantity} units</p>
+                    <p className="font-semibold">{medicine.quantity} units</p>
                   </div>
                 </div>
-                <div className="sm:col-span-2 flex items-center gap-4 p-4 rounded-lg bg-secondary">
-                  <div className={cn("p-2 rounded-full", stockInfo.bgColor)}>
-                    <StockIcon className={cn("h-6 w-6", stockInfo.textColor)} />
-                  </div>
+                <div className={cn("sm:col-span-2 flex items-center gap-4 p-4 rounded-lg", medicine.onChain ? 'bg-green-500/10' : 'bg-yellow-500/10')}>
+                  {medicine.onChain ? (
+                    <CheckCircle className="h-6 w-6 text-green-500" />
+                   ) : (
+                    <Clock className="h-6 w-6 text-yellow-500" />
+                   )}
                   <div>
-                    <p className="text-sm text-muted-foreground">Stock Status</p>
-                    <p className={cn("font-bold", stockInfo.textColor)}>{medicine.stock.status}</p>
+                    <p className="text-sm text-muted-foreground">Ledger Status</p>
+                    <p className={cn("font-bold", medicine.onChain ? 'text-green-600' : 'text-yellow-600')}>
+                      {medicine.onChain ? 'Confirmed On-Chain' : 'Pending Confirmation'}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -169,3 +153,4 @@ export default function MedicineDetailPage() {
     </div>
   );
 }
+

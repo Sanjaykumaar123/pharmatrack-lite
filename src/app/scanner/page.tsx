@@ -5,20 +5,25 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { ScanLine, Video, VideoOff } from 'lucide-react';
+import { ScanLine, VideoOff } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useMedicineStore } from '@/hooks/useMedicineStore';
 
 export default function ScannerPage() {
   const router = useRouter();
-  const { medicines } = useMedicineStore();
+  const { medicines, isInitialized, fetchMedicines } = useMedicineStore();
   const { toast } = useToast();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
 
   useEffect(() => {
+    if(!isInitialized) {
+      fetchMedicines();
+    }
+  }, [isInitialized, fetchMedicines])
+
+  useEffect(() => {
     const getCameraPermission = async () => {
-      // Check if we are in a browser environment
       if (typeof navigator !== 'undefined' && navigator.mediaDevices) {
         try {
           const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -48,7 +53,6 @@ export default function ScannerPage() {
 
     getCameraPermission();
 
-    // Cleanup function to stop the video stream when the component unmounts
     return () => {
       if (videoRef.current && videoRef.current.srcObject) {
         const stream = videoRef.current.srcObject as MediaStream;
