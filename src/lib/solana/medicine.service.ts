@@ -13,6 +13,9 @@ const MOCK_CHAIN: Medicine[] = [
     quantity: 1200,
     manufacturer: "PharmaLite Labs",
     onChain: true,
+    description: "A common pain reliever and fever reducer.",
+    imageUrl: "https://placehold.co/600x400.png",
+    stock: { quantity: 1200, status: "In Stock" },
   },
   {
     id: "mdc-002",
@@ -23,6 +26,9 @@ const MOCK_CHAIN: Medicine[] = [
     quantity: 600,
     manufacturer: "GZX Bio",
     onChain: true,
+    description: "An antibiotic used to treat a number of bacterial infections.",
+    imageUrl: "https://placehold.co/600x400.png",
+    stock: { quantity: 600, status: "In Stock" },
   },
   {
     id: "mdc-003",
@@ -30,9 +36,12 @@ const MOCK_CHAIN: Medicine[] = [
     batchNo: "IBU-200-C21",
     mfgDate: "2024-10-15",
     expDate: "2026-10-14",
-    quantity: 850,
+    quantity: 25,
     manufacturer: "MediCorp",
     onChain: true,
+    description: "A nonsteroidal anti-inflammatory drug (NSAID).",
+    imageUrl: "https://placehold.co/600x400.png",
+    stock: { quantity: 25, status: "Low Stock" },
   },
   {
     id: "mdc-004",
@@ -40,9 +49,12 @@ const MOCK_CHAIN: Medicine[] = [
     batchNo: "CET-010-D99",
     mfgDate: "2025-01-20",
     expDate: "2027-01-19",
-    quantity: 2500,
+    quantity: 0,
     manufacturer: "HealthGlobal",
     onChain: true,
+    description: "An antihistamine used to relieve allergy symptoms.",
+    imageUrl: "https://placehold.co/600x400.png",
+    stock: { quantity: 0, status: "Out of Stock" },
   },
     {
     id: "mdc-005",
@@ -53,6 +65,9 @@ const MOCK_CHAIN: Medicine[] = [
     quantity: 400,
     manufacturer: "PharmaLite Labs",
     onChain: true,
+    description: "A statin medication used to prevent cardiovascular disease.",
+    imageUrl: "https://placehold.co/600x400.png",
+    stock: { quantity: 400, status: "In Stock" },
   },
   {
     id: "mdc-006",
@@ -63,6 +78,9 @@ const MOCK_CHAIN: Medicine[] = [
     quantity: 1500,
     manufacturer: "GZX Bio",
     onChain: true,
+    description: "A first-line medication for the treatment of type 2 diabetes.",
+    imageUrl: "https://placehold.co/600x400.png",
+    stock: { quantity: 1500, status: "In Stock" },
   },
 ];
 
@@ -91,10 +109,23 @@ export async function addMedicineToChain(input: NewMedicine): Promise<Medicine> 
   // Pretend we sent a tx and waited for confirmation
   await sleep(400);
 
+  let status: Medicine['stock']['status'] = 'Out of Stock';
+    if (input.quantity > 50) {
+        status = 'In Stock';
+    } else if (input.quantity > 0) {
+        status = 'Low Stock';
+    }
+
   const created: Medicine = {
     id: genId(),
     ...input,
     onChain: false, // flip to true once a real tx confirms
+    description: "A newly added medicine.",
+    imageUrl: "https://placehold.co/600x400.png",
+    stock: {
+        quantity: input.quantity,
+        status: status
+    }
   };
 
   // Update our mock in-memory ledger

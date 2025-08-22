@@ -16,6 +16,7 @@ function MedicinesPageContent() {
   const { medicines, loading, error, isInitialized, fetchMedicines } = useMedicineStore();
   
   useEffect(() => {
+    // Fetch medicines only if not already initialized
     if (!isInitialized) {
       fetchMedicines();
     }
@@ -46,7 +47,7 @@ function MedicinesPageContent() {
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle>Connection Error</AlertTitle>
                 <AlertDescription>
-                    Could not connect to the Solana devnet. Please check your connection and try again.
+                    {error}
                 </AlertDescription>
             </Alert>
         </div>

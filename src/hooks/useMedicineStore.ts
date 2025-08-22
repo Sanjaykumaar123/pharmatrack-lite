@@ -23,13 +23,13 @@ export const useMedicineStore = create<MedicineState>((set, get) => ({
   isInitialized: false,
 
   fetchMedicines: async () => {
-    if (get().isInitialized) return; // Prevent multiple fetches
+    if (get().isInitialized || get().loading) return; // Prevent multiple fetches
     try {
       set({ loading: true, error: undefined });
       const meds = await getMedicinesFromChain();
       set({ medicines: meds, loading: false, isInitialized: true });
     } catch (e: any) {
-      set({ error: e?.message ?? "Failed to load medicines", loading: false });
+      set({ error: e?.message ?? "Failed to load medicines", loading: false, isInitialized: true });
     }
   },
 
@@ -63,5 +63,4 @@ export const useMedicineStore = create<MedicineState>((set, get) => ({
   },
 }));
 
-// Initialize store on app load
-useMedicineStore.getState().fetchMedicines();
+// No longer auto-initialize here, components will trigger fetch.
