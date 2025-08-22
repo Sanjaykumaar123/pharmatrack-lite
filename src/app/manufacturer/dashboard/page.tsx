@@ -34,20 +34,25 @@ export default function ManufacturerDashboardPage() {
           </CardContent>
         </Card>
         
-        <Card className="h-full bg-muted/40 border-dashed">
+        <Link href="/manufacturer/add-medicine" className="group">
+          <Card className="h-full hover:border-primary/50 hover:shadow-lg transition-all flex flex-col">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Add New Batch</CardTitle>
-              <PackagePlus className="h-6 w-6 text-muted-foreground" />
+              <PackagePlus className="h-6 w-6 text-primary" />
             </CardHeader>
             <CardContent className="flex-grow">
               <CardDescription>
-                  Register a new batch of medicine, assign it a unique identifier, and add it to the decentralized ledger to begin its supply chain journey.
+                  Register a new batch of medicine, assign it a unique identifier, and add it to the inventory to begin its supply chain journey.
               </CardDescription>
             </CardContent>
             <CardFooter>
-               <Button disabled variant="secondary">Coming Soon</Button>
+              <Button>
+                  Add Medicine
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Button>
             </CardFooter>
-        </Card>
+          </Card>
+        </Link>
 
         <Card className="h-full bg-muted/40 border-dashed">
             <CardHeader className="flex flex-row items-center justify-between">
