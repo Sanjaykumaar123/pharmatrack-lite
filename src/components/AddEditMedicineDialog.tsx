@@ -30,7 +30,6 @@ import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import type { Medicine } from '@/types';
-import { allMedicines } from '@/lib/data';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -105,7 +104,6 @@ export function AddEditMedicineDialog({ isOpen, onClose, onSave, medicine }: Add
       id: medicine?.id || new Date().toISOString(), // Use existing ID or generate a new one
       ...values,
       expiryDate: format(values.expiryDate, 'yyyy-MM-dd'),
-      imageUrl: medicine?.imageUrl || 'https://placehold.co/600x400.png',
       stock: {
         quantity: values.stock.quantity,
         status: status,
@@ -246,5 +244,3 @@ export function AddEditMedicineDialog({ isOpen, onClose, onSave, medicine }: Add
     </Dialog>
   );
 }
-
-    

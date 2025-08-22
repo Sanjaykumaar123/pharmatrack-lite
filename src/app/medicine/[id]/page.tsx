@@ -4,7 +4,6 @@
 import { useMedicineStore } from '@/hooks/useMedicineStore';
 import type { Medicine } from '@/types';
 import { notFound, useParams } from 'next/navigation';
-import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import SideEffects from '@/components/SideEffects';
@@ -78,88 +77,71 @@ export default function MedicineDetailPage() {
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="md:col-span-1">
-             <Card className="overflow-hidden border-primary/20 shadow-lg shadow-primary/5">
-                <div className="relative w-full aspect-square">
-                    <Image
-                        src={medicine.imageUrl}
-                        alt={medicine.name}
-                        fill
-                        className="object-cover"
-                        data-ai-hint={`${medicine.name} product shot`}
-                    />
+          <Card className="overflow-hidden border-primary/20 shadow-lg shadow-primary/5 h-full">
+            <CardHeader className="bg-primary/10">
+              <div className="flex items-center gap-4">
+                <Pill className="h-10 w-10 text-primary" />
+                <div>
+                  <CardTitle className="text-3xl font-bold text-foreground">
+                    {medicine.name}
+                  </CardTitle>
+                  <CardDescription className="text-lg text-muted-foreground">
+                    {medicine.description}
+                  </CardDescription>
                 </div>
-            </Card>
-          </div>
-          <div className="md:col-span-2">
-            <Card className="overflow-hidden border-primary/20 shadow-lg shadow-primary/5 h-full">
-              <CardHeader className="bg-primary/10">
-                <div className="flex items-center gap-4">
-                  <Pill className="h-10 w-10 text-primary" />
-                  <div>
-                    <CardTitle className="text-3xl font-bold text-foreground">
-                      {medicine.name}
-                    </CardTitle>
-                    <CardDescription className="text-lg text-muted-foreground">
-                      {medicine.description}
-                    </CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="flex items-center gap-4">
+                <Factory className="h-6 w-6 text-muted-foreground" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Manufacturer</p>
+                  <p className="font-semibold">{medicine.manufacturer}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <Package className="h-6 w-6 text-muted-foreground" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Batch Number</p>
+                  <p className="font-semibold">{medicine.batchNumber}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <Calendar className="h-6 w-6 text-muted-foreground" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Expiry Date</p>
+                  <div className="font-semibold flex items-center gap-2">
+                    <span>
+                      {new Date(medicine.expiryDate).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                    </span>
+                    {isExpired && (
+                      <Badge variant="destructive">Expired</Badge>
+                    )}
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div className="flex items-center gap-4">
-                  <Factory className="h-6 w-6 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Manufacturer</p>
-                    <p className="font-semibold">{medicine.manufacturer}</p>
-                  </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <Boxes className="h-6 w-6 text-muted-foreground" />
+                <div>
+                  <p className="text-sm text-muted-foreground">Stock Quantity</p>
+                  <p className="font-semibold">{medicine.stock.quantity} units</p>
                 </div>
-                <div className="flex items-center gap-4">
-                  <Package className="h-6 w-6 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Batch Number</p>
-                    <p className="font-semibold">{medicine.batchNumber}</p>
-                  </div>
+              </div>
+              <div className="sm:col-span-2 flex items-center gap-4 p-4 rounded-lg bg-secondary">
+                <div className={cn("p-2 rounded-full", stockInfo.bgColor)}>
+                  <StockIcon className={cn("h-6 w-6", stockInfo.textColor)} />
                 </div>
-                <div className="flex items-center gap-4">
-                  <Calendar className="h-6 w-6 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Expiry Date</p>
-                    <div className="font-semibold flex items-center gap-2">
-                      <span>
-                        {new Date(medicine.expiryDate).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })}
-                      </span>
-                      {isExpired && (
-                        <Badge variant="destructive">Expired</Badge>
-                      )}
-                    </div>
-                  </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Stock Status</p>
+                  <p className={cn("font-bold", stockInfo.textColor)}>{medicine.stock.status}</p>
                 </div>
-                <div className="flex items-center gap-4">
-                  <Boxes className="h-6 w-6 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Stock Quantity</p>
-                    <p className="font-semibold">{medicine.stock.quantity} units</p>
-                  </div>
-                </div>
-                <div className="sm:col-span-2 flex items-center gap-4 p-4 rounded-lg bg-secondary">
-                  <div className={cn("p-2 rounded-full", stockInfo.bgColor)}>
-                    <StockIcon className={cn("h-6 w-6", stockInfo.textColor)} />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">Stock Status</p>
-                    <p className={cn("font-bold", stockInfo.textColor)}>{medicine.stock.status}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+              </div>
+            </CardContent>
+          </Card>
 
 
         <div className="mt-8">

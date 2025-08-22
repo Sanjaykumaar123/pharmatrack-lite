@@ -5,7 +5,6 @@ export interface Medicine {
   batchNumber: string;
   expiryDate: string;
   description: string;
-  imageUrl: string;
   stock: {
     quantity: number;
     status: 'In Stock' | 'Low Stock' | 'Out of Stock';
