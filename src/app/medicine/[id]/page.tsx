@@ -53,7 +53,13 @@ export default function MedicineDetailPage({ params }: { params: { id: string } 
   
   if (isInitialized && !medicine) {
     // We are done loading, but no medicine was found.
-    notFound();
+    // This can happen if the component renders before the useEffect updates the state.
+    // We can show a not found or a temporary loader.
+    const foundMedicine = medicines.find((m) => m.id === id);
+    if (!foundMedicine) {
+      notFound();
+    }
+    // if found, the useEffect will set it and re-render.
   }
 
   // We show a loader while the medicine is being set after initialization
