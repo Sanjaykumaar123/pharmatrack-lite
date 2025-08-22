@@ -3,20 +3,20 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ShieldCheck, Lock, GitBranch, Database, Shield, FileCheck, UserCheck } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { ArrowRight, ShieldCheck, Lock, GitBranch, Database, Shield, FileCheck, UserCheck, Bot, ScanLine } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 
 const PillIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.29 8.29l-5.58 5.58c-.39.39-1.02.39-1.41 0l-2.59-2.59c-.39-.39-.39-1.02 0-1.41l5.58-5.58c.39-.39 1.02.39 1.41 0l2.59 2.59c.39.39.39 1.02 0 1.41z" />
+        <path d="M12.337 2.012a9.75 9.75 0 0 0-9.325 9.325 9.75 9.75 0 0 0 9.325 9.325 9.75 9.75 0 0 0 9.325-9.325A9.75 9.75 0 0 0 12.337 2.012ZM11.25 8.637a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 .75.75v3h3a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-3v3a.75.75 0 0 1-.75.75h-.75a.75.75 0 0 1-.75-.75v-3h-3a.75.75 0 0 1-.75-.75v-.75a.75.75 0 0 1 .75-.75h3v-3Z"></path>
     </svg>
 );
 
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-full">
-      <section className="relative w-full bg-background">
+    <div className="flex flex-col min-h-full bg-background">
+      <section className="relative w-full bg-background overflow-hidden">
        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background z-0"></div>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[calc(100vh-4rem)] py-20">
@@ -37,13 +37,14 @@ export default function Home() {
                  <Link href="/chat" passHref>
                   <Button size="lg" variant="outline" className="font-semibold transition-transform duration-300 hover:scale-105">
                     Ask AI Assistant
+                    <Bot className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
               </div>
             </div>
              <div className="relative h-96 lg:h-auto flex justify-center items-center">
-                <div className="absolute w-72 h-72 bg-primary/20 rounded-full blur-3xl"></div>
-                <PillIcon className="w-64 h-64 text-primary relative z-10 opacity-80" />
+                <div className="absolute w-80 h-80 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
+                <PillIcon className="w-72 h-72 text-primary relative z-10 opacity-80" />
             </div>
           </div>
         </div>
@@ -54,10 +55,10 @@ export default function Home() {
           <div className="text-center max-w-3xl mx-auto">
              <h2 className="text-3xl font-bold font-headline text-foreground">A Secure Foundation for Pharmaceutical Tracking</h2>
             <p className="mt-4 text-muted-foreground text-lg">
-             PharmaTrack Lite is built on the principles of blockchain to solve critical issues in the supply chain.
+             PharmaTrack Lite is built on the principles of a decentralized ledger to solve critical issues in the supply chain, enhancing safety and transparency for everyone.
             </p>
           </div>
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <Card className="text-center h-full hover:shadow-xl hover:-translate-y-2 transition-all duration-300 bg-background/50 border-primary/10">
                 <CardHeader>
                   <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
@@ -106,14 +107,14 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  No single point of failure. Data is distributed across the network, making it highly secure and resilient to tampering.
+                  No single point of failure. Data is distributed, making it highly secure and resilient to tampering.
                 </CardDescription>
               </CardContent>
             </Card>
              <Card className="text-center h-full hover:shadow-xl hover:-translate-y-2 transition-all duration-300 bg-background/50 border-primary/10">
               <CardHeader>
                  <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
-                  <Shield className="h-8 w-8 text-primary" />
+                  <ScanLine className="h-8 w-8 text-primary" />
                 </div>
                 <CardTitle className="mt-4">Real-Time Verification</CardTitle>
               </CardHeader>
@@ -126,32 +127,71 @@ export default function Home() {
              <Card className="text-center h-full hover:shadow-xl hover:-translate-y-2 transition-all duration-300 bg-background/50 border-primary/10">
               <CardHeader>
                  <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
-                  <FileCheck className="h-8 w-8 text-primary" />
-                </div>
-                <CardTitle className="mt-4">Automated Compliance</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>
-                  Smart contracts can automate regulatory checks and reporting, reducing administrative overhead and ensuring compliance.
-                </CardDescription>
-              </CardContent>
-            </Card>
-             <Card className="text-center h-full hover:shadow-xl hover:-translate-y-2 transition-all duration-300 bg-background/50 border-primary/10">
-              <CardHeader>
-                 <div className="mx-auto bg-primary/10 rounded-full p-4 w-fit">
                   <UserCheck className="h-8 w-8 text-primary" />
                 </div>
                 <CardTitle className="mt-4">Patient Empowerment</CardTitle>
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  Gives patients direct access to the history of their medicine, fostering confidence and active participation in their health.
+                  Gives patients direct access to their medicine's history, fostering confidence and active participation in their health.
                 </CardDescription>
               </CardContent>
             </Card>
           </div>
         </div>
       </section>
+
+      <section className="py-20 bg-background">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+           <div className="text-center max-w-3xl mx-auto">
+             <h2 className="text-3xl font-bold font-headline text-foreground">Explore PharmaTrack Lite</h2>
+            <p className="mt-4 text-muted-foreground text-lg">
+             Dive into the digital pharmacy, ask our AI for help, or learn more about the technology that powers it all.
+            </p>
+          </div>
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <Link href="/medicines" className="group">
+              <Card className="h-full hover:border-primary/50 hover:shadow-lg transition-all">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Database className="h-6 w-6 text-primary"/>
+                    Digital Pharmacy
+                  </CardTitle>
+                  <CardDescription>
+                    Browse the full inventory of medicines. Search, filter, and view details for every item on the ledger.
+                  </CardDescription>
+                </CardHeader>
+                <CardFooter>
+                    <Button variant="outline">
+                      Browse Inventory
+                      <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </Button>
+                </CardFooter>
+              </Card>
+            </Link>
+            <Link href="/chat" className="group">
+              <Card className="h-full hover:border-primary/50 hover:shadow-lg transition-all">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Bot className="h-6 w-6 text-primary"/>
+                    AI Assistant
+                  </CardTitle>
+                  <CardDescription>
+                    Have questions about your medicine? Our AI-powered assistant can provide information based on the inventory.
+                  </CardDescription>
+                </CardHeader>
+                <CardFooter>
+                    <Button variant="outline">
+                      Chat Now
+                       <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </Button>
+                </CardFooter>
+              </Card>
+            </Link>
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 }
