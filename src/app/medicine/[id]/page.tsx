@@ -1,15 +1,7 @@
-// ===================================================================================
-// BACKEND (Server-Side)
-// ===================================================================================
-// This is a "Server Component" in Next.js. By default, components in the App
-// Router run *only* on the server. This means this component's code is never
-// sent to the browser.
-// It fetches data and renders the page on the server, then sends the final HTML
-// to the client. This is efficient and secure, as data fetching logic and
-// sensitive information never leave the server environment.
-// ===================================================================================
 
-import { allMedicines } from '@/lib/data';
+"use client";
+
+import { useMedicineStore } from '@/hooks/useMedicineStore';
 import type { Medicine } from '@/types';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
@@ -18,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import SideEffects from '@/components/SideEffects';
 import { Calendar, Factory, Package, Pill, PackageCheck, AlertTriangle, PackageX, Boxes } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
+import { useEffect, useState } from 'react';
 
 const stockStatusMap = {
   'In Stock': {
@@ -39,10 +31,23 @@ const stockStatusMap = {
 };
 
 export default function MedicineDetailPage({ params }: { params: { id: string } }) {
-  const medicine: Medicine | undefined = allMedicines.find((m) => m.id === params.id);
+  const { medicines, isInitialized } = useMedicineStore();
+  const [medicine, setMedicine] = useState<Medicine | undefined>(undefined);
 
+  useEffect(() => {
+    if (isInitialized) {
+      const foundMedicine = medicines.find((m) => m.id === params.id);
+      setMedicine(foundMedicine);
+    }
+  }, [params.id, medicines, isInitialized]);
+
+  if (!isInitialized) {
+    // You can return a loading spinner here
+    return <div>Loading...</div>;
+  }
+  
   if (!medicine) {
-    notFound();
+    return notFound();
   }
 
   const isExpired = new Date(medicine.expiryDate) < new Date();
@@ -143,3 +148,5 @@ export default function MedicineDetailPage({ params }: { params: { id: string } 
     </div>
   );
 }
+
+    

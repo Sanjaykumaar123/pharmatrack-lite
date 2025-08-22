@@ -1,17 +1,24 @@
+
 "use client";
 
 import { Button } from "@/components/ui/button";
 import { ScanLine } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { allMedicines } from "@/lib/data";
+import { useMedicineStore } from '@/hooks/useMedicineStore';
 
 export default function ScannerPage() {
   const router = useRouter();
+  const { medicines } = useMedicineStore();
 
   const handleScan = () => {
     // In a real application, you would integrate a QR code scanning library.
     // For this prototype, we simulate a scan and redirect to a random medicine page.
-    const randomMedicine = allMedicines[Math.floor(Math.random() * allMedicines.length)];
+    if (medicines.length === 0) {
+        // Handle case where there are no medicines
+        router.push('/medicines');
+        return;
+    }
+    const randomMedicine = medicines[Math.floor(Math.random() * medicines.length)];
     router.push(`/medicine/${randomMedicine.id}`);
   };
 
@@ -40,3 +47,5 @@ export default function ScannerPage() {
     </div>
   );
 }
+
+    

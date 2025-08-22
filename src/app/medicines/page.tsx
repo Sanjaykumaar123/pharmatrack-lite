@@ -1,14 +1,3 @@
-// ===================================================================================
-// BACKEND (Server-Side) & FRONTEND (Client-Side)
-// ===================================================================================
-// This file demonstrates the "use client" directive in Next.js.
-// By default, all components in the Next.js App Router are Server Components,
-// meaning they run on the server (backend).
-// However, because this page requires user interactivity (like typing in a search
-// bar and filtering results), we add the "use client" directive at the top.
-// This tells Next.js to also run this component's code in the browser (frontend),
-// allowing for interactive user experiences.
-// ===================================================================================
 
 "use client";
 
@@ -17,48 +6,26 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, ScanLine, X } from 'lucide-react';
+import { Search, ScanLine, X, Loader2 } from 'lucide-react';
 import { MedicineCard } from '@/components/MedicineCard';
-// BLOCKCHAIN INTEGRATION POINT:
-// In a real application, you would remove this import.
-import { allMedicines } from '@/lib/data';
 import type { Medicine } from '@/types';
+import { useMedicineStore } from '@/hooks/useMedicineStore';
 
 function MedicinesPageContent() {
+  const { medicines, isInitialized } = useMedicineStore();
   const searchParams = useSearchParams();
   const initialStatus = searchParams.get('status');
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<string | null>(initialStatus);
-
-  // BLOCKCHAIN INTEGRATION POINT:
-  // The 'allMedicines' array would be replaced with state that is loaded from your blockchain API.
-  // For example:
-  // const [medicines, setMedicines] = useState<Medicine[]>([]);
-  // const [isLoading, setIsLoading] = useState(true);
-  //
-  // useEffect(() => {
-  //   const fetchMedicines = async () => {
-  //     setIsLoading(true);
-  //     try {
-  //       // This is where you would call your blockchain backend API.
-  //       const response = await fetch('https://your-blockchain-api.com/medicines');
-  //       const data = await response.json();
-  //       setMedicines(data);
-  //     } catch (error) {
-  //       console.error("Failed to fetch medicines from blockchain:", error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-  //   fetchMedicines();
-  // }, []);
+  
+  useEffect(() => {
+    setSelectedStatus(searchParams.get('status'));
+  }, [searchParams]);
 
 
   const filteredMedicines = useMemo(() => {
-    // This filtering logic would remain the same, but it would operate on the
-    // state fetched from the API (e.g., 'medicines') instead of 'allMedicines'.
-    return allMedicines.filter((med) => {
+    return medicines.filter((med) => {
       const searchMatch =
         med.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         med.batchNumber.toLowerCase().includes(searchTerm.toLowerCase());
@@ -67,17 +34,23 @@ function MedicinesPageContent() {
 
       return searchMatch && statusMatch;
     });
-  }, [searchTerm, selectedStatus]); // Add 'medicines' to dependency array in a real implementation.
+  }, [searchTerm, selectedStatus, medicines]);
 
   const handleClearFilter = () => {
     setSelectedStatus(null);
-    window.history.pushState({}, '', '/medicines');
+    const newUrl = new URL(window.location.href);
+    newUrl.searchParams.delete('status');
+    window.history.pushState({}, '', newUrl);
   }
 
-  // In a real implementation, you would add a loading state here.
-  // if (isLoading) {
-  //   return <div>Loading inventory from the ledger...</div>;
-  // }
+  if (!isInitialized) {
+      return (
+          <div className="flex h-full flex-col items-center justify-center">
+              <Loader2 className="h-10 w-10 animate-spin text-primary" />
+              <p className="mt-4 text-lg text-muted-foreground">Loading Inventory from the Ledger...</p>
+          </div>
+      )
+  }
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
@@ -146,3 +119,5 @@ export default function MedicinesPage() {
     </Suspense>
   )
 }
+
+    

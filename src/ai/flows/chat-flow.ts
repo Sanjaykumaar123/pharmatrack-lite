@@ -1,3 +1,4 @@
+
 // ===================================================================================
 // BACKEND (Server-Side)
 // ===================================================================================
@@ -19,7 +20,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { allMedicines } from '@/lib/data';
+import type { Medicine } from '@/types';
 
 const ChatMessageSchema = z.object({
   role: z.enum(['user', 'assistant']),
@@ -37,8 +38,11 @@ const ChatOutputSchema = z.object({
 });
 export type ChatOutput = z.infer<typeof ChatOutputSchema>;
 
-export async function chatWithAi(input: Omit<ChatInput, 'medicines'>): Promise<ChatOutput> {
-  const medicineInfo = allMedicines.map(med => 
+// This function is the main entry point called by the frontend.
+// It accepts the chat history and the current state of the medicine inventory.
+export async function chatWithAi(input: { history: z.infer<typeof ChatMessageSchema>[], allMedicines: Medicine[] }): Promise<ChatOutput> {
+  // We format the medicine data into a simple string for the AI to understand.
+  const medicineInfo = input.allMedicines.map(med => 
     `- Name: ${med.name}\n` +
     `  - Manufacturer: ${med.manufacturer}\n` +
     `  - Batch Number: ${med.batchNumber}\n` +
@@ -47,12 +51,15 @@ export async function chatWithAi(input: Omit<ChatInput, 'medicines'>): Promise<C
     `  - Stock: ${med.stock.quantity} units, status is ${med.stock.status}`
   ).join('\n');
 
+  // We call the Genkit flow with the prepared data.
   return chatFlow({
-    ...input,
+    history: input.history,
     medicines: medicineInfo,
   });
 }
 
+// This is the Genkit prompt definition.
+// It defines the AI's persona, its instructions, and how it should use the provided data.
 const prompt = ai.definePrompt({
   name: 'chatPrompt',
   input: {schema: ChatInputSchema},
@@ -73,6 +80,8 @@ Chat History:
 assistant: `,
 });
 
+// This is the Genkit flow that orchestrates the AI call.
+// It takes the formatted input and passes it to the prompt.
 const chatFlow = ai.defineFlow(
   {
     name: 'chatFlow',
@@ -84,3 +93,5 @@ const chatFlow = ai.defineFlow(
     return output!;
   }
 );
+
+    

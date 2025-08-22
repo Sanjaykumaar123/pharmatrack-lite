@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -10,6 +11,7 @@ import { chatWithAi } from '@/ai/flows/chat-flow';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
+import { useMedicineStore } from '@/hooks/useMedicineStore';
 
 interface Message {
     role: 'user' | 'assistant';
@@ -17,6 +19,7 @@ interface Message {
 }
 
 export default function ChatPage() {
+    const { medicines } = useMedicineStore();
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -33,8 +36,10 @@ export default function ChatPage() {
         setIsLoading(true);
 
         try {
+            // Pass the current state of all medicines to the AI
             const assistantMessageContent = await chatWithAi({
                 history: newMessages,
+                allMedicines: medicines,
             });
             const assistantMessage: Message = { role: 'assistant', content: assistantMessageContent.response };
             setMessages(prev => [...prev, assistantMessage]);
@@ -45,7 +50,7 @@ export default function ChatPage() {
                 title: 'Error',
                 description: 'Failed to get a response from the assistant. Please try again.',
             });
-            setMessages(prev => prev.slice(0, prev.length -1)); // Remove the user message if AI fails
+            setMessages(prev => prev.slice(0, prev.length - 1));
         } finally {
             setIsLoading(false);
         }
@@ -119,3 +124,5 @@ export default function ChatPage() {
         </div>
     );
 }
+
+    
