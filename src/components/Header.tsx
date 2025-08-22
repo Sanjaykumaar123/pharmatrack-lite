@@ -1,6 +1,11 @@
+
+"use client";
+
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
-import { LayoutDashboard, BrainCircuit, LogIn, UserPlus } from 'lucide-react';
+import { LayoutDashboard, BrainCircuit, LogIn, UserPlus, LogOut, User, Factory, ShieldCheck } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 const PillIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -13,7 +18,57 @@ const PillIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+const roleConfig = {
+    admin: {
+        icon: ShieldCheck,
+        dashboard: '/admin/dashboard',
+        label: 'Admin'
+    },
+    manufacturer: {
+        icon: Factory,
+        dashboard: '/manufacturer/dashboard',
+        label: 'Manufacturer'
+    },
+    customer: {
+        icon: User,
+        dashboard: '/customer/dashboard',
+        label: 'Customer'
+    }
+}
+
 export default function Header() {
+  const [loggedInRole, setLoggedInRole] = useState<string | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    // This effect runs on the client after hydration
+    // so it's safe to access sessionStorage.
+    const role = sessionStorage.getItem('loggedInUserRole');
+    setLoggedInRole(role);
+
+    const handleStorageChange = () => {
+        setLoggedInRole(sessionStorage.getItem('loggedInUserRole'));
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+        window.removeEventListener('storage', handleStorageChange);
+    };
+
+  }, []);
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('loggedInUserRole');
+    setLoggedInRole(null);
+    router.push('/');
+  };
+
+  const roleKey = loggedInRole as keyof typeof roleConfig;
+  const currentRole = loggedInRole ? roleConfig[roleKey] : null;
+  const RoleIcon = currentRole?.icon;
+
+
   return (
     <header className="bg-background/80 backdrop-blur-sm sticky top-0 z-50 border-b">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -39,18 +94,35 @@ export default function Header() {
               </Button>
             </Link>
              <div className="flex items-center gap-2 ml-4">
-                <Link href="/login" passHref>
-                    <Button variant="ghost">
-                        <LogIn className="mr-2 h-5 w-5" />
-                        Login
-                    </Button>
-                </Link>
-                <Link href="/signup" passHref>
-                    <Button>
-                        <UserPlus className="mr-2 h-5 w-5" />
-                        Sign Up
-                    </Button>
-                </Link>
+                {loggedInRole && currentRole && RoleIcon ? (
+                     <>
+                        <Link href={currentRole.dashboard} passHref>
+                            <Button variant="outline">
+                                <RoleIcon className="mr-2 h-5 w-5" />
+                                {currentRole.label} Dashboard
+                            </Button>
+                        </Link>
+                        <Button onClick={handleLogout}>
+                            <LogOut className="mr-2 h-5 w-5" />
+                            Logout
+                        </Button>
+                     </>
+                ) : (
+                    <>
+                        <Link href="/login" passHref>
+                            <Button variant="ghost">
+                                <LogIn className="mr-2 h-5 w-5" />
+                                Login
+                            </Button>
+                        </Link>
+                        <Link href="/signup" passHref>
+                            <Button>
+                                <UserPlus className="mr-2 h-5 w-5" />
+                                Sign Up
+                            </Button>
+                        </Link>
+                    </>
+                )}
             </div>
           </nav>
         </div>

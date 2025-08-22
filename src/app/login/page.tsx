@@ -31,6 +31,11 @@ export default function LoginPage() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     // This is a simulated login. In a real app, you'd handle authentication.
+    // We'll save the role to session storage to simulate a logged-in state.
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem('loggedInUserRole', role);
+    }
+    
     // We'll just redirect based on the selected role.
     if (role === 'admin') {
       router.push('/admin/dashboard');
