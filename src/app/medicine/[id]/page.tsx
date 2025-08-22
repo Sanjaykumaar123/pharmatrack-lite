@@ -33,13 +33,14 @@ const stockStatusMap = {
 export default function MedicineDetailPage({ params }: { params: { id: string } }) {
   const { medicines, isInitialized } = useMedicineStore();
   const [medicine, setMedicine] = useState<Medicine | undefined>(undefined);
+  const { id } = params;
 
   useEffect(() => {
     if (isInitialized) {
-      const foundMedicine = medicines.find((m) => m.id === params.id);
+      const foundMedicine = medicines.find((m) => m.id === id);
       setMedicine(foundMedicine);
     }
-  }, [params.id, medicines, isInitialized]);
+  }, [id, medicines, isInitialized]);
 
   if (!isInitialized) {
     // You can return a loading spinner here
@@ -149,4 +150,3 @@ export default function MedicineDetailPage({ params }: { params: { id: string } 
   );
 }
 
-    
