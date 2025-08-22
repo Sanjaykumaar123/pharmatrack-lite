@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useMemo, useState, Suspense } from 'react';
@@ -5,12 +6,11 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, ScanLine, X, Loader2 } from 'lucide-react';
+import { Search, ScanLine, X, Loader2, AlertCircle } from 'lucide-react';
 import { MedicineCard } from '@/components/MedicineCard';
 import { useMedicineStore } from '@/hooks/useMedicineStore';
 import type { Medicine } from '@/types/medicine';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle } from 'lucide-react';
 
 function MedicinesPageContent() {
   const { medicines, loading, error, isInitialized, fetchMedicines } = useMedicineStore();
@@ -25,6 +25,7 @@ function MedicinesPageContent() {
   const [searchTerm, setSearchTerm] = useState('');
   
   const filteredMedicines = useMemo(() => {
+    if (!medicines) return [];
     return medicines.filter((med) => {
       return med.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
              med.batchNo.toLowerCase().includes(searchTerm.toLowerCase());

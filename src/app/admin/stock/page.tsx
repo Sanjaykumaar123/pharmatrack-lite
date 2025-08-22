@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
@@ -58,6 +59,7 @@ export default function StockManagementPage() {
   const { toast } = useToast();
 
   const sortedMedicines = useMemo(() => {
+    if (!medicines) return [];
     let sortableMedicines = [...medicines];
     if (sortConfig !== null) {
       sortableMedicines.sort((a, b) => {
@@ -221,3 +223,4 @@ export default function StockManagementPage() {
     </>
   );
 }
+
