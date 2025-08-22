@@ -60,7 +60,7 @@ export default function CustomerDashboardPage() {
                 <CardTitle>Scan a Medicine</CardTitle>
             </CardHeader>
             <CardContent className="flex-grow">
-              <CardDescription>Use your camera to scan a medicine's QR code to instantly verify its authenticity and view its history on the blockchain.</CardDescription>
+              <CardDescription>Use your camera to scan a medicine's QR code to instantly verify its authenticity and view its history on the simulated ledger.</CardDescription>
             </CardContent>
             <CardFooter>
               <Button variant="outline">

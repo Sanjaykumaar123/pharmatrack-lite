@@ -30,7 +30,7 @@ export default function ManufacturerDashboardPage() {
             <CardTitle>Welcome, Manufacturer!</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">This is your dashboard for managing medicines you have produced. Here you can add new batches to the blockchain, track their journey through the supply chain, and manage your inventory information.</p>
+            <p className="text-muted-foreground">This is your dashboard for managing medicines you have produced. Here you can add new batches to the decentralized ledger, track their journey through the supply chain, and manage your inventory information.</p>
           </CardContent>
         </Card>
         
@@ -42,7 +42,7 @@ export default function ManufacturerDashboardPage() {
             </CardHeader>
             <CardContent className="flex-grow">
               <CardDescription>
-                  Register a new batch of medicine, assign it a unique identifier, and add it to the inventory to begin its supply chain journey.
+                  Register a new batch of medicine, assign it a unique identifier, and add it to the decentralized ledger to begin its supply chain journey.
               </CardDescription>
             </CardContent>
             <CardFooter>

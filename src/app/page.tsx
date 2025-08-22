@@ -25,7 +25,7 @@ export default function Home() {
                 Bringing Clarity and Trust to Your Pharmacy.
               </h1>
               <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-                PharmaTrack Lite provides a transparent, secure, and efficient solution to manage your medicine inventory on a decentralized ledger, ensuring safety and reliability from manufacturer to patient.
+                PharmaTrack Lite provides a transparent, secure, and efficient solution to manage your medicine inventory on a simulated decentralized ledger, ensuring safety and reliability from manufacturer to patient.
               </p>
               <div className="mt-10 flex flex-col sm:flex-row gap-4">
                 <Link href="/medicines" passHref>
@@ -158,7 +158,7 @@ export default function Home() {
                     Digital Pharmacy
                   </CardTitle>
                   <CardDescription>
-                    Browse the full inventory of medicines. Search, filter, and view details for every item on the ledger.
+                    Browse the full inventory of medicines. Search, filter, and view details for every item on the simulated ledger.
                   </CardDescription>
                 </CardHeader>
                 <CardFooter>

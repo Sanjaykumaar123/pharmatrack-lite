@@ -65,7 +65,6 @@ export default function AddMedicinePage() {
       id: new Date().toISOString(), // Generate a unique ID
       ...values,
       expiryDate: format(values.expiryDate, 'yyyy-MM-dd'),
-      imageUrl: 'https://placehold.co/600x400.png',
       stock: {
         quantity: values.stock.quantity,
         status: status,
@@ -75,8 +74,8 @@ export default function AddMedicinePage() {
     addMedicine(newMedicine);
 
     toast({
-      title: 'Medicine Added',
-      description: `${newMedicine.name} has been successfully added to the inventory.`,
+      title: 'Medicine Added to Ledger',
+      description: `${newMedicine.name} has been successfully registered in the inventory.`,
     });
 
     router.push('/admin/stock');
@@ -92,9 +91,9 @@ export default function AddMedicinePage() {
             </Link>
             <div>
             <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
-                Add New Medicine Batch
+                Register New Medicine Batch
             </h1>
-            <p className="text-muted-foreground">Fill out the form below to register a new medicine.</p>
+            <p className="text-muted-foreground">Fill out the form below to register a new medicine on the decentralized ledger.</p>
             </div>
         </div>
 
@@ -102,7 +101,7 @@ export default function AddMedicinePage() {
         <CardHeader>
           <CardTitle>Medicine Details</CardTitle>
           <CardDescription>
-            Enter the information for the new medicine batch. All fields are required.
+            Enter the information for the new medicine batch. This will create an immutable record on the ledger.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -229,7 +228,7 @@ export default function AddMedicinePage() {
                  </Link>
                 <Button type="submit">
                   <PackagePlus className="mr-2 h-5 w-5" />
-                  Add Medicine to Inventory
+                  Add Medicine to Ledger
                 </Button>
               </div>
             </form>

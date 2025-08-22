@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, ScanLine, X, Loader2 } from 'lucide-react';
+import { Search, ScanLine, X, Loader2, Database } from 'lucide-react';
 import { MedicineCard } from '@/components/MedicineCard';
 import type { Medicine } from '@/types';
 import { useMedicineStore } from '@/hooks/useMedicineStore';
@@ -100,6 +100,7 @@ function MedicinesPageContent() {
           </div>
         ) : (
           <div className="text-center py-10 px-6 bg-card rounded-lg border">
+            <Database className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold text-foreground">No Results Found</h3>
             <p className="text-muted-foreground mt-2">
               We couldn't find any medicine matching your search or filter criteria. Please check the spelling or try a different term.
@@ -119,5 +120,3 @@ export default function MedicinesPage() {
     </Suspense>
   )
 }
-
-    
