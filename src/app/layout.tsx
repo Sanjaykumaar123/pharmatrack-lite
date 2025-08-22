@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
-import Header from '@/components/Header';
 import { cn } from '@/lib/utils';
 import { Poppins } from 'next/font/google';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import Header from '@/components/Header';
 
 export const metadata: Metadata = {
   title: 'PharmaTrack Lite',
@@ -22,13 +23,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("h-full", poppins.variable)}>
+    <html lang="en" className={cn("h-full", poppins.variable)} suppressHydrationWarning>
       <body className={cn('font-body antialiased h-full flex flex-col bg-background')}>
-        <Header />
-        <main className="flex-1">
-          {children}
-        </main>
-        <Toaster />
+        <SidebarProvider>
+            <Header />
+            <main className="flex-1">
+              {children}
+            </main>
+            <Toaster />
+        </SidebarProvider>
       </body>
     </html>
   );

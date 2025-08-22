@@ -4,8 +4,9 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
-import { LayoutDashboard, BrainCircuit, LogIn, UserPlus, LogOut, User, Factory, ShieldCheck, Loader2 } from 'lucide-react';
+import { LayoutDashboard, BrainCircuit, LogIn, UserPlus, LogOut, User, Factory, ShieldCheck, Loader2, Moon, Sun } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Sidebar, SidebarTrigger } from './ui/sidebar';
 
 const PillIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -35,6 +36,32 @@ const roleConfig = {
         label: 'Customer'
     }
 }
+
+function ThemeToggle() {
+    const [theme, setTheme] = useState('light');
+
+    useEffect(() => {
+        const storedTheme = localStorage.getItem('theme') || 'light';
+        setTheme(storedTheme);
+        document.documentElement.classList.toggle('dark', storedTheme === 'dark');
+    }, []);
+
+    const toggleTheme = () => {
+        const newTheme = theme === 'light' ? 'dark' : 'light';
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+        document.documentElement.classList.toggle('dark', newTheme === 'dark');
+    };
+
+    return (
+        <Button variant="ghost" size="icon" onClick={toggleTheme}>
+            <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <span className="sr-only">Toggle theme</span>
+        </Button>
+    );
+}
+
 
 export default function Header() {
   const [loggedInRole, setLoggedInRole] = useState<string | null>(null);
@@ -75,38 +102,44 @@ export default function Header() {
     <header className="bg-background/80 backdrop-blur-sm sticky top-0 z-50 border-b">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <PillIcon className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold text-foreground font-headline">
-              PharmaTrack Lite
-            </span>
-          </Link>
+          <div className="flex items-center gap-2">
+            <SidebarTrigger className="md:hidden" />
+            <Link href="/" className="flex items-center gap-2">
+              <PillIcon className="h-8 w-8 text-primary" />
+              <span className="text-xl font-bold text-foreground font-headline hidden sm:inline-block">
+                PharmaTrack Lite
+              </span>
+            </Link>
+          </div>
 
-          <nav className="hidden md:flex items-center gap-2">
-            <Link href="/medicines" passHref>
-              <Button variant="ghost">
-                <LayoutDashboard className="mr-2 h-5 w-5" />
-                Pharmacy
-              </Button>
-            </Link>
-            <Link href="/chat" passHref>
-              <Button variant="ghost">
-                <BrainCircuit className="mr-2 h-5 w-5" />
-                AI Assistant
-              </Button>
-            </Link>
-             <div className="flex items-center gap-2 ml-4">
+          <div className="flex items-center gap-2">
+             <nav className="hidden md:flex items-center gap-2">
+              <Link href="/medicines" passHref>
+                <Button variant="ghost">
+                  <LayoutDashboard className="mr-2 h-5 w-5" />
+                  Pharmacy
+                </Button>
+              </Link>
+              <Link href="/chat" passHref>
+                <Button variant="ghost">
+                  <BrainCircuit className="mr-2 h-5 w-5" />
+                  AI Assistant
+                </Button>
+              </Link>
+            </nav>
+            <div className="w-px h-6 bg-border mx-2 hidden md:block" />
+            <div className="flex items-center gap-2">
                 {isLoading ? (
                     <Loader2 className="h-6 w-6 animate-spin" />
                 ) : loggedInRole && currentRole && RoleIcon ? (
                      <>
                         <Link href={currentRole.dashboard} passHref>
-                            <Button variant="outline">
+                            <Button variant="outline" className="hidden sm:flex">
                                 <RoleIcon className="mr-2 h-5 w-5" />
                                 {currentRole.label} Dashboard
                             </Button>
                         </Link>
-                        <Button onClick={handleLogout}>
+                        <Button onClick={handleLogout} className="hidden sm:flex">
                             <LogOut className="mr-2 h-5 w-5" />
                             Logout
                         </Button>
@@ -114,23 +147,72 @@ export default function Header() {
                 ) : (
                     <>
                         <Link href="/login" passHref>
-                            <Button variant="ghost">
+                            <Button variant="ghost" className="hidden sm:flex">
                                 <LogIn className="mr-2 h-5 w-5" />
                                 Login
                             </Button>
                         </Link>
                         <Link href="/signup" passHref>
-                            <Button>
+                            <Button className="hidden sm:flex">
                                 <UserPlus className="mr-2 h-5 w-5" />
                                 Sign Up
                             </Button>
                         </Link>
                     </>
                 )}
+                 <ThemeToggle />
             </div>
-          </nav>
+          </div>
         </div>
       </div>
+      <Sidebar side="left" className="md:hidden">
+         <nav className="flex flex-col gap-4 p-4">
+            <Link href="/medicines" passHref>
+              <Button variant="ghost" className="w-full justify-start">
+                <LayoutDashboard className="mr-2 h-5 w-5" />
+                Pharmacy
+              </Button>
+            </Link>
+            <Link href="/chat" passHref>
+              <Button variant="ghost" className="w-full justify-start">
+                <BrainCircuit className="mr-2 h-5 w-5" />
+                AI Assistant
+              </Button>
+            </Link>
+            <hr />
+              {isLoading ? (
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                ) : loggedInRole && currentRole && RoleIcon ? (
+                     <>
+                        <Link href={currentRole.dashboard} passHref>
+                            <Button variant="outline" className="w-full justify-start">
+                                <RoleIcon className="mr-2 h-5 w-5" />
+                                {currentRole.label} Dashboard
+                            </Button>
+                        </Link>
+                        <Button onClick={handleLogout} className="w-full justify-start">
+                            <LogOut className="mr-2 h-5 w-5" />
+                            Logout
+                        </Button>
+                     </>
+                ) : (
+                    <>
+                        <Link href="/login" passHref>
+                            <Button variant="ghost" className="w-full justify-start">
+                                <LogIn className="mr-2 h-5 w-5" />
+                                Login
+                            </Button>
+                        </Link>
+                        <Link href="/signup" passHref>
+                            <Button className="w-full justify-start">
+                                <UserPlus className="mr-2 h-5 w-5" />
+                                Sign Up
+                            </Button>
+                        </Link>
+                    </>
+                )}
+          </nav>
+      </Sidebar>
     </header>
   );
 }
