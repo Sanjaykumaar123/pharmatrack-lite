@@ -1,3 +1,4 @@
+
 "use client";
 import { connection } from "./client";
 import type { Medicine, NewMedicine } from "@/types/medicine";
@@ -21,6 +22,46 @@ const MOCK_CHAIN: Medicine[] = [
     mfgDate: "2025-04-02",
     expDate: "2027-04-01",
     quantity: 600,
+    manufacturer: "GZX Bio",
+    onChain: true,
+  },
+  {
+    id: "mdc-003",
+    name: "Ibuprofen 200mg",
+    batchNo: "IBU-200-C21",
+    mfgDate: "2024-10-15",
+    expDate: "2026-10-14",
+    quantity: 850,
+    manufacturer: "MediCorp",
+    onChain: true,
+  },
+  {
+    id: "mdc-004",
+    name: "Cetirizine 10mg",
+    batchNo: "CET-010-D99",
+    mfgDate: "2025-01-20",
+    expDate: "2027-01-19",
+    quantity: 2500,
+    manufacturer: "HealthGlobal",
+    onChain: true,
+  },
+    {
+    id: "mdc-005",
+    name: "Atorvastatin 20mg",
+    batchNo: "ATO-020-E45",
+    mfgDate: "2024-08-01",
+    expDate: "2026-07-31",
+    quantity: 400,
+    manufacturer: "PharmaLite Labs",
+    onChain: true,
+  },
+  {
+    id: "mdc-006",
+    name: "Metformin 500mg",
+    batchNo: "MET-500-F18",
+    mfgDate: "2025-05-30",
+    expDate: "2027-05-29",
+    quantity: 1500,
     manufacturer: "GZX Bio",
     onChain: true,
   },
