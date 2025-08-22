@@ -35,6 +35,7 @@ export const allMedicines: Medicine[] = [
     batchNumber: 'P12345',
     expiryDate: '2025-12-31',
     description: 'A common pain reliever and fever reducer.',
+    imageUrl: 'https://placehold.co/600x400.png',
     stock: {
       quantity: 150,
       status: 'In Stock',
@@ -47,6 +48,7 @@ export const allMedicines: Medicine[] = [
     batchNumber: 'I67890',
     expiryDate: '2026-06-30',
     description: 'A nonsteroidal anti-inflammatory drug (NSAID).',
+    imageUrl: 'https://placehold.co/600x400.png',
     stock: {
       quantity: 25,
       status: 'Low Stock',
@@ -59,6 +61,7 @@ export const allMedicines: Medicine[] = [
     batchNumber: 'A11223',
     expiryDate: '2024-11-30',
     description: 'An antibiotic used to treat a number of bacterial infections.',
+    imageUrl: 'https://placehold.co/600x400.png',
     stock: {
       quantity: 0,
       status: 'Out of Stock',
@@ -71,6 +74,7 @@ export const allMedicines: Medicine[] = [
     batchNumber: 'L44556',
     expiryDate: '2027-01-15',
     description: 'An ACE inhibitor used to treat high blood pressure and heart failure.',
+    imageUrl: 'https://placehold.co/600x400.png',
     stock: {
       quantity: 200,
       status: 'In Stock',
@@ -83,6 +87,7 @@ export const allMedicines: Medicine[] = [
     batchNumber: 'M77889',
     expiryDate: '2025-08-20',
     description: 'A first-line medication for the treatment of type 2 diabetes.',
+    imageUrl: 'https://placehold.co/600x400.png',
     stock: {
       quantity: 75,
       status: 'In Stock',
@@ -95,6 +100,7 @@ export const allMedicines: Medicine[] = [
     batchNumber: 'A99001',
     expiryDate: '2026-03-25',
     description: 'A statin medication used to prevent cardiovascular disease.',
+    imageUrl: 'https://placehold.co/600x400.png',
     stock: {
       quantity: 40,
       status: 'Low Stock',
@@ -107,6 +113,7 @@ export const allMedicines: Medicine[] = [
     batchNumber: 'CRA202401',
     expiryDate: '2026-05-31',
     description: 'Contains Paracetamol for faster relief from pain and fever.',
+    imageUrl: 'https://placehold.co/600x400.png',
     stock: {
       quantity: 300,
       status: 'In Stock',
@@ -119,6 +126,7 @@ export const allMedicines: Medicine[] = [
     batchNumber: 'COMB451-B',
     expiryDate: '2025-09-30',
     description: 'Combination of Ibuprofen and Paracetamol for pain and inflammation.',
+    imageUrl: 'https://placehold.co/600x400.png',
     stock: {
       quantity: 120,
       status: 'In Stock',
@@ -131,6 +139,7 @@ export const allMedicines: Medicine[] = [
     batchNumber: 'DIG5523',
     expiryDate: '2025-07-31',
     description: 'An antacid that provides relief from acidity and gas.',
+    imageUrl: 'https://placehold.co/600x400.png',
     stock: {
       quantity: 80,
       status: 'In Stock',
@@ -143,6 +152,7 @@ export const allMedicines: Medicine[] = [
     batchNumber: 'AZI-9087',
     expiryDate: '2024-10-31',
     description: 'Azithromycin, an antibiotic for bacterial infections.',
+    imageUrl: 'https://placehold.co/600x400.png',
     stock: {
       quantity: 15,
       status: 'Low Stock',
@@ -155,6 +165,7 @@ export const allMedicines: Medicine[] = [
     batchNumber: 'VOL-G-021',
     expiryDate: '2026-01-31',
     description: 'Topical gel with Diclofenac for targeted pain relief.',
+    imageUrl: 'https://placehold.co/600x400.png',
     stock: {
       quantity: 0,
       status: 'Out of Stock',
@@ -167,6 +178,7 @@ export const allMedicines: Medicine[] = [
     batchNumber: 'CETZ-C-443',
     expiryDate: '2027-02-28',
     description: 'An antihistamine used to relieve allergy symptoms.',
+    imageUrl: 'https://placehold.co/600x400.png',
     stock: {
       quantity: 250,
       status: 'In Stock',

@@ -65,6 +65,7 @@ export default function AddMedicinePage() {
       id: new Date().toISOString(), // Generate a unique ID
       ...values,
       expiryDate: format(values.expiryDate, 'yyyy-MM-dd'),
+      imageUrl: 'https://placehold.co/600x400.png',
       stock: {
         quantity: values.stock.quantity,
         status: status,

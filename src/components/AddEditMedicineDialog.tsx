@@ -104,6 +104,7 @@ export function AddEditMedicineDialog({ isOpen, onClose, onSave, medicine }: Add
       id: medicine?.id || new Date().toISOString(), // Use existing ID or generate a new one
       ...values,
       expiryDate: format(values.expiryDate, 'yyyy-MM-dd'),
+      imageUrl: medicine?.imageUrl || 'https://placehold.co/600x400.png',
       stock: {
         quantity: values.stock.quantity,
         status: status,
