@@ -31,6 +31,7 @@ import {
   MoreHorizontal,
   Pencil,
   Trash2,
+  Loader2,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -40,7 +41,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ChartContainer, ChartConfig, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
-import { allMedicines as initialMedicines } from '@/lib/data';
 import type { Medicine } from '@/types';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -348,6 +348,3 @@ export default function StockManagementPage() {
     </>
   );
 }
-
-
-    

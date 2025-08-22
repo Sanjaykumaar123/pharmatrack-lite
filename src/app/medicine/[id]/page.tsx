@@ -8,7 +8,7 @@ import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import SideEffects from '@/components/SideEffects';
-import { Calendar, Factory, Package, Pill, PackageCheck, AlertTriangle, PackageX, Boxes } from 'lucide-react';
+import { Calendar, Factory, Package, Pill, PackageCheck, AlertTriangle, PackageX, Boxes, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 
@@ -43,12 +43,29 @@ export default function MedicineDetailPage({ params }: { params: { id: string } 
   }, [id, medicines, isInitialized]);
 
   if (!isInitialized) {
-    // You can return a loading spinner here
-    return <div>Loading...</div>;
+    return (
+        <div className="flex items-center justify-center h-full">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="ml-4 text-lg">Loading Medicine Details...</p>
+        </div>
+    )
   }
   
   if (!medicine) {
-    return notFound();
+    // This can happen briefly while the useEffect runs
+    // Or if the medicine is not found
+    // To avoid flashing notFound(), we can show a loader
+    // If it's still not found after initialization, we could redirect
+    // For now, if we're initialized and there's no medicine, it's a 404.
+     if (isInitialized) {
+        notFound();
+     }
+     return (
+         <div className="flex items-center justify-center h-full">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="ml-4 text-lg">Finding Medicine...</p>
+        </div>
+     )
   }
 
   const isExpired = new Date(medicine.expiryDate) < new Date();
@@ -149,4 +166,3 @@ export default function MedicineDetailPage({ params }: { params: { id: string } 
     </div>
   );
 }
-
