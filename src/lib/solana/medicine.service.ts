@@ -1,67 +1,64 @@
+"use client";
+import { connection } from "./client";
+import type { Medicine, NewMedicine } from "@/types/medicine";
 
-import { getSolanaConnection } from './client';
-import { allMedicines } from '@/lib/data';
-import type { Medicine } from '@/types';
+// Mock ledger data (pretend this lives on-chain)
+const MOCK_CHAIN: Medicine[] = [
+  {
+    id: "mdc-001",
+    name: "Paracetamol 500mg",
+    batchNo: "BATCH-P500-24A",
+    mfgDate: "2024-12-10",
+    expDate: "2026-12-09",
+    quantity: 1200,
+    manufacturer: "PharmaLite Labs",
+    onChain: true,
+  },
+  {
+    id: "mdc-002",
+    name: "Amoxicillin 250mg",
+    batchNo: "AMX-250-B11",
+    mfgDate: "2025-04-02",
+    expDate: "2027-04-01",
+    quantity: 600,
+    manufacturer: "GZX Bio",
+    onChain: true,
+  },
+];
 
-// ===================================================================================
-// SOLANA BLOCKCHAIN SERVICE
-// ===================================================================================
-// This file is responsible for all direct interactions with your Solana program
-// (smart contract). It serves as an abstraction layer between your UI components
-// and the blockchain.
-//
-// In a real-world application:
-// - `getMedicinesFromChain` would query your on-chain program to fetch all medicine
-//   accounts.
-// - `addMedicineToChain` would construct and send a transaction to the program
-//   to create a new medicine account.
-// ===================================================================================
-
+const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
+const genId = () => `mdc-${Math.random().toString(36).slice(2, 8)}`;
 
 /**
- * Fetches all medicines from the blockchain.
- * 
- * NOTE: This is a SIMULATION. It currently returns mock data.
- * In a real implementation, you would use the `connection` object to query
- * your Solana program's accounts and deserialize their data.
+ * Simulate fetching from Solana. We actually touch the network so
+ * you can verify connectivity/devnet health, but we return mock data.
  */
 export async function getMedicinesFromChain(): Promise<Medicine[]> {
-    const connection = getSolanaConnection();
-    console.log('Fetching medicines from Solana devnet...');
-    // In a real app, you would use `connection.getProgramAccounts(...)` here.
-
-    // We'll return the mock data for now to keep the UI functional.
-    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
-    console.log('Successfully fetched medicines.');
-    return allMedicines;
+  // Network touch – useful in dev to ensure RPC is reachable
+  await connection.getLatestBlockhash();
+  // Artificial latency to mimic RPC
+  await sleep(250);
+  return [...MOCK_CHAIN];
 }
 
 /**
- * Adds a new medicine to the blockchain.
- * 
- * NOTE: This is a SIMULATION. It currently only logs to the console.
- * In a real implementation, you would construct a transaction with an
- * instruction to call your program's "add_medicine" function, then send
- * it to the network using the `connection` object.
- * 
- * @param medicine The new medicine data to add.
+ * Simulate writing a new medicine to the ledger.
+ * In a real flow you would build and send a Transaction here using web3.js.
  */
-export async function addMedicineToChain(medicine: Medicine): Promise<void> {
-    const connection = getSolanaConnection();
-    console.log('Preparing to add new medicine to the Solana devnet:', medicine);
-    console.log('Connection to cluster established:', connection.rpcEndpoint);
+export async function addMedicineToChain(input: NewMedicine): Promise<Medicine> {
+  console.log("[Simulated] Building Solana tx for addMedicine:", input);
 
-    // In a real app, you would build and send a transaction here.
-    // Example:
-    // const transaction = new Transaction().add(
-    //   new TransactionInstruction({
-    //     keys: [...],
-    //     programId,
-    //     data: Buffer.from(...),
-    //   })
-    // );
-    // await sendAndConfirmTransaction(connection, transaction, [payer]);
+  // Pretend we sent a tx and waited for confirmation
+  await sleep(400);
 
-    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
-    console.log(`Simulated adding ${medicine.name} to the ledger.`);
+  const created: Medicine = {
+    id: genId(),
+    ...input,
+    onChain: false, // flip to true once a real tx confirms
+  };
+
+  // Update our mock in-memory ledger
+  MOCK_CHAIN.unshift(created);
+
+  return created;
 }
