@@ -3,7 +3,6 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import { Poppins } from 'next/font/google';
-import { SidebarProvider } from '@/components/ui/sidebar';
 import Header from '@/components/Header';
 
 export const metadata: Metadata = {
@@ -25,13 +24,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={cn("h-full", poppins.variable)} suppressHydrationWarning>
       <body className={cn('font-body antialiased h-full flex flex-col bg-background')}>
-        <SidebarProvider>
             <Header />
             <main className="flex-1">
               {children}
             </main>
             <Toaster />
-        </SidebarProvider>
       </body>
     </html>
   );

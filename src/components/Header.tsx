@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
 import { LayoutDashboard, BrainCircuit, LogIn, UserPlus, LogOut, User, Factory, ShieldCheck, Loader2, Moon, Sun } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Sidebar, SidebarTrigger } from './ui/sidebar';
 
 const PillIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -41,16 +40,20 @@ function ThemeToggle() {
     const [theme, setTheme] = useState('light');
 
     useEffect(() => {
-        const storedTheme = localStorage.getItem('theme') || 'light';
+        const storedTheme = typeof window !== 'undefined' ? localStorage.getItem('theme') || 'light' : 'light';
         setTheme(storedTheme);
-        document.documentElement.classList.toggle('dark', storedTheme === 'dark');
+        if (typeof window !== 'undefined') {
+          document.documentElement.classList.toggle('dark', storedTheme === 'dark');
+        }
     }, []);
 
     const toggleTheme = () => {
         const newTheme = theme === 'light' ? 'dark' : 'light';
         setTheme(newTheme);
-        localStorage.setItem('theme', newTheme);
-        document.documentElement.classList.toggle('dark', newTheme === 'dark');
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('theme', newTheme);
+          document.documentElement.classList.toggle('dark', newTheme === 'dark');
+        }
     };
 
     return (
@@ -69,8 +72,6 @@ export default function Header() {
   const router = useRouter();
 
   useEffect(() => {
-    // This effect runs on the client after hydration
-    // so it's safe to access sessionStorage.
     const role = sessionStorage.getItem('loggedInUserRole');
     setLoggedInRole(role);
     setIsLoading(false);
@@ -102,15 +103,12 @@ export default function Header() {
     <header className="bg-background/80 backdrop-blur-sm sticky top-0 z-50 border-b">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <SidebarTrigger className="md:hidden" />
-            <Link href="/" className="flex items-center gap-2">
-              <PillIcon className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold text-foreground font-headline hidden sm:inline-block">
-                PharmaTrack Lite
-              </span>
-            </Link>
-          </div>
+          <Link href="/" className="flex items-center gap-2">
+            <PillIcon className="h-8 w-8 text-primary" />
+            <span className="text-xl font-bold text-foreground font-headline hidden sm:inline-block">
+              PharmaTrack Lite
+            </span>
+          </Link>
 
           <div className="flex items-center gap-2">
              <nav className="hidden md:flex items-center gap-2">
@@ -134,12 +132,12 @@ export default function Header() {
                 ) : loggedInRole && currentRole && RoleIcon ? (
                      <>
                         <Link href={currentRole.dashboard} passHref>
-                            <Button variant="outline" className="hidden sm:flex">
+                            <Button variant="outline">
                                 <RoleIcon className="mr-2 h-5 w-5" />
                                 {currentRole.label} Dashboard
                             </Button>
                         </Link>
-                        <Button onClick={handleLogout} className="hidden sm:flex">
+                        <Button onClick={handleLogout}>
                             <LogOut className="mr-2 h-5 w-5" />
                             Logout
                         </Button>
@@ -147,13 +145,13 @@ export default function Header() {
                 ) : (
                     <>
                         <Link href="/login" passHref>
-                            <Button variant="ghost" className="hidden sm:flex">
+                            <Button variant="ghost">
                                 <LogIn className="mr-2 h-5 w-5" />
                                 Login
                             </Button>
                         </Link>
                         <Link href="/signup" passHref>
-                            <Button className="hidden sm:flex">
+                            <Button>
                                 <UserPlus className="mr-2 h-5 w-5" />
                                 Sign Up
                             </Button>
@@ -165,54 +163,6 @@ export default function Header() {
           </div>
         </div>
       </div>
-      <Sidebar side="left" className="md:hidden">
-         <nav className="flex flex-col gap-4 p-4">
-            <Link href="/medicines" passHref>
-              <Button variant="ghost" className="w-full justify-start">
-                <LayoutDashboard className="mr-2 h-5 w-5" />
-                Pharmacy
-              </Button>
-            </Link>
-            <Link href="/chat" passHref>
-              <Button variant="ghost" className="w-full justify-start">
-                <BrainCircuit className="mr-2 h-5 w-5" />
-                AI Assistant
-              </Button>
-            </Link>
-            <hr />
-              {isLoading ? (
-                    <Loader2 className="h-6 w-6 animate-spin" />
-                ) : loggedInRole && currentRole && RoleIcon ? (
-                     <>
-                        <Link href={currentRole.dashboard} passHref>
-                            <Button variant="outline" className="w-full justify-start">
-                                <RoleIcon className="mr-2 h-5 w-5" />
-                                {currentRole.label} Dashboard
-                            </Button>
-                        </Link>
-                        <Button onClick={handleLogout} className="w-full justify-start">
-                            <LogOut className="mr-2 h-5 w-5" />
-                            Logout
-                        </Button>
-                     </>
-                ) : (
-                    <>
-                        <Link href="/login" passHref>
-                            <Button variant="ghost" className="w-full justify-start">
-                                <LogIn className="mr-2 h-5 w-5" />
-                                Login
-                            </Button>
-                        </Link>
-                        <Link href="/signup" passHref>
-                            <Button className="w-full justify-start">
-                                <UserPlus className="mr-2 h-5 w-5" />
-                                Sign Up
-                            </Button>
-                        </Link>
-                    </>
-                )}
-          </nav>
-      </Sidebar>
     </header>
   );
 }
