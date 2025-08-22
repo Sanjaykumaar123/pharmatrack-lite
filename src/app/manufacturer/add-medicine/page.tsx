@@ -69,6 +69,7 @@ export default function AddMedicinePage() {
         quantity: values.stock.quantity,
         status: status,
       },
+       imageUrl: 'https://placehold.co/600x400.png',
     };
 
     addMedicine(newMedicine);
