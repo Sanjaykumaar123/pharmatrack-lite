@@ -1,6 +1,6 @@
 "use client";
 import { connection } from "./client";
-import type { Medicine, NewMedicine } from "@/types/medicine";
+import type { Medicine, NewMedicine, UpdateMedicine } from "@/types/medicine";
 
 // Mock ledger data (pretend this lives on-chain)
 const MOCK_CHAIN: Medicine[] = [
@@ -132,4 +132,46 @@ export async function addMedicineToChain(input: NewMedicine): Promise<Medicine> 
   MOCK_CHAIN.unshift(created);
 
   return created;
+}
+
+/**
+ * Simulate updating an existing medicine on the ledger.
+ */
+export async function updateMedicineOnChain(
+  id: string,
+  payload: UpdateMedicine
+): Promise<Medicine> {
+  console.log(`[Simulated] Building Solana tx for updateMedicine: ${id}`, payload);
+  await sleep(300);
+
+  const medicineIndex = MOCK_CHAIN.findIndex((m) => m.id === id);
+  if (medicineIndex === -1) {
+    throw new Error("Medicine not found on the simulated chain.");
+  }
+
+  // Update the mock data
+  const originalMedicine = MOCK_CHAIN[medicineIndex];
+  
+  const updatedMedicine = {
+    ...originalMedicine,
+    ...payload,
+  };
+
+  // If quantity changed, update stock status
+  if (payload.quantity !== undefined) {
+    let newStatus: Medicine['stock']['status'] = 'Out of Stock';
+    if (payload.quantity > 50) {
+      newStatus = 'In Stock';
+    } else if (payload.quantity > 0) {
+      newStatus = 'Low Stock';
+    }
+    updatedMedicine.stock = {
+      quantity: payload.quantity,
+      status: newStatus,
+    };
+  }
+
+  MOCK_CHAIN[medicineIndex] = updatedMedicine;
+
+  return updatedMedicine;
 }

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
@@ -42,6 +41,7 @@ import type { Medicine } from '@/types';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useMedicineStore } from '@/hooks/useMedicineStore';
+import { AddEditMedicineDialog } from '@/components/AddEditMedicineDialog';
 
 type SortKey = keyof Pick<Medicine, 'name' | 'manufacturer' | 'quantity' | 'expDate'>;
 
@@ -55,6 +55,8 @@ export default function StockManagementPage() {
   }, [isInitialized, fetchMedicines]);
 
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'ascending' | 'descending' } | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(null);
   
   const { toast } = useToast();
 
@@ -104,9 +106,12 @@ export default function StockManagementPage() {
     return sortConfig.direction === 'ascending' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />;
   };
 
+  const handleEditClick = (medicine: Medicine) => {
+    setSelectedMedicine(medicine);
+    setIsEditDialogOpen(true);
+  };
+
   const handleDeleteClick = (medicineId: string) => {
-    // Note: This is a local delete for the prototype.
-    // A real app would send a transaction to the chain to mark as decommissioned.
     deleteMedicine(medicineId);
     toast({
         title: "Medicine Removed",
@@ -201,9 +206,9 @@ export default function StockManagementPage() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem disabled>
+                              <DropdownMenuItem onClick={() => handleEditClick(med)}>
                                 <Pencil className="mr-2 h-4 w-4" />
-                                <span>Edit (Not Implemented)</span>
+                                <span>Edit</span>
                               </DropdownMenuItem>
                               <DropdownMenuItem onClick={() => handleDeleteClick(med.id)} className="text-destructive focus:text-destructive">
                                 <Trash2 className="mr-2 h-4 w-4" />
@@ -220,7 +225,11 @@ export default function StockManagementPage() {
             </CardContent>
           </Card>
       </div>
+       <AddEditMedicineDialog 
+        isOpen={isEditDialogOpen}
+        onClose={() => setIsEditDialogOpen(false)}
+        medicine={selectedMedicine}
+      />
     </>
   );
 }
-

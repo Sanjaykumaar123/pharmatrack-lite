@@ -16,3 +16,5 @@ export type Medicine = {
 };
 
 export type NewMedicine = Omit<Medicine, "id" | "onChain" | "description" | "stock" | "imageUrl">;
+
+export type UpdateMedicine = Partial<Omit<Medicine, "id" | "onChain">>;
