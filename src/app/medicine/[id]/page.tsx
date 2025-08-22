@@ -3,7 +3,7 @@
 
 import { useMedicineStore } from '@/hooks/useMedicineStore';
 import type { Medicine } from '@/types';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -30,10 +30,11 @@ const stockStatusMap = {
   },
 };
 
-export default function MedicineDetailPage({ params }: { params: { id: string } }) {
+export default function MedicineDetailPage() {
   const { medicines, isInitialized } = useMedicineStore();
   const [medicine, setMedicine] = useState<Medicine | undefined>(undefined);
-  const { id } = params;
+  const params = useParams();
+  const id = params.id as string;
 
   useEffect(() => {
     if (isInitialized) {
@@ -53,8 +54,6 @@ export default function MedicineDetailPage({ params }: { params: { id: string } 
   
   if (isInitialized && !medicine) {
     // We are done loading, but no medicine was found.
-    // This can happen if the component renders before the useEffect updates the state.
-    // We can show a not found or a temporary loader.
     const foundMedicine = medicines.find((m) => m.id === id);
     if (!foundMedicine) {
       notFound();
