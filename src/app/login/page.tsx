@@ -34,6 +34,8 @@ export default function LoginPage() {
     // We'll save the role to session storage to simulate a logged-in state.
     if (typeof window !== "undefined") {
       sessionStorage.setItem('loggedInUserRole', role);
+      // We are manually dispatching a storage event to ensure the header updates immediately.
+      window.dispatchEvent(new Event("storage"));
     }
     
     // We'll just redirect based on the selected role.
