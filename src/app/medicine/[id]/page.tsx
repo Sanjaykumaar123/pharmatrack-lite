@@ -51,15 +51,13 @@ export default function MedicineDetailPage({ params }: { params: { id: string } 
     )
   }
   
+  if (isInitialized && !medicine) {
+    // We are done loading, but no medicine was found.
+    notFound();
+  }
+
+  // We show a loader while the medicine is being set after initialization
   if (!medicine) {
-    // This can happen briefly while the useEffect runs
-    // Or if the medicine is not found
-    // To avoid flashing notFound(), we can show a loader
-    // If it's still not found after initialization, we could redirect
-    // For now, if we're initialized and there's no medicine, it's a 404.
-     if (isInitialized) {
-        notFound();
-     }
      return (
          <div className="flex items-center justify-center h-full">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
