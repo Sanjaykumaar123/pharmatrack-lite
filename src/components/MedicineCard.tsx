@@ -42,7 +42,7 @@ export function MedicineCard({ medicine }: MedicineCardProps) {
       <Card className={cn("h-full flex flex-col transition-all duration-300 ease-in-out group-hover:shadow-xl group-hover:border-primary/50 group-hover:shadow-primary/10", isOutOfStock && "bg-muted/50 opacity-70 hover:opacity-100")}>
         <div className="relative w-full h-40 overflow-hidden rounded-t-lg">
            <Image
-            src={medicine.imageUrl}
+            src={medicine.imageUrl || 'https://placehold.co/600x400.png'}
             alt={medicine.name}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"

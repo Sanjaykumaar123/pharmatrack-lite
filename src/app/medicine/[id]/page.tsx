@@ -83,7 +83,7 @@ export default function MedicineDetailPage() {
              <Card className="overflow-hidden border-primary/20 shadow-lg shadow-primary/5">
                 <div className="relative w-full aspect-square">
                     <Image
-                        src={medicine.imageUrl}
+                        src={medicine.imageUrl || 'https://placehold.co/600x400.png'}
                         alt={medicine.name}
                         fill
                         className="object-cover"
