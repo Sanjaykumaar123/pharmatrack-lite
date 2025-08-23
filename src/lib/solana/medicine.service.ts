@@ -14,7 +14,6 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: "PharmaLite Labs",
     onChain: true,
     description: "A common pain reliever and fever reducer.",
-    imageUrl: "https://placehold.co/600x400.png",
     stock: { quantity: 1200, status: "In Stock" },
     supplyChainStatus: 'At Pharmacy',
     history: [
@@ -30,7 +29,6 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: "GZX Bio",
     onChain: true,
     description: "An antibiotic used to treat a number of bacterial infections.",
-    imageUrl: "https://placehold.co/600x400.png",
     stock: { quantity: 600, status: "In Stock" },
     supplyChainStatus: 'In Transit',
      history: [
@@ -46,7 +44,6 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: "MediCorp",
     onChain: true,
     description: "A nonsteroidal anti-inflammatory drug (NSAID).",
-    imageUrl: "https://placehold.co/600x400.png",
     stock: { quantity: 25, status: "Low Stock" },
     supplyChainStatus: 'At Pharmacy',
      history: [
@@ -62,7 +59,6 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: "HealthGlobal",
     onChain: true,
     description: "An antihistamine used to relieve allergy symptoms.",
-    imageUrl: "https://placehold.co/600x400.png",
     stock: { quantity: 0, status: "Out of Stock" },
     supplyChainStatus: 'At Pharmacy',
      history: [
@@ -78,7 +74,6 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: "PharmaLite Labs",
     onChain: true,
     description: "A statin medication used to prevent cardiovascular disease.",
-    imageUrl: "https://placehold.co/600x400.png",
     stock: { quantity: 400, status: "In Stock" },
     supplyChainStatus: 'At Manufacturer',
      history: [
@@ -94,7 +89,6 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: "GZX Bio",
     onChain: true,
     description: "A first-line medication for the treatment of type 2 diabetes.",
-    imageUrl: "https://placehold.co/600x400.png",
     stock: { quantity: 1500, status: "In Stock" },
     supplyChainStatus: 'At Manufacturer',
     history: [
@@ -140,7 +134,6 @@ export async function addMedicineToChain(input: NewMedicine): Promise<Medicine> 
     ...input,
     description: input.description ?? "No description provided.",
     onChain: false, // flip to true once a real tx confirms
-    imageUrl: "https://placehold.co/600x400.png",
     stock: {
         quantity: input.quantity,
         status: status

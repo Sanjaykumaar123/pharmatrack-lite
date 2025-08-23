@@ -23,24 +23,19 @@ export function MedicineCard({ medicine }: MedicineCardProps) {
   return (
     <Link href={`/medicine/${medicine.id}`} className="group">
       <Card className={cn("h-full flex flex-col transition-all duration-300 ease-in-out group-hover:shadow-xl group-hover:border-primary/50 group-hover:shadow-primary/10", isOutOfStock && "bg-muted/50 opacity-70 hover:opacity-100")}>
-        <div className="relative w-full h-40 overflow-hidden rounded-t-lg">
-           <Image
-            src={medicine.imageUrl || 'https://placehold.co/600x400.png'}
-            alt={medicine.name}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            data-ai-hint={`${medicine.name} pills`}
-          />
-           <Badge className={cn("absolute top-2 right-2", medicine.onChain ? "bg-green-500/80" : "bg-yellow-500/80")}>
-            {medicine.onChain ? <CheckCircle className="h-3 w-3 mr-1" /> : <Clock className="h-3 w-3 mr-1" />}
-            {medicine.onChain ? 'On-Chain' : 'Pending'}
-          </Badge>
-        </div>
         <CardHeader>
-          <CardTitle className="text-foreground group-hover:text-primary transition-colors">
-            {medicine.name}
-          </CardTitle>
-          <CardDescription>Batch: {medicine.batchNo}</CardDescription>
+          <div className="flex justify-between items-start">
+            <div>
+              <CardTitle className="text-foreground group-hover:text-primary transition-colors">
+                {medicine.name}
+              </CardTitle>
+              <CardDescription>Batch: {medicine.batchNo}</CardDescription>
+            </div>
+             <Badge className={cn("shrink-0", medicine.onChain ? "bg-green-500/80" : "bg-yellow-500/80")}>
+                {medicine.onChain ? <CheckCircle className="h-3 w-3 mr-1" /> : <Clock className="h-3 w-3 mr-1" />}
+                {medicine.onChain ? 'On-Chain' : 'Pending'}
+              </Badge>
+          </div>
         </CardHeader>
         <CardFooter className="mt-auto pt-4 flex justify-end">
           <Button variant="outline" size="sm" className="text-muted-foreground group-hover:text-primary group-hover:border-primary/50 group-hover:bg-primary/5">

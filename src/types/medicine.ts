@@ -15,7 +15,6 @@ export type Medicine = {
       status: 'In Stock' | 'Low Stock' | 'Out of Stock';
   };
   supplyChainStatus: SupplyChainStatus;
-  imageUrl: string;
   history?: {
       timestamp: string;
       action: 'CREATED' | 'UPDATED';
@@ -23,12 +22,12 @@ export type Medicine = {
   }[];
 };
 
-export type NewMedicine = Omit<Medicine, "id" | "onChain" | "stock" | "imageUrl" | "history" | "description" | "supplyChainStatus"> & {
+export type NewMedicine = Omit<Medicine, "id" | "onChain" | "stock" | "history" | "description" | "supplyChainStatus"> & {
     description?: string;
     quantity: number;
 };
 
-export type UpdateMedicine = Partial<Omit<Medicine, "id" | "onChain" | "history" | "stock" | "imageUrl">> & {
+export type UpdateMedicine = Partial<Omit<Medicine, "id" | "onChain" | "history" | "stock" >> & {
     quantity: number;
     supplyChainStatus: SupplyChainStatus;
 };

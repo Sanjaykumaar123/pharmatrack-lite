@@ -4,7 +4,6 @@
 import { useMedicineStore } from '@/hooks/useMedicineStore';
 import type { Medicine } from '@/types/medicine';
 import { notFound, useParams } from 'next/navigation';
-import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import SideEffects from '@/components/SideEffects';
@@ -53,20 +52,7 @@ export default function MedicineDetailPage() {
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="md:col-span-1">
-             <Card className="overflow-hidden border-primary/20 shadow-lg shadow-primary/5">
-                <div className="relative w-full aspect-square">
-                    <Image
-                        src={medicine.imageUrl || 'https://placehold.co/600x400.png'}
-                        alt={medicine.name}
-                        fill
-                        className="object-cover"
-                        data-ai-hint={`${medicine.name} product shot`}
-                    />
-                </div>
-            </Card>
-          </div>
-          <div className="md:col-span-2">
+          <div className="md:col-span-3">
             <Card className="overflow-hidden border-primary/20 shadow-lg shadow-primary/5 h-full">
               <CardHeader className="bg-primary/10">
                 <div className="flex items-center gap-4">
