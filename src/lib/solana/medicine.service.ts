@@ -1,7 +1,7 @@
 
 "use client";
 import { connection } from "./client";
-import type { Medicine, NewMedicine, UpdateMedicine } from "@/types/medicine";
+import type { Medicine, NewMedicine, UpdateMedicine, SupplyChainStatus } from "@/types/medicine";
 
 // Mock ledger data (pretend this lives on-chain)
 const MOCK_CHAIN: Medicine[] = [
@@ -11,12 +11,12 @@ const MOCK_CHAIN: Medicine[] = [
     batchNo: "BATCH-P500-24A",
     mfgDate: "2024-12-10",
     expDate: "2026-12-09",
-    quantity: 1200,
     manufacturer: "PharmaLite Labs",
     onChain: true,
     description: "A common pain reliever and fever reducer.",
     imageUrl: "https://placehold.co/600x400.png",
     stock: { quantity: 1200, status: "In Stock" },
+    supplyChainStatus: 'At Pharmacy',
     history: [
       { timestamp: "2024-01-01T10:00:00Z", action: "CREATED", changes: "Batch registered on-chain." }
     ]
@@ -27,12 +27,12 @@ const MOCK_CHAIN: Medicine[] = [
     batchNo: "AMX-250-B11",
     mfgDate: "2025-04-02",
     expDate: "2027-04-01",
-    quantity: 600,
     manufacturer: "GZX Bio",
     onChain: true,
     description: "An antibiotic used to treat a number of bacterial infections.",
     imageUrl: "https://placehold.co/600x400.png",
     stock: { quantity: 600, status: "In Stock" },
+    supplyChainStatus: 'In Transit',
      history: [
       { timestamp: "2024-01-02T11:00:00Z", action: "CREATED", changes: "Batch registered on-chain." }
     ]
@@ -43,12 +43,12 @@ const MOCK_CHAIN: Medicine[] = [
     batchNo: "IBU-200-C21",
     mfgDate: "2024-10-15",
     expDate: "2026-10-14",
-    quantity: 25,
     manufacturer: "MediCorp",
     onChain: true,
     description: "A nonsteroidal anti-inflammatory drug (NSAID).",
     imageUrl: "https://placehold.co/600x400.png",
     stock: { quantity: 25, status: "Low Stock" },
+    supplyChainStatus: 'At Pharmacy',
      history: [
       { timestamp: "2024-01-03T12:00:00Z", action: "CREATED", changes: "Batch registered on-chain." }
     ]
@@ -59,12 +59,12 @@ const MOCK_CHAIN: Medicine[] = [
     batchNo: "CET-010-D99",
     mfgDate: "2025-01-20",
     expDate: "2027-01-19",
-    quantity: 0,
     manufacturer: "HealthGlobal",
     onChain: true,
     description: "An antihistamine used to relieve allergy symptoms.",
     imageUrl: "https://placehold.co/600x400.png",
     stock: { quantity: 0, status: "Out of Stock" },
+    supplyChainStatus: 'At Pharmacy',
      history: [
       { timestamp: "2024-01-04T14:00:00Z", action: "CREATED", changes: "Batch registered on-chain." }
     ]
@@ -75,12 +75,12 @@ const MOCK_CHAIN: Medicine[] = [
     batchNo: "ATO-020-E45",
     mfgDate: "2024-08-01",
     expDate: "2026-07-31",
-    quantity: 400,
     manufacturer: "PharmaLite Labs",
     onChain: true,
     description: "A statin medication used to prevent cardiovascular disease.",
     imageUrl: "https://placehold.co/600x400.png",
     stock: { quantity: 400, status: "In Stock" },
+    supplyChainStatus: 'At Manufacturer',
      history: [
       { timestamp: "2024-01-05T15:00:00Z", action: "CREATED", changes: "Batch registered on-chain." }
     ]
@@ -91,12 +91,12 @@ const MOCK_CHAIN: Medicine[] = [
     batchNo: "MET-500-F18",
     mfgDate: "2025-05-30",
     expDate: "2027-05-29",
-    quantity: 1500,
     manufacturer: "GZX Bio",
     onChain: true,
     description: "A first-line medication for the treatment of type 2 diabetes.",
     imageUrl: "https://placehold.co/600x400.png",
     stock: { quantity: 1500, status: "In Stock" },
+    supplyChainStatus: 'At Manufacturer',
     history: [
         { timestamp: "2024-01-06T16:00:00Z", action: "CREATED", changes: "Batch registered on-chain." }
     ]
@@ -145,6 +145,7 @@ export async function addMedicineToChain(input: NewMedicine): Promise<Medicine> 
         quantity: input.quantity,
         status: status
     },
+    supplyChainStatus: 'At Manufacturer',
     history: [{
         timestamp: new Date().toISOString(),
         action: 'CREATED',
@@ -154,6 +155,14 @@ export async function addMedicineToChain(input: NewMedicine): Promise<Medicine> 
 
   // Update our mock in-memory ledger
   MOCK_CHAIN.unshift(created);
+
+  // Simulate on-chain confirmation delay
+  setTimeout(() => {
+    const index = MOCK_CHAIN.findIndex(m => m.id === created.id);
+    if(index !== -1) {
+        MOCK_CHAIN[index].onChain = true;
+    }
+  }, 2000);
 
   return created;
 }
@@ -173,7 +182,7 @@ export async function updateMedicineOnChain(
     throw new Error("Medicine not found on the simulated chain.");
   }
 
-  // Update the mock data
+  // Update our mock data
   const originalMedicine = MOCK_CHAIN[medicineIndex];
   
   const updatedMedicine: Medicine = {
@@ -184,21 +193,24 @@ export async function updateMedicineOnChain(
 
   const changes = Object.entries(payload).map(([key, value]) => {
       const originalValue = (originalMedicine as any)[key];
-      if(originalValue !== value) {
-        return `${key} changed from "${originalValue}" to "${value}"`;
+      if(key === 'stock') return null; // stock object is handled separately
+      if(originalValue !== value && value !== undefined) {
+        return `${key} changed to "${value}"`;
       }
       return null;
   }).filter(Boolean).join(', ');
 
-  updatedMedicine.history?.push({
-      timestamp: new Date().toISOString(),
-      action: 'UPDATED',
-      changes: changes || "No changes detected in payload."
-  });
+  if(changes) {
+    updatedMedicine.history?.push({
+        timestamp: new Date().toISOString(),
+        action: 'UPDATED',
+        changes: changes
+    });
+  }
 
 
-  // If quantity changed, update stock status
-  if (payload.quantity !== undefined) {
+  // If quantity changed, update stock status and log history
+  if (payload.quantity !== undefined && payload.quantity !== originalMedicine.stock.quantity) {
     let newStatus: Medicine['stock']['status'] = 'Out of Stock';
     if (payload.quantity > 50) {
       newStatus = 'In Stock';
@@ -209,6 +221,11 @@ export async function updateMedicineOnChain(
       quantity: payload.quantity,
       status: newStatus,
     };
+    updatedMedicine.history?.push({
+        timestamp: new Date().toISOString(),
+        action: 'UPDATED',
+        changes: `Quantity changed from ${originalMedicine.stock.quantity} to ${payload.quantity}`
+    });
   }
 
   MOCK_CHAIN[medicineIndex] = updatedMedicine;

@@ -34,6 +34,9 @@ import {
   PackageCheck,
   AlertTriangle,
   PackageX,
+  Factory,
+  Truck,
+  Building,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -44,14 +47,14 @@ import {
 import { ChartContainer, ChartConfig, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
-import type { Medicine } from '@/types';
+import type { Medicine, SupplyChainStatus } from '@/types';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useMedicineStore } from '@/hooks/useMedicineStore';
 import { AddEditMedicineDialog } from '@/components/AddEditMedicineDialog';
 
 type StockStatus = Medicine['stock']['status'];
-type SortKey = keyof Pick<Medicine, 'name' | 'manufacturer' | 'expDate' > | 'quantity';
+type SortKey = keyof Pick<Medicine, 'name' | 'manufacturer' | 'expDate' > | 'quantity' | 'supplyChainStatus';
 
 const chartConfig = {
   quantity: {
@@ -69,6 +72,13 @@ const statusConfig: Record<
   'Low Stock': { icon: AlertTriangle, color: 'text-yellow-500', badge: 'secondary' },
   'Out of Stock': { icon: PackageX, color: 'text-red-500', badge: 'destructive' },
 };
+
+const supplyChainStatusConfig: Record<SupplyChainStatus, { icon: React.ElementType, label: string }> = {
+    'At Manufacturer': { icon: Factory, label: 'At Manufacturer' },
+    'In Transit': { icon: Truck, label: 'In Transit' },
+    'At Pharmacy': { icon: Building, label: 'At Pharmacy' },
+}
+
 
 export default function StockManagementPage() {
   const { medicines, loading, isInitialized, fetchMedicines, deleteMedicine } = useMedicineStore();
@@ -113,8 +123,8 @@ export default function StockManagementPage() {
           aValue = new Date(a.expDate).getTime();
           bValue = new Date(b.expDate).getTime();
         } else {
-            aValue = a[sortConfig.key as 'name' | 'manufacturer'].toLowerCase();
-            bValue = b[sortConfig.key as 'name' | 'manufacturer'].toLowerCase();
+            aValue = a[sortConfig.key as 'name' | 'manufacturer' | 'supplyChainStatus'].toLowerCase();
+            bValue = b[sortConfig.key as 'name' | 'manufacturer' | 'supplyChainStatus'].toLowerCase();
         }
         
         if (aValue < bValue) {
@@ -250,26 +260,30 @@ export default function StockManagementPage() {
                       <TableHead>
                           <Button variant="ghost" onClick={() => requestSort('name')}>Name {getSortIcon('name')}</Button>
                       </TableHead>
-                      <TableHead>
-                          <Button variant="ghost" onClick={() => requestSort('manufacturer')}>Manufacturer {getSortIcon('manufacturer')}</Button>
+                       <TableHead>
+                          <Button variant="ghost" onClick={() => requestSort('supplyChainStatus')}>Supply Chain {getSortIcon('supplyChainStatus')}</Button>
                       </TableHead>
                       <TableHead className="text-right">
                           <Button variant="ghost" onClick={() => requestSort('quantity')}>Quantity {getSortIcon('quantity')}</Button>
                       </TableHead>
-                      <TableHead>
-                          <Button variant="ghost" onClick={() => requestSort('expDate')}>Expiry Date {getSortIcon('expDate')}</Button>
-                      </TableHead>
-                      <TableHead>Status</TableHead>
+                      <TableHead>Ledger Status</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {sortedAndFilteredMedicines.map((med) => (
+                    {sortedAndFilteredMedicines.map((med) => {
+                       const supplyChainInfo = supplyChainStatusConfig[med.supplyChainStatus];
+                       const SupplyChainIcon = supplyChainInfo.icon;
+                       return (
                       <TableRow key={med.id}>
                         <TableCell className="font-medium">{med.name}</TableCell>
-                        <TableCell>{med.manufacturer}</TableCell>
+                         <TableCell>
+                            <div className="flex items-center gap-2">
+                                <SupplyChainIcon className="h-4 w-4 text-muted-foreground" />
+                                <span>{supplyChainInfo.label}</span>
+                            </div>
+                        </TableCell>
                         <TableCell className="text-right">{med.stock.quantity}</TableCell>
-                        <TableCell>{new Date(med.expDate).toLocaleDateString()}</TableCell>
                         <TableCell>
                            <Badge variant={med.onChain ? "secondary" : "destructive"} className={cn(med.onChain ? 'bg-green-100 text-green-800 border-green-200' : 'bg-yellow-100 text-yellow-800 border-yellow-200')}>
                             {med.onChain ? <CheckCircle className="h-3 w-3 mr-1" /> : <Clock className="h-3 w-3 mr-1" />}
@@ -297,7 +311,8 @@ export default function StockManagementPage() {
                           </DropdownMenu>
                         </TableCell>
                       </TableRow>
-                    ))}
+                       )
+                    })}
                   </TableBody>
                 </Table>
               </div>
@@ -332,4 +347,3 @@ export default function StockManagementPage() {
     </>
   );
 }
-

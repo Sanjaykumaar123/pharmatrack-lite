@@ -28,9 +28,10 @@ import { CalendarIcon, Loader2 } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
-import type { Medicine, UpdateMedicine } from '@/types/medicine';
+import type { Medicine, UpdateMedicine, SupplyChainStatus } from '@/types/medicine';
 import { useMedicineStore } from '@/hooks/useMedicineStore';
 import { useToast } from '@/hooks/use-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
 const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -38,6 +39,7 @@ const formSchema = z.object({
   batchNo: z.string().min(1, { message: 'Batch number is required.' }),
   expDate: z.date({ required_error: 'An expiry date is required.' }),
   quantity: z.coerce.number().min(0, { message: 'Quantity cannot be negative.' }),
+  supplyChainStatus: z.enum(['At Manufacturer', 'In Transit', 'At Pharmacy']),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -64,6 +66,7 @@ export function AddEditMedicineDialog({ isOpen, onClose, medicine }: AddEditMedi
         batchNo: medicine.batchNo,
         expDate: new Date(medicine.expDate),
         quantity: medicine.stock.quantity,
+        supplyChainStatus: medicine.supplyChainStatus,
       });
     }
   }, [medicine, isOpen, form]);
@@ -103,8 +106,8 @@ export function AddEditMedicineDialog({ isOpen, onClose, medicine }: AddEditMedi
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="name"
@@ -132,7 +135,7 @@ export function AddEditMedicineDialog({ isOpen, onClose, medicine }: AddEditMedi
                   )}
                 />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <FormField
                     control={form.control}
                     name="batchNo"
@@ -158,6 +161,28 @@ export function AddEditMedicineDialog({ isOpen, onClose, medicine }: AddEditMedi
                         <FormMessage />
                         </FormItem>
                     )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="supplyChainStatus"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Supply Chain Status</FormLabel>
+                           <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select status" />
+                                </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                <SelectItem value="At Manufacturer">At Manufacturer</SelectItem>
+                                <SelectItem value="In Transit">In Transit</SelectItem>
+                                <SelectItem value="At Pharmacy">At Pharmacy</SelectItem>
+                                </SelectContent>
+                            </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
               </div>
 

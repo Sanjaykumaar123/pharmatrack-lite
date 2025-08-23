@@ -1,11 +1,12 @@
 
+export type SupplyChainStatus = 'At Manufacturer' | 'In Transit' | 'At Pharmacy';
+
 export type Medicine = {
   id: string; // app-level id for list rendering
   name: string;
   batchNo: string;
   mfgDate: string; // ISO date
   expDate: string; // ISO date
-  quantity: number; // Will be nested under 'stock'
   manufacturer: string;
   onChain: boolean; // whether we’ve confirmed a ledger write
   description: string;
@@ -13,6 +14,7 @@ export type Medicine = {
       quantity: number;
       status: 'In Stock' | 'Low Stock' | 'Out of Stock';
   };
+  supplyChainStatus: SupplyChainStatus;
   imageUrl: string;
   history?: {
       timestamp: string;
@@ -21,11 +23,12 @@ export type Medicine = {
   }[];
 };
 
-export type NewMedicine = Omit<Medicine, "id" | "onChain" | "stock" | "imageUrl" | "history" | "description"> & {
+export type NewMedicine = Omit<Medicine, "id" | "onChain" | "stock" | "imageUrl" | "history" | "description" | "supplyChainStatus"> & {
     description?: string;
     quantity: number;
 };
 
-export type UpdateMedicine = Partial<Omit<Medicine, "id" | "onChain" | "history" | "stock">> & {
+export type UpdateMedicine = Partial<Omit<Medicine, "id" | "onChain" | "history" | "stock" | "imageUrl">> & {
     quantity: number;
+    supplyChainStatus: SupplyChainStatus;
 };

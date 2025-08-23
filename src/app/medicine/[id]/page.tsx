@@ -119,7 +119,7 @@ export default function MedicineDetailPage() {
                   <Boxes className="h-6 w-6 text-muted-foreground" />
                   <div>
                     <p className="text-sm text-muted-foreground">Stock Quantity</p>
-                    <p className="font-semibold">{medicine.quantity} units</p>
+                    <p className="font-semibold">{medicine.stock.quantity} units</p>
                   </div>
                 </div>
                 <div className={cn("sm:col-span-2 flex items-center gap-4 p-4 rounded-lg", medicine.onChain ? 'bg-green-500/10' : 'bg-yellow-500/10')}>
