@@ -27,21 +27,11 @@ export default function MedicineDetailPage() {
     };
 
     if (!isInitialized) {
-      fetchMedicines().then(() => {
-        // After fetching is done, the store will update, and the second useEffect will run.
-      });
+      fetchMedicines();
     } else {
       findMedicine();
     }
-  }, [id, isInitialized, fetchMedicines]);
-
-
-  useEffect(() => {
-    if (isInitialized) {
-        const found = medicines.find((m) => m.id === id);
-        setMedicine(found || null);
-    }
-  }, [id, medicines, isInitialized]);
+  }, [id, isInitialized, fetchMedicines, medicines]);
 
 
   if (medicine === undefined || !isInitialized) {
@@ -150,38 +140,40 @@ export default function MedicineDetailPage() {
           </div>
         </div>
 
-        <div className="mt-8">
-            <Card className="border-primary/20 shadow-lg shadow-primary/5">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <History className="text-primary" />
-                        Transaction History
-                    </CardTitle>
-                    <CardDescription>
-                        A transparent and auditable log of all changes made to this medicine batch.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <ul className="space-y-4">
-                        {medicine.history.map((entry, index) => (
-                            <li key={index} className="flex items-start gap-4">
-                                <div>
-                                    <div className="flex items-center gap-2">
-                                        <Badge variant={entry.action === "CREATED" ? "default" : "secondary"}>
-                                            {entry.action}
-                                        </Badge>
-                                        <p className="text-sm text-muted-foreground">
-                                            {new Date(entry.timestamp).toLocaleString()}
-                                        </p>
-                                    </div>
-                                    <p className="mt-1 font-medium">{entry.changes}</p>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-                </CardContent>
-            </Card>
-        </div>
+        {medicine.history && medicine.history.length > 0 && (
+          <div className="mt-8">
+              <Card className="border-primary/20 shadow-lg shadow-primary/5">
+                  <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                          <History className="text-primary" />
+                          Transaction History
+                      </CardTitle>
+                      <CardDescription>
+                          A transparent and auditable log of all changes made to this medicine batch.
+                      </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                      <ul className="space-y-4">
+                          {medicine.history.map((entry, index) => (
+                              <li key={index} className="flex items-start gap-4">
+                                  <div>
+                                      <div className="flex items-center gap-2">
+                                          <Badge variant={entry.action === "CREATED" ? "default" : "secondary"}>
+                                              {entry.action}
+                                          </Badge>
+                                          <p className="text-sm text-muted-foreground">
+                                              {new Date(entry.timestamp).toLocaleString()}
+                                          </p>
+                                      </div>
+                                      <p className="mt-1 font-medium">{entry.changes}</p>
+                                  </div>
+                              </li>
+                          ))}
+                      </ul>
+                  </CardContent>
+              </Card>
+          </div>
+        )}
         
         <div className="mt-8">
           <SideEffects medicineName={medicine.name} />

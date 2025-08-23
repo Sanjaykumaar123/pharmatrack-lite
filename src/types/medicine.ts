@@ -1,3 +1,4 @@
+
 export type Medicine = {
   id: string; // app-level id for list rendering
   name: string;
@@ -13,8 +14,17 @@ export type Medicine = {
       status: 'In Stock' | 'Low Stock' | 'Out of Stock';
   };
   imageUrl: string;
+  history?: {
+      timestamp: string;
+      action: 'CREATED' | 'UPDATED';
+      changes: string;
+  }[];
 };
 
-export type NewMedicine = Omit<Medicine, "id" | "onChain" | "description" | "stock" | "imageUrl">;
+export type NewMedicine = Omit<Medicine, "id" | "onChain" | "description" | "stock" | "imageUrl" | "history"> & {
+    description?: string;
+};
 
-export type UpdateMedicine = Partial<Omit<Medicine, "id" | "onChain">>;
+export type UpdateMedicine = Partial<Omit<Medicine, "id" | "onChain" | "history" | "stock">> & {
+    quantity: number;
+};

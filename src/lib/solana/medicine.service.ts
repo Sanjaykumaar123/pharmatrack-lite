@@ -1,3 +1,4 @@
+
 "use client";
 import { connection } from "./client";
 import type { Medicine, NewMedicine, UpdateMedicine } from "@/types/medicine";
@@ -16,6 +17,9 @@ const MOCK_CHAIN: Medicine[] = [
     description: "A common pain reliever and fever reducer.",
     imageUrl: "https://placehold.co/600x400.png",
     stock: { quantity: 1200, status: "In Stock" },
+    history: [
+      { timestamp: "2024-01-01T10:00:00Z", action: "CREATED", changes: "Batch registered on-chain." }
+    ]
   },
   {
     id: "mdc-002",
@@ -29,6 +33,9 @@ const MOCK_CHAIN: Medicine[] = [
     description: "An antibiotic used to treat a number of bacterial infections.",
     imageUrl: "https://placehold.co/600x400.png",
     stock: { quantity: 600, status: "In Stock" },
+     history: [
+      { timestamp: "2024-01-02T11:00:00Z", action: "CREATED", changes: "Batch registered on-chain." }
+    ]
   },
   {
     id: "mdc-003",
@@ -42,6 +49,9 @@ const MOCK_CHAIN: Medicine[] = [
     description: "A nonsteroidal anti-inflammatory drug (NSAID).",
     imageUrl: "https://placehold.co/600x400.png",
     stock: { quantity: 25, status: "Low Stock" },
+     history: [
+      { timestamp: "2024-01-03T12:00:00Z", action: "CREATED", changes: "Batch registered on-chain." }
+    ]
   },
   {
     id: "mdc-004",
@@ -55,6 +65,9 @@ const MOCK_CHAIN: Medicine[] = [
     description: "An antihistamine used to relieve allergy symptoms.",
     imageUrl: "https://placehold.co/600x400.png",
     stock: { quantity: 0, status: "Out of Stock" },
+     history: [
+      { timestamp: "2024-01-04T14:00:00Z", action: "CREATED", changes: "Batch registered on-chain." }
+    ]
   },
     {
     id: "mdc-005",
@@ -68,6 +81,9 @@ const MOCK_CHAIN: Medicine[] = [
     description: "A statin medication used to prevent cardiovascular disease.",
     imageUrl: "https://placehold.co/600x400.png",
     stock: { quantity: 400, status: "In Stock" },
+     history: [
+      { timestamp: "2024-01-05T15:00:00Z", action: "CREATED", changes: "Batch registered on-chain." }
+    ]
   },
   {
     id: "mdc-006",
@@ -81,6 +97,9 @@ const MOCK_CHAIN: Medicine[] = [
     description: "A first-line medication for the treatment of type 2 diabetes.",
     imageUrl: "https://placehold.co/600x400.png",
     stock: { quantity: 1500, status: "In Stock" },
+    history: [
+        { timestamp: "2024-01-06T16:00:00Z", action: "CREATED", changes: "Batch registered on-chain." }
+    ]
   },
 ];
 
@@ -119,13 +138,18 @@ export async function addMedicineToChain(input: NewMedicine): Promise<Medicine> 
   const created: Medicine = {
     id: genId(),
     ...input,
+    description: input.description ?? "No description provided.",
     onChain: false, // flip to true once a real tx confirms
-    description: "A newly added medicine.",
     imageUrl: "https://placehold.co/600x400.png",
     stock: {
         quantity: input.quantity,
         status: status
-    }
+    },
+    history: [{
+        timestamp: new Date().toISOString(),
+        action: 'CREATED',
+        changes: 'Batch registered on the ledger.'
+    }]
   };
 
   // Update our mock in-memory ledger
@@ -152,10 +176,26 @@ export async function updateMedicineOnChain(
   // Update the mock data
   const originalMedicine = MOCK_CHAIN[medicineIndex];
   
-  const updatedMedicine = {
+  const updatedMedicine: Medicine = {
     ...originalMedicine,
     ...payload,
+    history: originalMedicine.history ? [...originalMedicine.history] : [],
   };
+
+  const changes = Object.entries(payload).map(([key, value]) => {
+      const originalValue = (originalMedicine as any)[key];
+      if(originalValue !== value) {
+        return `${key} changed from "${originalValue}" to "${value}"`;
+      }
+      return null;
+  }).filter(Boolean).join(', ');
+
+  updatedMedicine.history?.push({
+      timestamp: new Date().toISOString(),
+      action: 'UPDATED',
+      changes: changes || "No changes detected in payload."
+  });
+
 
   // If quantity changed, update stock status
   if (payload.quantity !== undefined) {
