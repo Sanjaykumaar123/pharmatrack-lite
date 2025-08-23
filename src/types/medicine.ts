@@ -22,8 +22,7 @@ export type Medicine = {
   }[];
 };
 
-export type NewMedicine = Omit<Medicine, "id" | "onChain" | "stock" | "history" | "description" | "supplyChainStatus"> & {
-    description?: string;
+export type NewMedicine = Omit<Medicine, "id" | "onChain" | "stock" | "history" | "supplyChainStatus"> & {
     quantity: number;
 };
 

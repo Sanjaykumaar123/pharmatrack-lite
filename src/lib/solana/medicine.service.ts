@@ -585,7 +585,11 @@ export async function addMedicineToChain(input: NewMedicine): Promise<Medicine> 
 
   const created: Medicine = {
     id: genId(),
-    ...input,
+    name: input.name,
+    manufacturer: input.manufacturer,
+    batchNo: input.batchNo,
+    mfgDate: input.mfgDate,
+    expDate: input.expDate,
     description: input.description ?? "No description provided.",
     onChain: false, // flip to true once a real tx confirms
     stock: {
@@ -636,11 +640,12 @@ export async function updateMedicineOnChain(
     ...originalMedicine,
     ...payload,
     history: originalMedicine.history ? [...originalMedicine.history] : [],
+    onChain: false, // Mark as pending confirmation
   };
 
   const changes = Object.entries(payload).map(([key, value]) => {
       const originalValue = (originalMedicine as any)[key];
-      if(key === 'stock') return null; // stock object is handled separately
+      if(key === 'stock' || key === 'onChain') return null; // stock object is handled separately
       if(originalValue !== value && value !== undefined) {
         return `${key} changed to "${value}"`;
       }
@@ -676,6 +681,15 @@ export async function updateMedicineOnChain(
   }
 
   MOCK_CHAIN[medicineIndex] = updatedMedicine;
+  
+    // Simulate on-chain confirmation delay
+  setTimeout(() => {
+    const index = MOCK_CHAIN.findIndex(m => m.id === updatedMedicine.id);
+    if(index !== -1) {
+        MOCK_CHAIN[index].onChain = true;
+    }
+  }, 2000);
+
 
   return updatedMedicine;
 }
