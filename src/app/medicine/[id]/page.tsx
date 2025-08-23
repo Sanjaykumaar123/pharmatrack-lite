@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMedicineStore } from '@/hooks/useMedicineStore';
@@ -12,25 +13,38 @@ import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 
 export default function MedicineDetailPage() {
-  const { medicines, isInitialized, loading, fetchMedicines } = useMedicineStore();
-  const [medicine, setMedicine] = useState<Medicine | undefined>(undefined);
+  const { medicines, isInitialized, fetchMedicines } = useMedicineStore();
+  const [medicine, setMedicine] = useState<Medicine | null | undefined>(undefined); // undefined: loading, null: not found
   const params = useParams();
   const id = params.id as string;
   
   useEffect(() => {
+    const findMedicine = () => {
+      if (medicines.length > 0) {
+        const found = medicines.find((m) => m.id === id);
+        setMedicine(found || null); // Set to null if not found
+      }
+    };
+
     if (!isInitialized) {
-      fetchMedicines();
+      fetchMedicines().then(() => {
+        // After fetching is done, the store will update, and the second useEffect will run.
+      });
+    } else {
+      findMedicine();
     }
-  }, [isInitialized, fetchMedicines]);
+  }, [id, isInitialized, fetchMedicines]);
+
 
   useEffect(() => {
-    if (medicines.length > 0) {
-      const foundMedicine = medicines.find((m) => m.id === id);
-      setMedicine(foundMedicine);
+    if (isInitialized) {
+        const found = medicines.find((m) => m.id === id);
+        setMedicine(found || null);
     }
-  }, [id, medicines]);
+  }, [id, medicines, isInitialized]);
 
-  if (loading || !isInitialized) {
+
+  if (medicine === undefined || !isInitialized) {
     return (
         <div className="flex items-center justify-center h-full">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -39,7 +53,7 @@ export default function MedicineDetailPage() {
     )
   }
   
-  if (!medicine) {
+  if (medicine === null) {
       notFound();
   }
 
