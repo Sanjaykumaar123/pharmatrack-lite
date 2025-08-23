@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect } from 'react';
@@ -62,7 +63,7 @@ export function AddEditMedicineDialog({ isOpen, onClose, medicine }: AddEditMedi
         manufacturer: medicine.manufacturer,
         batchNo: medicine.batchNo,
         expDate: new Date(medicine.expDate),
-        quantity: medicine.quantity,
+        quantity: medicine.stock.quantity,
       });
     }
   }, [medicine, isOpen, form]);

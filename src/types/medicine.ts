@@ -5,7 +5,7 @@ export type Medicine = {
   batchNo: string;
   mfgDate: string; // ISO date
   expDate: string; // ISO date
-  quantity: number;
+  quantity: number; // Will be nested under 'stock'
   manufacturer: string;
   onChain: boolean; // whether we’ve confirmed a ledger write
   description: string;
@@ -21,8 +21,9 @@ export type Medicine = {
   }[];
 };
 
-export type NewMedicine = Omit<Medicine, "id" | "onChain" | "description" | "stock" | "imageUrl" | "history"> & {
+export type NewMedicine = Omit<Medicine, "id" | "onChain" | "stock" | "imageUrl" | "history" | "description"> & {
     description?: string;
+    quantity: number;
 };
 
 export type UpdateMedicine = Partial<Omit<Medicine, "id" | "onChain" | "history" | "stock">> & {

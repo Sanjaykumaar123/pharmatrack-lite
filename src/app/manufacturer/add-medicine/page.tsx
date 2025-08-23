@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm } from 'react-hook-form';
@@ -10,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { CalendarIcon, PackagePlus, ArrowLeft, Loader2 } from 'lucide-react';
@@ -23,6 +25,7 @@ const formSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
   manufacturer: z.string().min(2, { message: 'Manufacturer must be at least 2 characters.' }),
   batchNo: z.string().min(1, { message: 'Batch number is required.' }),
+  description: z.string().min(10, { message: 'Description must be at least 10 characters.' }),
   mfgDate: z.date({ required_error: 'A manufacturing date is required.' }),
   expDate: z.date({ required_error: 'An expiry date is required.' }),
   quantity: z.coerce.number().min(0, { message: 'Quantity cannot be negative.' }),
@@ -41,6 +44,7 @@ export default function AddMedicinePage() {
       name: '',
       manufacturer: '',
       batchNo: '',
+      description: '',
       mfgDate: new Date(),
       expDate: new Date(Date.now() + 31536000000), // +1 year
       quantity: 0,
@@ -125,6 +129,19 @@ export default function AddMedicinePage() {
                   )}
                 />
               </div>
+               <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="A brief description of the medicine and its use case." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <FormField
                     control={form.control}
@@ -258,3 +275,4 @@ export default function AddMedicinePage() {
     </div>
   );
 }
+

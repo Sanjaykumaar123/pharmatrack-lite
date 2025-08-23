@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
@@ -29,7 +30,10 @@ import {
   Trash2,
   Loader2,
   CheckCircle,
-  Clock
+  Clock,
+  PackageCheck,
+  AlertTriangle,
+  PackageX,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -37,13 +41,34 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ChartContainer, ChartConfig, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
+
 import type { Medicine } from '@/types';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useMedicineStore } from '@/hooks/useMedicineStore';
 import { AddEditMedicineDialog } from '@/components/AddEditMedicineDialog';
 
-type SortKey = keyof Pick<Medicine, 'name' | 'manufacturer' | 'quantity' | 'expDate'>;
+type StockStatus = Medicine['stock']['status'];
+type SortKey = keyof Pick<Medicine, 'name' | 'manufacturer' | 'expDate' > | 'quantity';
+
+const chartConfig = {
+  quantity: {
+    label: 'Quantity',
+    color: 'hsl(var(--primary))',
+  },
+} satisfies ChartConfig;
+
+
+const statusConfig: Record<
+  StockStatus,
+  { icon: React.ElementType; color: string; badge: 'default' | 'secondary' | 'destructive' }
+> = {
+  'In Stock': { icon: PackageCheck, color: 'text-green-500', badge: 'secondary' },
+  'Low Stock': { icon: AlertTriangle, color: 'text-yellow-500', badge: 'secondary' },
+  'Out of Stock': { icon: PackageX, color: 'text-red-500', badge: 'destructive' },
+};
 
 export default function StockManagementPage() {
   const { medicines, loading, isInitialized, fetchMedicines, deleteMedicine } = useMedicineStore();
@@ -54,23 +79,36 @@ export default function StockManagementPage() {
     }
   }, [isInitialized, fetchMedicines]);
 
+  const [filter, setFilter] = useState<StockStatus | 'All'>('All');
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'ascending' | 'descending' } | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(null);
   
   const { toast } = useToast();
 
-  const sortedMedicines = useMemo(() => {
-    if (!medicines) return [];
-    let sortableMedicines = [...medicines];
+   const summary = useMemo(() => {
+    return medicines.reduce(
+      (acc, med) => {
+        acc[med.stock.status]++;
+        acc.Total++;
+        return acc;
+      },
+      { 'In Stock': 0, 'Low Stock': 0, 'Out of Stock': 0, Total: 0 }
+    );
+  }, [medicines]);
+
+  const sortedAndFilteredMedicines = useMemo(() => {
+    let filtered =
+      filter === 'All' ? medicines : medicines.filter((med) => med.stock.status === filter);
+
     if (sortConfig !== null) {
-      sortableMedicines.sort((a, b) => {
+      filtered.sort((a, b) => {
         let aValue: string | number;
         let bValue: string | number;
 
         if (sortConfig.key === 'quantity') {
-          aValue = a.quantity;
-          bValue = b.quantity;
+          aValue = a.stock.quantity;
+          bValue = b.stock.quantity;
         } else if (sortConfig.key === 'expDate') {
           aValue = new Date(a.expDate).getTime();
           bValue = new Date(b.expDate).getTime();
@@ -88,8 +126,9 @@ export default function StockManagementPage() {
         return 0;
       });
     }
-    return sortableMedicines;
-  }, [medicines, sortConfig]);
+
+    return filtered;
+  }, [medicines, filter, sortConfig]);
 
   const requestSort = (key: SortKey) => {
     let direction: 'ascending' | 'descending' = 'ascending';
@@ -105,6 +144,17 @@ export default function StockManagementPage() {
     }
     return sortConfig.direction === 'ascending' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />;
   };
+
+  const chartData = useMemo(() => {
+    return medicines
+      .filter((med) => med.stock.quantity > 0)
+      .sort((a, b) => b.stock.quantity - a.stock.quantity)
+      .slice(0, 10) // Top 10 most stocked items
+      .map((med) => ({
+        name: med.name,
+        quantity: med.stock.quantity,
+      }));
+  }, [medicines]);
 
   const handleEditClick = (medicine: Medicine) => {
     setSelectedMedicine(medicine);
@@ -154,11 +204,42 @@ export default function StockManagementPage() {
           </div>
         </div>
 
-        <Card>
+        {/* Summary Cards */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+          <Card onClick={() => setFilter('All')} className={cn("cursor-pointer transition-all", filter === 'All' && "ring-2 ring-primary")}>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Medicines</CardTitle>
+              <PackageCheck className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{summary.Total}</div>
+            </CardContent>
+          </Card>
+          {Object.entries(summary).map(([status, count]) => {
+            if (status === 'Total') return null;
+            const config = statusConfig[status as StockStatus];
+            const Icon = config.icon;
+            return (
+              <Card key={status} onClick={() => setFilter(status as StockStatus)} className={cn("cursor-pointer transition-all", filter === status && "ring-2 ring-primary")}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">{status}</CardTitle>
+                  <Icon className={cn('h-4 w-4 text-muted-foreground', config.color)} />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">{count}</div>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+
+        <div className="grid gap-8 lg:grid-cols-5">
+           <Card className="lg:col-span-3">
             <CardHeader>
               <CardTitle>Inventory Details</CardTitle>
               <CardDescription>
                 A detailed list of all medicines recorded on the ledger.
+                {filter !== 'All' && ` (Filtering by: ${filter})`}
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -172,7 +253,6 @@ export default function StockManagementPage() {
                       <TableHead>
                           <Button variant="ghost" onClick={() => requestSort('manufacturer')}>Manufacturer {getSortIcon('manufacturer')}</Button>
                       </TableHead>
-                      <TableHead>Batch No.</TableHead>
                       <TableHead className="text-right">
                           <Button variant="ghost" onClick={() => requestSort('quantity')}>Quantity {getSortIcon('quantity')}</Button>
                       </TableHead>
@@ -184,12 +264,11 @@ export default function StockManagementPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {sortedMedicines.map((med) => (
+                    {sortedAndFilteredMedicines.map((med) => (
                       <TableRow key={med.id}>
                         <TableCell className="font-medium">{med.name}</TableCell>
                         <TableCell>{med.manufacturer}</TableCell>
-                        <TableCell>{med.batchNo}</TableCell>
-                        <TableCell className="text-right">{med.quantity}</TableCell>
+                        <TableCell className="text-right">{med.stock.quantity}</TableCell>
                         <TableCell>{new Date(med.expDate).toLocaleDateString()}</TableCell>
                         <TableCell>
                            <Badge variant={med.onChain ? "secondary" : "destructive"} className={cn(med.onChain ? 'bg-green-100 text-green-800 border-green-200' : 'bg-yellow-100 text-yellow-800 border-yellow-200')}>
@@ -224,6 +303,26 @@ export default function StockManagementPage() {
               </div>
             </CardContent>
           </Card>
+          {/* Stock Analytics Chart */}
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle>Stock Analytics</CardTitle>
+              <CardDescription>Top 10 most stocked medicines.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
+                <BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ left: 20, right: 20, top: 10, bottom: 10 }}>
+                  <CartesianGrid horizontal={false} />
+                  <YAxis dataKey="name" type="category" tickLine={false} axisLine={false} tickMargin={10} width={100} className="text-xs truncate" interval={0}/>
+                  <XAxis dataKey="quantity" type="number" hide />
+                  <Tooltip cursor={{fill: 'hsl(var(--muted))'}} content={<ChartTooltipContent />} />
+                  <Bar dataKey="quantity" layout="vertical" radius={5} fill="hsl(var(--primary))">
+                  </Bar>
+                </BarChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+        </div>
       </div>
        <AddEditMedicineDialog 
         isOpen={isEditDialogOpen}
@@ -233,3 +332,4 @@ export default function StockManagementPage() {
     </>
   );
 }
+
