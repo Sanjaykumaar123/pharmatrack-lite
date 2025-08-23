@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import SideEffects from '@/components/SideEffects';
-import { Calendar, Factory, Package, Pill, Boxes, Loader2, CheckCircle, Clock } from 'lucide-react';
+import { Calendar, Factory, Package, Pill, Boxes, Loader2, CheckCircle, Clock, History } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 
@@ -24,13 +24,13 @@ export default function MedicineDetailPage() {
   }, [isInitialized, fetchMedicines]);
 
   useEffect(() => {
-    if (isInitialized) {
+    if (medicines.length > 0) {
       const foundMedicine = medicines.find((m) => m.id === id);
       setMedicine(foundMedicine);
     }
-  }, [id, medicines, isInitialized]);
+  }, [id, medicines]);
 
-  if (loading && !isInitialized) {
+  if (loading || !isInitialized) {
     return (
         <div className="flex items-center justify-center h-full">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -39,17 +39,8 @@ export default function MedicineDetailPage() {
     )
   }
   
-  if (isInitialized && !medicine) {
-      notFound();
-  }
-
   if (!medicine) {
-     return (
-         <div className="flex items-center justify-center h-full">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-4 text-lg">Finding Medicine on Ledger...</p>
-        </div>
-     )
+      notFound();
   }
 
   const isExpired = new Date(medicine.expDate) < new Date();
@@ -145,7 +136,39 @@ export default function MedicineDetailPage() {
           </div>
         </div>
 
-
+        <div className="mt-8">
+            <Card className="border-primary/20 shadow-lg shadow-primary/5">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                        <History className="text-primary" />
+                        Transaction History
+                    </CardTitle>
+                    <CardDescription>
+                        A transparent and auditable log of all changes made to this medicine batch.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <ul className="space-y-4">
+                        {medicine.history.map((entry, index) => (
+                            <li key={index} className="flex items-start gap-4">
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <Badge variant={entry.action === "CREATED" ? "default" : "secondary"}>
+                                            {entry.action}
+                                        </Badge>
+                                        <p className="text-sm text-muted-foreground">
+                                            {new Date(entry.timestamp).toLocaleString()}
+                                        </p>
+                                    </div>
+                                    <p className="mt-1 font-medium">{entry.changes}</p>
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                </CardContent>
+            </Card>
+        </div>
+        
         <div className="mt-8">
           <SideEffects medicineName={medicine.name} />
         </div>
@@ -153,4 +176,3 @@ export default function MedicineDetailPage() {
     </div>
   );
 }
-
