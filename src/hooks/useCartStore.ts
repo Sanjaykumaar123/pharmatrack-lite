@@ -4,7 +4,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { CartItem } from '@/types/medicine';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/use-toast';
 
 interface CartState {
   items: CartItem[];
@@ -19,7 +19,6 @@ export const useCartStore = create<CartState>()(
     (set, get) => ({
       items: [],
       addItem: (item) => {
-        const { toast } = useToast();
         const existingItem = get().items.find((i) => i.id === item.id);
 
         if (existingItem) {
@@ -30,7 +29,7 @@ export const useCartStore = create<CartState>()(
           });
         } else {
           // Add new item
-          set((state) => ({ items: [...state.items, { ...item, quantity: 1 }] }));
+          set((state) => ({ items: [...state.items, { ...item, quantity: item.quantity || 1 }] }));
         }
       },
       removeItem: (itemId) => {
