@@ -6,11 +6,13 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, ScanLine, X, Loader2, AlertCircle } from 'lucide-react';
+import { Search, ScanLine, X, Loader2, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { MedicineCard } from '@/components/MedicineCard';
 import { useMedicineStore } from '@/hooks/useMedicineStore';
 import type { Medicine } from '@/types/medicine';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
+const ITEMS_PER_PAGE = 12;
 
 function MedicinesPageContent() {
   const { medicines, loading, error, isInitialized, fetchMedicines } = useMedicineStore();
@@ -23,6 +25,7 @@ function MedicinesPageContent() {
   }, [isInitialized, fetchMedicines]);
 
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   
   const filteredMedicines = useMemo(() => {
     if (!medicines) return [];
@@ -31,6 +34,19 @@ function MedicinesPageContent() {
              med.batchNo.toLowerCase().includes(searchTerm.toLowerCase());
     });
   }, [searchTerm, medicines]);
+
+  const totalPages = Math.ceil(filteredMedicines.length / ITEMS_PER_PAGE);
+  const paginatedMedicines = useMemo(() => {
+      const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+      const endIndex = startIndex + ITEMS_PER_PAGE;
+      return filteredMedicines.slice(startIndex, endIndex);
+  }, [currentPage, filteredMedicines]);
+
+  useEffect(() => {
+      // Reset to page 1 when search term changes
+      setCurrentPage(1);
+  }, [searchTerm]);
+
 
   if (loading && !isInitialized) {
       return (
@@ -83,12 +99,35 @@ function MedicinesPageContent() {
       </div>
       
       <div>
-        {filteredMedicines.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredMedicines.map((med: Medicine) => (
-              <MedicineCard key={med.id} medicine={med} />
-            ))}
-          </div>
+        {paginatedMedicines.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {paginatedMedicines.map((med: Medicine) => (
+                <MedicineCard key={med.id} medicine={med} />
+              ))}
+            </div>
+            <div className="flex items-center justify-center gap-4 mt-8">
+                <Button 
+                    variant="outline"
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                >
+                    <ChevronLeft className="mr-2 h-4 w-4" />
+                    Previous
+                </Button>
+                <span className="text-sm font-medium">
+                    Page {currentPage} of {totalPages}
+                </span>
+                <Button 
+                    variant="outline"
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                >
+                    Next
+                    <ChevronRight className="ml-2 h-4 w-4" />
+                </Button>
+            </div>
+          </>
         ) : (
           <div className="text-center py-10 px-6 bg-card rounded-lg border">
             <h3 className="text-lg font-semibold text-foreground">No Results Found</h3>
@@ -104,7 +143,7 @@ function MedicinesPageContent() {
 
 export default function MedicinesPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div className="flex h-full flex-col items-center justify-center"><Loader2 className="h-10 w-10 animate-spin text-primary" /><p className="mt-4 text-lg text-muted-foreground">Loading...</p></div>}>
       <MedicinesPageContent />
     </Suspense>
   )
