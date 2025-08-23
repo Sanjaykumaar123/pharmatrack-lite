@@ -14,6 +14,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Sanofi India',
     onChain: true,
     description: 'Pain and fever reducer.',
+    price: 45.50,
     stock: { quantity: 1500, status: 'In Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2024-01-10T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -27,6 +28,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'GSK India',
     onChain: true,
     description: 'Provides relief from various types of pain.',
+    price: 55.00,
     stock: { quantity: 250, status: 'In Stock' },
     supplyChainStatus: 'In Transit',
     history: [{ timestamp: '2024-02-15T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -40,6 +42,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Alembic Pharma',
     onChain: true,
     description: 'Antibiotic for bacterial infections.',
+    price: 119.75,
     stock: { quantity: 45, status: 'Low Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2024-03-20T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -53,6 +56,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Micro Labs',
     onChain: true,
     description: 'Used for fever and pain.',
+    price: 30.20,
     stock: { quantity: 0, status: 'Out of Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2024-04-25T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -66,6 +70,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Mankind Pharma',
     onChain: true,
     description: 'For high blood pressure.',
+    price: 42.00,
     stock: { quantity: 800, status: 'In Stock' },
     supplyChainStatus: 'At Manufacturer',
     history: [{ timestamp: '2024-05-30T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -79,6 +84,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Glenmark Pharma',
     onChain: true,
     description: 'Antihypertensive medication.',
+    price: 88.50,
     stock: { quantity: 600, status: 'In Stock' },
     supplyChainStatus: 'At Manufacturer',
     history: [{ timestamp: '2024-06-05T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -92,6 +98,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Blue Cross Labs',
     onChain: true,
     description: 'For abdominal pain and cramps.',
+    price: 49.00,
     stock: { quantity: 30, status: 'Low Stock' },
     supplyChainStatus: 'In Transit',
     history: [{ timestamp: '2024-07-10T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -105,6 +112,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Sanofi India',
     onChain: true,
     description: 'Antihistamine for allergies.',
+    price: 99.80,
     stock: { quantity: 450, status: 'In Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2024-08-15T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -118,6 +126,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Zydus Cadila',
     onChain: true,
     description: 'To lower cholesterol.',
+    price: 65.25,
     stock: { quantity: 700, status: 'In Stock' },
     supplyChainStatus: 'At Manufacturer',
     history: [{ timestamp: '2024-09-20T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -131,6 +140,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Sun Pharma',
     onChain: true,
     description: 'Topical pain relief gel.',
+    price: 135.00,
     stock: { quantity: 120, status: 'In Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2024-10-25T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -144,6 +154,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Sun Pharma',
     onChain: true,
     description: 'Multivitamin and mineral supplement.',
+    price: 310.00,
     stock: { quantity: 300, status: 'In Stock' },
     supplyChainStatus: 'In Transit',
     history: [{ timestamp: '2024-11-01T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -157,6 +168,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'USV Pvt Ltd',
     onChain: true,
     description: 'Blood thinner to prevent clots.',
+    price: 8.50,
     stock: { quantity: 900, status: 'In Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2024-12-05T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -170,6 +182,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Novartis India',
     onChain: true,
     description: 'Lubricating eye drops.',
+    price: 150.00,
     stock: { quantity: 50, status: 'Low Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2025-01-10T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -183,6 +196,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Win-Medicare',
     onChain: true,
     description: 'Antiseptic for wounds.',
+    price: 112.00,
     stock: { quantity: 200, status: 'In Stock' },
     supplyChainStatus: 'At Manufacturer',
     history: [{ timestamp: '2025-02-15T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -196,6 +210,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Abbott India',
     onChain: true,
     description: 'Laxative syrup for constipation.',
+    price: 180.00,
     stock: { quantity: 150, status: 'In Stock' },
     supplyChainStatus: 'In Transit',
     history: [{ timestamp: '2025-03-20T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -209,6 +224,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Apex Labs',
     onChain: true,
     description: 'Multivitamin with zinc.',
+    price: 105.00,
     stock: { quantity: 1000, status: 'In Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2025-04-25T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -222,6 +238,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Merck Ltd',
     onChain: true,
     description: 'Vitamin B complex supplement.',
+    price: 34.50,
     stock: { quantity: 20, status: 'Low Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2025-05-30T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -235,6 +252,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Alkem Labs',
     onChain: true,
     description: 'Broad-spectrum antibiotic.',
+    price: 201.70,
     stock: { quantity: 0, status: 'Out of Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2025-06-05T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -248,6 +266,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Abbott India',
     onChain: true,
     description: 'Antacid for acidity and gas.',
+    price: 19.80,
     stock: { quantity: 180, status: 'In Stock' },
     supplyChainStatus: 'At Manufacturer',
     history: [{ timestamp: '2025-07-10T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -261,6 +280,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Cadila Pharma',
     onChain: true,
     description: 'For protozoan infections.',
+    price: 75.00,
     stock: { quantity: 90, status: 'In Stock' },
     supplyChainStatus: 'In Transit',
     history: [{ timestamp: '2025-08-15T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -275,6 +295,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Cipla',
     onChain: true,
     description: 'Antibiotic for bacterial infections.',
+    price: 85.00,
     stock: { quantity: 300, status: 'In Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2024-01-15T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -288,6 +309,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Alkem Labs',
     onChain: true,
     description: 'Cephalosporin antibiotic.',
+    price: 110.00,
     stock: { quantity: 40, status: 'Low Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2024-02-20T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -301,6 +323,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Alkem Labs',
     onChain: true,
     description: 'For gastroesophageal reflux disease.',
+    price: 199.00,
     stock: { quantity: 600, status: 'In Stock' },
     supplyChainStatus: 'In Transit',
     history: [{ timestamp: '2024-03-25T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -314,6 +337,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Sun Pharma',
     onChain: true,
     description: 'Lowers cholesterol and triglycerides.',
+    price: 154.00,
     stock: { quantity: 150, status: 'In Stock' },
     supplyChainStatus: 'At Manufacturer',
     history: [{ timestamp: '2024-04-01T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -327,6 +351,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'MSD Pharmaceuticals',
     onChain: true,
     description: 'For type 2 diabetes.',
+    price: 350.00,
     stock: { quantity: 200, status: 'In Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2024-05-10T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -340,6 +365,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Unichem Labs',
     onChain: true,
     description: 'For hypertension.',
+    price: 78.00,
     stock: { quantity: 10, status: 'Low Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2024-06-15T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -353,6 +379,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Torrent Pharma',
     onChain: true,
     description: 'Calcium and Vitamin D3 supplement.',
+    price: 95.00,
     stock: { quantity: 800, status: 'In Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2024-07-20T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -366,6 +393,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'USV Pvt Ltd',
     onChain: true,
     description: 'Anti-diabetic medication.',
+    price: 120.00,
     stock: { quantity: 0, status: 'Out of Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2024-08-25T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -379,6 +407,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Novo Nordisk',
     onChain: true,
     description: 'Insulin for diabetes.',
+    price: 750.00,
     stock: { quantity: 5, status: 'Low Stock' },
     supplyChainStatus: 'At Manufacturer',
     history: [{ timestamp: '2024-09-01T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -392,6 +421,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Abbott India',
     onChain: true,
     description: 'For hypothyroidism.',
+    price: 125.00,
     stock: { quantity: 1200, status: 'In Stock' },
     supplyChainStatus: 'In Transit',
     history: [{ timestamp: '2024-10-10T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -405,6 +435,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Sun Pharma',
     onChain: true,
     description: 'For acidity and heartburn.',
+    price: 210.00,
     stock: { quantity: 350, status: 'In Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2024-11-15T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -418,6 +449,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Cipla',
     onChain: true,
     description: 'For allergic rhinitis.',
+    price: 185.00,
     stock: { quantity: 200, status: 'In Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2024-12-20T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -431,6 +463,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Boehringer Ingelheim',
     onChain: true,
     description: 'For COPD.',
+    price: 950.00,
     stock: { quantity: 25, status: 'Low Stock' },
     supplyChainStatus: 'At Manufacturer',
     history: [{ timestamp: '2025-01-25T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -444,6 +477,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Novartis India',
     onChain: true,
     description: 'Sustained-release painkiller.',
+    price: 72.00,
     stock: { quantity: 180, status: 'In Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2025-02-01T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -457,6 +491,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Dr. Reddy\'s Labs',
     onChain: true,
     description: 'Antiallergic medication.',
+    price: 20.00,
     stock: { quantity: 500, status: 'In Stock' },
     supplyChainStatus: 'In Transit',
     history: [{ timestamp: '2025-03-10T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -470,6 +505,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Dr. Reddy\'s Labs',
     onChain: true,
     description: 'For ulcers and acid reflux.',
+    price: 150.00,
     stock: { quantity: 300, status: 'In Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2025-04-15T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -483,6 +519,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Sun Pharma',
     onChain: true,
     description: 'Cholesterol-lowering agent.',
+    price: 130.00,
     stock: { quantity: 400, status: 'In Stock' },
     supplyChainStatus: 'At Manufacturer',
     history: [{ timestamp: '2025-05-20T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -496,6 +533,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Alkem Labs',
     onChain: true,
     description: 'Vitamin D3 supplement.',
+    price: 250.00,
     stock: { quantity: 250, status: 'In Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2025-06-25T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -509,6 +547,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'J. B. Chemicals',
     onChain: true,
     description: 'For stomach acid reduction.',
+    price: 15.00,
     stock: { quantity: 0, status: 'Out of Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2025-07-01T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -522,6 +561,7 @@ const MOCK_CHAIN: Medicine[] = [
     manufacturer: 'Cipla',
     onChain: true,
     description: 'Fluoroquinolone antibiotic.',
+    price: 65.00,
     stock: { quantity: 100, status: 'In Stock' },
     supplyChainStatus: 'At Pharmacy',
     history: [{ timestamp: '2025-08-10T10:00:00Z', action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -544,6 +584,7 @@ const MOCK_CHAIN: Medicine[] = [
       manufacturer: manufacturers[id % manufacturers.length],
       onChain: true,
       description: 'A commonly available medicine in India.',
+      price: parseFloat((Math.random() * (500 - 20) + 20).toFixed(2)),
       stock: { quantity, status },
       supplyChainStatus: scStatus[id % scStatus.length],
       history: [{ timestamp: mfg.toISOString(), action: 'CREATED', changes: 'Batch registered on-chain.' }]
@@ -590,7 +631,8 @@ export async function addMedicineToChain(input: NewMedicine): Promise<Medicine> 
     batchNo: input.batchNo,
     mfgDate: input.mfgDate,
     expDate: input.expDate,
-    description: input.description ?? "No description provided.",
+    description: input.description,
+    price: input.price,
     onChain: false, // flip to true once a real tx confirms
     stock: {
         quantity: input.quantity,

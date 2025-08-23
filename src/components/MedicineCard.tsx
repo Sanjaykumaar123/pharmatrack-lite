@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import {
   Card,
@@ -5,12 +6,17 @@ import {
   CardTitle,
   CardDescription,
   CardFooter,
+  CardContent,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, CheckCircle, Clock } from 'lucide-react';
+import { ChevronRight, CheckCircle, Clock, ShoppingCart } from 'lucide-react';
 import type { Medicine } from '@/types/medicine';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
+import { useCartStore } from '@/hooks/useCartStore';
+import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
+
 
 interface MedicineCardProps {
   medicine: Medicine;
@@ -18,31 +24,67 @@ interface MedicineCardProps {
 
 export function MedicineCard({ medicine }: MedicineCardProps) {
   const isOutOfStock = medicine.stock.status === 'Out of Stock';
+  const { addItem } = useCartStore();
+  const { toast } = useToast();
+  const router = useRouter();
+
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem({ id: medicine.id, name: medicine.name, price: medicine.price, quantity: 1 });
+    toast({
+      title: "Added to Cart",
+      description: `${medicine.name} has been added to your cart.`,
+    });
+  };
+
+  const handleBuyNow = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem({ id: medicine.id, name: medicine.name, price: medicine.price, quantity: 1 });
+    router.push('/cart');
+  };
 
   return (
-    <Link href={`/medicine/${medicine.id}`} className="group">
-      <Card className={cn("h-full flex flex-col transition-all duration-300 ease-in-out group-hover:shadow-xl group-hover:border-primary/50 group-hover:shadow-primary/10", isOutOfStock && "bg-muted/50 opacity-70 hover:opacity-100")}>
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <div>
-              <CardTitle className="text-foreground group-hover:text-primary transition-colors">
-                {medicine.name}
-              </CardTitle>
-              <CardDescription>Batch: {medicine.batchNo}</CardDescription>
+    <Card className={cn("h-full flex flex-col transition-all duration-300 ease-in-out group hover:shadow-xl hover:border-primary/50 hover:shadow-primary/10", isOutOfStock && "bg-muted/50 opacity-70")}>
+      <CardHeader>
+        <Link href={`/medicine/${medicine.id}`} className="group/link">
+            <div className="flex justify-between items-start">
+              <div>
+                <CardTitle className="text-foreground group-hover/link:text-primary transition-colors">
+                  {medicine.name}
+                </CardTitle>
+                <CardDescription>Batch: {medicine.batchNo}</CardDescription>
+              </div>
+              <Badge className={cn("shrink-0", medicine.onChain ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800")}>
+                  {medicine.onChain ? <CheckCircle className="h-3 w-3 mr-1" /> : <Clock className="h-3 w-3 mr-1" />}
+                  {medicine.onChain ? 'On-Chain' : 'Pending'}
+                </Badge>
             </div>
-             <Badge className={cn("shrink-0", medicine.onChain ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800")}>
-                {medicine.onChain ? <CheckCircle className="h-3 w-3 mr-1" /> : <Clock className="h-3 w-3 mr-1" />}
-                {medicine.onChain ? 'On-Chain' : 'Pending'}
-              </Badge>
-          </div>
-        </CardHeader>
-        <CardFooter className="mt-auto pt-4 flex justify-end">
-          <Button variant="outline" size="sm" className="text-muted-foreground group-hover:text-primary group-hover:border-primary/50 group-hover:bg-primary/5">
-            View Details
-            <ChevronRight className="h-4 w-4 ml-1 transition-transform group-hover:translate-x-1" />
+        </Link>
+      </CardHeader>
+      <CardContent className="flex-grow">
+          <Link href={`/medicine/${medicine.id}`} className="block">
+              <p className="text-2xl font-bold text-primary mb-2">₹{medicine.price.toFixed(2)}</p>
+              <div className="flex items-center text-sm text-muted-foreground">
+                  <p>Qty: {medicine.stock.quantity} &bull; Status: <span className={cn(
+                      medicine.stock.status === 'In Stock' && 'text-green-600',
+                      medicine.stock.status === 'Low Stock' && 'text-yellow-600',
+                      medicine.stock.status === 'Out of Stock' && 'text-red-600'
+                  )}>{medicine.stock.status}</span></p>
+              </div>
+          </Link>
+      </CardContent>
+      <CardFooter className="mt-auto pt-4 flex flex-col sm:flex-row gap-2">
+          <Button onClick={handleAddToCart} size="sm" variant="outline" className="w-full" disabled={isOutOfStock}>
+              <ShoppingCart className="mr-2 h-4 w-4"/> Add to Cart
           </Button>
-        </CardFooter>
-      </Card>
-    </Link>
+          <Button onClick={handleBuyNow} size="sm" className="w-full" disabled={isOutOfStock}>
+              Buy Now
+          </Button>
+      </CardFooter>
+    </Card>
   );
 }
+

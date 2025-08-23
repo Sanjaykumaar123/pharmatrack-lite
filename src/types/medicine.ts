@@ -10,6 +10,7 @@ export type Medicine = {
   manufacturer: string;
   onChain: boolean; // whether we’ve confirmed a ledger write
   description: string;
+  price: number;
   stock: {
       quantity: number;
       status: 'In Stock' | 'Low Stock' | 'Out of Stock';
@@ -22,11 +23,18 @@ export type Medicine = {
   }[];
 };
 
-export type NewMedicine = Omit<Medicine, "id" | "onChain" | "stock" | "history" | "supplyChainStatus"> & {
+export type NewMedicine = Omit<Medicine, "id" | "onChain" | "history" | "supplyChainStatus" | "stock"> & {
     quantity: number;
 };
 
 export type UpdateMedicine = Partial<Omit<Medicine, "id" | "onChain" | "history" | "stock" >> & {
     quantity: number;
     supplyChainStatus: SupplyChainStatus;
+};
+
+export type CartItem = {
+    id: string;
+    name: string;
+    price: number;
+    quantity: number;
 };

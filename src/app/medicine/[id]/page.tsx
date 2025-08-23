@@ -4,18 +4,41 @@
 import { useMedicineStore } from '@/hooks/useMedicineStore';
 import type { Medicine } from '@/types/medicine';
 import { notFound, useParams } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import SideEffects from '@/components/SideEffects';
-import { Calendar, Factory, Package, Pill, Boxes, Loader2, CheckCircle, Clock, History } from 'lucide-react';
+import { Calendar, Factory, Package, Pill, Boxes, Loader2, CheckCircle, Clock, History, ShoppingCart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { useCartStore } from '@/hooks/useCartStore';
+import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
 export default function MedicineDetailPage() {
   const { medicines, isInitialized, fetchMedicines } = useMedicineStore();
   const [medicine, setMedicine] = useState<Medicine | null | undefined>(undefined); // undefined: loading, null: not found
   const params = useParams();
   const id = params.id as string;
+  const { toast } = useToast();
+  const router = useRouter();
+
+  const { addItem } = useCartStore();
+
+  const handleAddToCart = () => {
+    if (!medicine) return;
+    addItem({ id: medicine.id, name: medicine.name, price: medicine.price, quantity: 1 });
+    toast({
+      title: "Added to Cart",
+      description: `${medicine.name} has been added to your cart.`,
+    });
+  };
+
+  const handleBuyNow = () => {
+    if (!medicine) return;
+    addItem({ id: medicine.id, name: medicine.name, price: medicine.price, quantity: 1 });
+    router.push('/cart');
+  };
   
   useEffect(() => {
     const findMedicine = () => {
@@ -55,15 +78,20 @@ export default function MedicineDetailPage() {
           <div className="md:col-span-3">
             <Card className="overflow-hidden border-primary/20 shadow-lg shadow-primary/5 h-full">
               <CardHeader className="bg-primary/10">
-                <div className="flex items-center gap-4">
-                  <Pill className="h-10 w-10 text-primary" />
-                  <div>
-                    <CardTitle className="text-3xl font-bold text-foreground">
-                      {medicine.name}
-                    </CardTitle>
-                    <CardDescription className="text-lg text-muted-foreground">
-                      {medicine.description}
-                    </CardDescription>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <Pill className="h-10 w-10 text-primary" />
+                    <div>
+                      <CardTitle className="text-3xl font-bold text-foreground">
+                        {medicine.name}
+                      </CardTitle>
+                      <CardDescription className="text-lg text-muted-foreground">
+                        {medicine.description}
+                      </CardDescription>
+                    </div>
+                  </div>
+                  <div className="text-2xl font-bold text-primary self-start sm:self-center">
+                    ₹{medicine.price.toFixed(2)}
                   </div>
                 </div>
               </CardHeader>
@@ -122,6 +150,14 @@ export default function MedicineDetailPage() {
                   </div>
                 </div>
               </CardContent>
+              <CardFooter className="bg-secondary/30 p-6 flex flex-col sm:flex-row gap-4">
+                <Button onClick={handleAddToCart} size="lg" variant="outline" className="w-full sm:w-auto">
+                    <ShoppingCart className="mr-2 h-5 w-5"/> Add to Cart
+                </Button>
+                <Button onClick={handleBuyNow} size="lg" className="w-full sm:w-auto">
+                    Buy Now
+                </Button>
+              </CardFooter>
             </Card>
           </div>
         </div>

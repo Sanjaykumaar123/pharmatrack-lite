@@ -4,8 +4,10 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
-import { LayoutDashboard, BrainCircuit, LogIn, UserPlus, LogOut, User, Factory, ShieldCheck, Loader2, Moon, Sun } from 'lucide-react';
+import { LayoutDashboard, BrainCircuit, LogIn, UserPlus, LogOut, User, Factory, ShieldCheck, Loader2, Moon, Sun, ShoppingCart } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useCartStore } from '@/hooks/useCartStore';
+import { Badge } from './ui/badge';
 
 const PillIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -63,6 +65,28 @@ function ThemeToggle() {
             <span className="sr-only">Toggle theme</span>
         </Button>
     );
+}
+
+function CartButton() {
+    const { items } = useCartStore();
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, [])
+
+    const itemCount = isClient ? items.reduce((sum, item) => sum + item.quantity, 0) : 0;
+
+    return (
+        <Link href="/cart" passHref>
+            <Button variant="ghost" size="icon" className="relative">
+                <ShoppingCart className="h-6 w-6" />
+                {itemCount > 0 && (
+                    <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0">{itemCount}</Badge>
+                )}
+            </Button>
+        </Link>
+    )
 }
 
 
@@ -158,6 +182,7 @@ export default function Header() {
                         </Link>
                     </>
                 )}
+                 <CartButton />
                  <ThemeToggle />
             </div>
           </div>
