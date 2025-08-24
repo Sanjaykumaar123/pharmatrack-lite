@@ -50,7 +50,7 @@ export async function signUpWithEmail({ email, password, firstName, lastName }: 
       case 'auth/weak-password':
         throw new Error('The password is too weak. Please choose a stronger password.');
       default:
-        throw new Error('An unexpected error occurred. Please try again.');
+        throw new Error('An unexpected error occurred during sign up. Please try again.');
     }
   }
 }
@@ -59,32 +59,11 @@ export async function signUpWithEmail({ email, password, firstName, lastName }: 
 // SIGN IN
 // ========================================================
 export async function signInWithEmail(email: string, password: string, role: Role): Promise<User> {
+   let userCredential;
    try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-
-    // Verify the user's role from Firestore
-    const userDocRef = doc(db, 'users', user.uid);
-    const userDoc = await getDoc(userDocRef);
-
-    if (userDoc.exists() && userDoc.data().role === role) {
-        return user;
-    } else if (userDoc.exists()) {
-        // If role doesn't match, sign them out and throw an error
-        await signOut(auth);
-        throw new Error(`You do not have permission to log in as a ${role}.`);
-    } else {
-        // This should not happen if signup is working correctly
-         await signOut(auth);
-        throw new Error("User data not found. Please contact support.");
-    }
+    userCredential = await signInWithEmailAndPassword(auth, email, password);
   } catch (error: any) {
-    // Re-throw custom errors from our role check first
-    if (error.message.includes('permission') || error.message.includes('User data not found')) {
-        throw error;
-    }
-
-    // Then handle Firebase-specific auth errors
+     // Handle Firebase-specific auth errors first
     switch (error.code) {
       case 'auth/user-not-found':
       case 'auth/wrong-password':
@@ -93,9 +72,31 @@ export async function signInWithEmail(email: string, password: string, role: Rol
       case 'auth/invalid-email':
         throw new Error('Please enter a valid email address.');
       default:
-        throw new Error('An unexpected error occurred. Please try again.');
+        // This will catch other unexpected Firebase errors
+        throw new Error('An unexpected error occurred during login. Please try again.');
     }
   }
+    
+  const user = userCredential.user;
+
+  // If login was successful, now verify the role from Firestore
+  const userDocRef = doc(db, 'users', user.uid);
+  const userDoc = await getDoc(userDocRef);
+
+  if (!userDoc.exists()) {
+    // This case is critical. If the user exists in Auth but not Firestore.
+    await signOut(auth); // Log them out for security
+    throw new Error("Your user account was not found in the database. Please contact support.");
+  }
+  
+  if (userDoc.data().role !== role) {
+    // Role doesn't match, sign them out and throw a specific error
+    await signOut(auth);
+    throw new Error(`You do not have permission to log in as a ${role}.`);
+  }
+
+  // If all checks pass, return the user
+  return user;
 }
 
 
