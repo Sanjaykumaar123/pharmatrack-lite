@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -8,7 +9,7 @@
  * - MedicineSideEffectsOutput - The return type for the getMedicineSideEffects function.
  */
 
-import {ai} from '@/ai/genkit';
+import {ai} from '@/backend/genkit';
 import {z} from 'genkit';
 
 const MedicineSideEffectsInputSchema = z.object({

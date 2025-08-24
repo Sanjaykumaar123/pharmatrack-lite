@@ -18,7 +18,7 @@
  * - ChatOutput - The return type for the chatWithAi function.
  */
 
-import {ai} from '@/ai/genkit';
+import {ai} from '@/backend/genkit';
 import {z} from 'genkit';
 import type { Medicine } from '@/types/medicine';
 
