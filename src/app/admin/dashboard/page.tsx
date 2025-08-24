@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, Home, Warehouse, ArrowRight, Users, LineChart } from 'lucide-react';
+import { ShieldCheck, Home, Warehouse, ArrowRight, Users, LineChart, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminDashboardPage() {
@@ -48,6 +48,26 @@ export default function AdminDashboardPage() {
             <CardFooter>
               <Button>
                   Go to Stock Dashboard
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </CardFooter>
+          </Card>
+        </Link>
+
+        <Link href="/admin/orders" className="group">
+          <Card className="h-full hover:border-primary/50 hover:shadow-lg transition-all flex flex-col">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Order Management</CardTitle>
+              <ShoppingCart className="h-6 w-6 text-primary" />
+            </CardHeader>
+            <CardContent className="flex-grow">
+              <CardDescription>
+                  View and process customer orders, update their fulfillment status, and manage the order lifecycle from pending to delivered.
+              </CardDescription>
+            </CardContent>
+            <CardFooter>
+              <Button>
+                  Manage Orders
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </CardFooter>

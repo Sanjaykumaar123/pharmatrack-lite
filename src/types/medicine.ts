@@ -1,6 +1,25 @@
 
 export type SupplyChainStatus = 'At Manufacturer' | 'In Transit' | 'At Pharmacy';
 
+export type OrderStatus = 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
+
+export type OrderItem = {
+    medicineId: string;
+    name: string;
+    quantity: number;
+    price: number;
+};
+
+export type Order = {
+    id: string;
+    customerName: string; // Simulated customer name
+    items: OrderItem[];
+    total: number;
+    status: OrderStatus;
+    orderDate: string; // ISO date string
+};
+
+
 export type Medicine = {
   id: string; // app-level id for list rendering
   name: string;
@@ -23,8 +42,9 @@ export type Medicine = {
   }[];
 };
 
-export type NewMedicine = Omit<Medicine, "id" | "onChain" | "history" | "supplyChainStatus" | "stock"> & {
+export type NewMedicine = Omit<Medicine, "id" | "onChain" | "history" | "supplyChainStatus" | "stock" | "price"> & {
     quantity: number;
+    price: number;
 };
 
 export type UpdateMedicine = Partial<Omit<Medicine, "id" | "onChain" | "history" | "stock" >> & {

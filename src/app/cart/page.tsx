@@ -10,10 +10,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription }
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useOrderStore } from '@/hooks/useOrderStore';
+import { useRouter } from 'next/navigation';
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, clearCart } = useCartStore();
+  const { addOrder } = useOrderStore();
   const { toast } = useToast();
+  const router = useRouter();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -21,13 +25,26 @@ export default function CartPage() {
   }, []);
 
   const total = isClient ? items.reduce((sum, item) => sum + item.price * item.quantity, 0) : 0;
+  const tax = total * 0.05; // 5% tax
+  const finalTotal = total + tax;
 
   const handleCheckout = () => {
-    toast({
-      title: "Checkout Simulated",
-      description: "In a real app, you would be redirected to a payment gateway.",
+    if (items.length === 0) return;
+
+    addOrder({
+      customerName: 'Guest Customer', // Simulated user
+      items: items.map(item => ({ medicineId: item.id, name: item.name, quantity: item.quantity, price: item.price })),
+      total: finalTotal,
+      status: 'Pending',
     });
+
+    toast({
+      title: "Order Placed!",
+      description: "Your order has been successfully submitted.",
+    });
+    
     clearCart();
+    router.push('/medicines');
   };
 
   if (!isClient) {
@@ -83,6 +100,7 @@ export default function CartPage() {
                               value={item.quantity}
                               onChange={(e) => updateQuantity(item.id, parseInt(e.target.value, 10) || 1)}
                               className="w-14 h-7 text-center"
+                              min="1"
                             />
                             <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
                               <Plus className="h-4 w-4" />
@@ -114,12 +132,12 @@ export default function CartPage() {
                   <span>₹{total.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Taxes (Simulated)</span>
-                  <span>₹{(total * 0.05).toFixed(2)}</span>
+                  <span>Taxes (Simulated 5%)</span>
+                  <span>₹{tax.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between font-bold text-lg">
                   <span>Total</span>
-                  <span>₹{(total * 1.05).toFixed(2)}</span>
+                  <span>₹{finalTotal.toFixed(2)}</span>
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col gap-2">
