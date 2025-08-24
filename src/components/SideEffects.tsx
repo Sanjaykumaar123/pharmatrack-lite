@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { getMedicineSideEffects } from '@/ai/flows/medicine-side-effects';
+import { getMedicineSideEffects } from '@/backend/flows/medicine-side-effects';
 import { Button } from '@/components/ui/button';
 import {
   Accordion,

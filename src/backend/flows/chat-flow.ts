@@ -18,9 +18,9 @@
  * - ChatOutput - The return type for the chatWithAi function.
  */
 
-import {ai} from '@/backend/genkit';
+import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import type { Medicine } from '@/frontend/types';
+import type { Medicine } from '@/types/medicine';
 
 const ChatMessageSchema = z.object({
   role: z.enum(['user', 'assistant']),
@@ -45,8 +45,8 @@ export async function chatWithAi(input: { history: z.infer<typeof ChatMessageSch
   const medicineInfo = input.allMedicines.map(med => 
     `- Name: ${med.name}\n` +
     `  - Manufacturer: ${med.manufacturer}\n` +
-    `  - Batch Number: ${med.batchNumber}\n` +
-    `  - Expiry Date: ${med.expiryDate}\n` +
+    `  - Batch Number: ${med.batchNo}\n` +
+    `  - Expiry Date: ${med.expDate}\n` +
     `  - Description: ${med.description}\n` +
     `  - Stock: ${med.stock.quantity} units, status is ${med.stock.status}`
   ).join('\n');

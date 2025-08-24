@@ -8,7 +8,7 @@
  * - MedicineSideEffectsOutput - The return type for the getMedicineSideEffects function.
  */
 
-import {ai} from '@/backend/genkit';
+import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const MedicineSideEffectsInputSchema = z.object({
