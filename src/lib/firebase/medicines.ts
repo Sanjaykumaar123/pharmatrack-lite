@@ -9,7 +9,7 @@ import {
     query,
     orderBy
 } from 'firebase/firestore';
-import { db } from './firebase';
+import { db } from '../firebase';
 import type { Medicine, NewMedicine, UpdateMedicine } from '@/types/medicine';
 
 const medicinesCollection = collection(db, 'medicines');
