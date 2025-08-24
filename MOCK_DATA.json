@@ -1,0 +1,108 @@
+
+[
+  {
+    "id": "1",
+    "name": "Paracetamol",
+    "manufacturer": "Pharma Inc.",
+    "batchNo": "P12345",
+    "mfgDate": "2023-01-01",
+    "expDate": "2025-12-31",
+    "price": 5.99,
+    "onChain": true,
+    "description": "A common pain reliever and fever reducer.",
+    "supplyChainStatus": "At Pharmacy",
+    "history": [
+        { "timestamp": "2023-01-01T10:00:00Z", "action": "CREATED", "changes": "Batch registered by Pharma Inc."},
+        { "timestamp": "2023-01-05T14:30:00Z", "action": "UPDATED", "changes": "In Transit to Distributor"},
+        { "timestamp": "2023-01-10T09:00:00Z", "action": "UPDATED", "changes": "Arrived at Pharmacy"}
+    ],
+    "quantity": 150
+  },
+  {
+    "id": "2",
+    "name": "Ibuprofen",
+    "manufacturer": "MediCorp",
+    "batchNo": "I67890",
+    "mfgDate": "2023-02-01",
+    "expDate": "2026-06-30",
+    "price": 7.49,
+    "onChain": true,
+    "description": "A nonsteroidal anti-inflammatory drug (NSAID).",
+    "supplyChainStatus": "At Pharmacy",
+    "history": [
+        { "timestamp": "2023-02-01T10:00:00Z", "action": "CREATED", "changes": "Batch registered by MediCorp."},
+        { "timestamp": "2023-02-05T18:00:00Z", "action": "UPDATED", "changes": "In Transit to Distributor"},
+        { "timestamp": "2023-02-12T11:00:00Z", "action": "UPDATED", "changes": "Arrived at Pharmacy"}
+    ],
+    "quantity": 25
+  },
+  {
+    "id": "3",
+    "name": "Amoxicillin",
+    "manufacturer": "HealthGlobal",
+    "batchNo": "A11223",
+    "mfgDate": "2023-03-01",
+    "expDate": "2024-11-30",
+    "price": 12,
+    "onChain": false,
+    "description": "An antibiotic used to treat a number of bacterial infections.",
+    "supplyChainStatus": "At Manufacturer",
+     "history": [
+        { "timestamp": "2023-03-01T10:00:00Z", "action": "CREATED", "changes": "Batch registered by HealthGlobal."}
+    ],
+    "quantity": 0
+  },
+  {
+    "id": "4",
+    "name": "Lisinopril",
+    "manufacturer": "Pharma Inc.",
+    "batchNo": "L44556",
+    "mfgDate": "2023-04-01",
+    "expDate": "2027-01-15",
+    "price": 15.5,
+    "onChain": true,
+    "description": "An ACE inhibitor used to treat high blood pressure and heart failure.",
+    "supplyChainStatus": "In Transit",
+    "history": [
+        { "timestamp": "2023-04-01T10:00:00Z", "action": "CREATED", "changes": "Batch registered by Pharma Inc."},
+        { "timestamp": "2023-04-05T11:20:00Z", "action": "UPDATED", "changes": "In Transit to Distributor"}
+    ],
+    "quantity": 200
+  },
+  {
+    "id": "5",
+    "name": "Metformin",
+    "manufacturer": "MediCorp",
+    "batchNo": "M77889",
+    "mfgDate": "2023-05-01",
+    "expDate": "2025-08-20",
+    "price": 8.75,
+    "onChain": true,
+    "description": "A first-line medication for the treatment of type 2 diabetes.",
+    "supplyChainStatus": "At Pharmacy",
+    "history": [
+        { "timestamp": "2023-05-01T10:00:00Z", "action": "CREATED", "changes": "Batch registered by MediCorp."},
+        { "timestamp": "2023-05-06T12:30:00Z", "action": "UPDATED", "changes": "In Transit to Distributor"},
+        { "timestamp": "2023-05-15T14:00:00Z", "action": "UPDATED", "changes": "Arrived at Pharmacy"}
+    ],
+    "quantity": 75
+  },
+  {
+    "id": "6",
+    "name": "Atorvastatin",
+    "manufacturer": "HealthGlobal",
+    "batchNo": "A99001",
+    "mfgDate": "2023-06-01",
+    "expDate": "2026-03-25",
+    "price": 22,
+    "onChain": true,
+    "description": "A statin medication used to prevent cardiovascular disease.",
+    "supplyChainStatus": "At Pharmacy",
+    "history": [
+        { "timestamp": "2023-06-01T10:00:00Z", "action": "CREATED", "changes": "Batch registered by HealthGlobal."},
+        { "timestamp": "2023-06-07T16:00:00Z", "action": "UPDATED", "changes": "In Transit to Distributor"},
+        { "timestamp": "2023-06-14T09:45:00Z", "action": "UPDATED", "changes": "Arrived at Pharmacy"}
+    ],
+    "quantity": 40
+  }
+]
