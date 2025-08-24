@@ -82,6 +82,7 @@ export async function signInWithEmail(email: string, password: string, role: Rol
      switch (error.code) {
       case 'auth/user-not-found':
       case 'auth/wrong-password':
+      case 'auth/invalid-credential':
         throw new Error('Invalid email or password.');
       case 'auth/invalid-email':
         throw new Error('Please enter a valid email address.');
