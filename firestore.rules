@@ -1,9 +1,17 @@
-rules_version = '2';
 
+rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if false;
+    // Allow users to be created
+    match /users/{userId} {
+      allow create: if request.auth != null;
+      allow read, update, delete: if request.auth.uid == userId;
+    }
+
+    // Allow public read access to medicines
+    match /medicines/{medicineId} {
+      allow read: if true;
+      allow write: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
   }
 }
