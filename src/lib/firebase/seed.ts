@@ -18,14 +18,21 @@ export async function seedDatabase() {
 
     mockData.forEach((medicine) => {
         const docRef = doc(medicinesCollection, medicine.id);
+        
+        // Correctly structure the data for Firestore
         const data = {
-            ...medicine,
-            stock: {
-                quantity: medicine.quantity,
-                status: getStockStatus(medicine.quantity),
-            }
-        }
-        delete (data as any).quantity; // remove top-level quantity
+            name: medicine.name,
+            manufacturer: medicine.manufacturer,
+            batchNo: medicine.batchNo,
+            mfgDate: medicine.mfgDate,
+            expDate: medicine.expDate,
+            price: medicine.price,
+            onChain: medicine.onChain,
+            description: medicine.description,
+            supplyChainStatus: medicine.supplyChainStatus,
+            history: medicine.history || [],
+            quantity: medicine.quantity // Keep the top-level quantity for Firestore
+        };
 
         batch.set(docRef, data);
     });
