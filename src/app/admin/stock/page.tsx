@@ -34,6 +34,8 @@ import {
   Factory,
   Truck,
   Building,
+  PlusCircle,
+  Pencil,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -44,9 +46,10 @@ import {
 import { ChartContainer, ChartConfig, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
-import type { Medicine, SupplyChainStatus } from '@/types';
+import type { Medicine, SupplyChainStatus } from '@/types/medicine';
 import { cn } from '@/lib/utils';
 import { useMedicineStore } from '@/hooks/useMedicineStore';
+import { AddEditMedicineDialog } from '@/components/AddEditMedicineDialog';
 
 type StockStatus = Medicine['stockStatus'];
 type SortKey = keyof Pick<Medicine, 'name' | 'manufacturer' | 'expDate' | 'quantity' | 'supplyChainStatus'>;
@@ -79,6 +82,9 @@ export default function StockManagementPage() {
   
   const [filter, setFilter] = useState<StockStatus | 'All'>('All');
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'ascending' | 'descending' } | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(null);
+
   
    const summary = useMemo(() => {
     return medicines.reduce(
@@ -150,6 +156,15 @@ export default function StockManagementPage() {
       }));
   }, [medicines]);
 
+  const handleAddClick = () => {
+    setSelectedMedicine(null);
+    setIsDialogOpen(true);
+  };
+
+  const handleEditClick = (medicine: Medicine) => {
+    setSelectedMedicine(medicine);
+    setIsDialogOpen(true);
+  };
 
   if (!isInitialized) {
       return (
@@ -170,12 +185,18 @@ export default function StockManagementPage() {
             </h1>
             <p className="text-muted-foreground mt-1">Oversee the entire inventory from the local data file.</p>
           </div>
-          <Link href="/admin/dashboard" passHref>
-            <Button variant="outline">
-              <Home className="mr-2 h-5 w-5" />
-              Admin Dashboard
+          <div className="flex items-center gap-4">
+            <Button onClick={handleAddClick}>
+                <PlusCircle className="mr-2 h-5 w-5" />
+                Add New Medicine
             </Button>
-          </Link>
+            <Link href="/admin/dashboard" passHref>
+                <Button variant="outline">
+                <Home className="mr-2 h-5 w-5" />
+                Admin Dashboard
+                </Button>
+            </Link>
+          </div>
         </div>
 
         {/* Summary Cards */}
@@ -231,6 +252,7 @@ export default function StockManagementPage() {
                           <Button variant="ghost" onClick={() => requestSort('quantity')}>Quantity {getSortIcon('quantity')}</Button>
                       </TableHead>
                       <TableHead>Ledger Status</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -252,6 +274,22 @@ export default function StockManagementPage() {
                             {med.onChain ? <CheckCircle className="h-3 w-3 mr-1" /> : <Clock className="h-3 w-3 mr-1" />}
                             {med.onChain ? 'Confirmed' : 'Pending'}
                            </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem onClick={() => handleEditClick(med)}>
+                                <Pencil className="mr-2 h-4 w-4" />
+                                <span>Edit</span>
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                        )
@@ -282,7 +320,11 @@ export default function StockManagementPage() {
           </Card>
         </div>
       </div>
+      <AddEditMedicineDialog 
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        medicine={selectedMedicine}
+      />
     </>
   );
 }
-

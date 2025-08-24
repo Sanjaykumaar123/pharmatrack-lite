@@ -3,17 +3,8 @@
 
 import { create } from "zustand";
 import allMedicines from '../../MOCK_DATA.json';
-import type { Medicine } from "@/types/medicine";
-
-// ===================================================================================
-// LOCAL DATA SIMULATION
-// ===================================================================================
-// This file now acts as a client-side "store" that loads data directly
-// from the local MOCK_DATA.json file. This removes the dependency on an external
-// database (like Firestore) and allows the prototype to work offline and without
-// any special setup.
-// ===================================================================================
-
+import type { Medicine, NewMedicine, UpdateMedicine } from "@/types/medicine";
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 const getStockStatus = (quantity: number): Medicine['stockStatus'] => {
     if (quantity <= 0) return 'Out of Stock';
@@ -21,7 +12,6 @@ const getStockStatus = (quantity: number): Medicine['stockStatus'] => {
     return 'In Stock';
 };
 
-// Process the raw data to add the calculated stockStatus
 const processedMedicines: Medicine[] = allMedicines.map(med => ({
     ...med,
     stockStatus: getStockStatus(med.quantity)
@@ -31,11 +21,90 @@ interface MedicineState {
   medicines: Medicine[];
   isInitialized: boolean;
   error?: string;
-  // Note: add, update, delete functions are removed as we are reading from a static file.
+  loading: boolean;
+  addMedicine: (payload: NewMedicine) => Promise<Medicine | null>;
+  updateMedicine: (id: string, payload: UpdateMedicine) => Promise<Medicine | null>;
 }
 
-export const useMedicineStore = create<MedicineState>(() => ({
-  medicines: processedMedicines,
-  isInitialized: true, // Data is loaded synchronously, so it's always initialized.
-  error: undefined,
-}));
+export const useMedicineStore = create<MedicineState>()(
+  persist(
+    (set, get) => ({
+      medicines: processedMedicines,
+      isInitialized: true,
+      error: undefined,
+      loading: false,
+      addMedicine: async (payload) => {
+        set({ loading: true });
+        const newMedicine: Medicine = {
+          id: `med-${Date.now()}`,
+          ...payload,
+          mfgDate: payload.mfgDate,
+          expDate: payload.expDate,
+          onChain: false,
+          supplyChainStatus: 'At Manufacturer',
+          history: [{
+              timestamp: new Date().toISOString(),
+              action: 'CREATED',
+              changes: 'Batch registered locally.'
+          }],
+          stockStatus: getStockStatus(payload.quantity)
+        };
+        
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        set(state => ({
+          medicines: [newMedicine, ...state.medicines],
+          loading: false,
+        }));
+        
+        return newMedicine;
+      },
+      updateMedicine: async (id: string, payload: UpdateMedicine) => {
+        set({ loading: true });
+        let updatedMedicine: Medicine | null = null;
+        
+        set(state => {
+            const newMedicines = state.medicines.map(med => {
+                if (med.id === id) {
+                    const changes = Object.entries(payload).map(([key, value]) => {
+                        if (value !== undefined && med[key as keyof Medicine] !== value) {
+                            return `${key} changed`;
+                        }
+                        return null;
+                    }).filter(Boolean).join(', ');
+                    
+                    updatedMedicine = {
+                        ...med,
+                        ...payload,
+                        quantity: payload.quantity ?? med.quantity,
+                        stockStatus: getStockStatus(payload.quantity ?? med.quantity),
+                         history: [
+                            ...(med.history || []),
+                            {
+                                timestamp: new Date().toISOString(),
+                                action: 'UPDATED',
+                                changes: changes || 'Updated details.'
+                            }
+                        ]
+                    };
+                    return updatedMedicine;
+                }
+                return med;
+            });
+            return { medicines: newMedicines };
+        });
+
+        // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        set({ loading: false });
+        return updatedMedicine;
+      }
+    }),
+    {
+      name: 'medicine-storage',
+      storage: createJSONStorage(() => sessionStorage),
+    }
+  )
+);
