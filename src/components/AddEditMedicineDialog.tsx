@@ -27,7 +27,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CalendarIcon, Loader2 } from 'lucide-react';
 import { Calendar } from '@/components/ui/calendar';
 import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import type { Medicine, UpdateMedicine, SupplyChainStatus } from '@/types/medicine';
 import { useMedicineStore } from '@/hooks/useMedicineStore';
 import { useToast } from '@/hooks/use-toast';
@@ -40,6 +40,8 @@ const formSchema = z.object({
   expDate: z.date({ required_error: 'An expiry date is required.' }),
   quantity: z.coerce.number().min(0, { message: 'Quantity cannot be negative.' }),
   supplyChainStatus: z.enum(['At Manufacturer', 'In Transit', 'At Pharmacy']),
+  price: z.coerce.number().min(0, {message: "Price must be positive."}),
+  description: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -64,9 +66,11 @@ export function AddEditMedicineDialog({ isOpen, onClose, medicine }: AddEditMedi
         name: medicine.name,
         manufacturer: medicine.manufacturer,
         batchNo: medicine.batchNo,
-        expDate: new Date(medicine.expDate),
+        expDate: parseISO(medicine.expDate),
         quantity: medicine.stock.quantity,
         supplyChainStatus: medicine.supplyChainStatus,
+        price: medicine.price,
+        description: medicine.description,
       });
     }
   }, [medicine, isOpen, form]);
@@ -84,14 +88,14 @@ export function AddEditMedicineDialog({ isOpen, onClose, medicine }: AddEditMedi
     if(updated) {
       toast({
         title: 'Medicine Updated',
-        description: `${updated.name} has been successfully updated on the ledger.`,
+        description: `${values.name} has been successfully updated.`,
       });
       onClose();
     } else {
         toast({
             variant: "destructive",
             title: 'Failed to Update Medicine',
-            description: `There was an error submitting the update to the ledger.`,
+            description: `There was an error submitting the update to the database.`,
         });
     }
   };
@@ -102,7 +106,7 @@ export function AddEditMedicineDialog({ isOpen, onClose, medicine }: AddEditMedi
         <DialogHeader>
           <DialogTitle>Edit Medicine</DialogTitle>
           <DialogDescription>
-            Update the details of the medicine batch. This will create a new transaction on the ledger.
+            Update the details of the medicine batch. This will create a new transaction record.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -162,13 +166,29 @@ export function AddEditMedicineDialog({ isOpen, onClose, medicine }: AddEditMedi
                         </FormItem>
                     )}
                     />
+                     <FormField
+                    control={form.control}
+                    name="price"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Price (₹)</FormLabel>
+                        <FormControl>
+                            <Input type="number" placeholder="e.g. 45.50" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+              </div>
+
+                <div className="grid grid-cols-2 gap-6">
                     <FormField
                       control={form.control}
                       name="supplyChainStatus"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Supply Chain Status</FormLabel>
-                           <Select onValueChange={field.onChange} defaultValue={field.value}>
+                           <Select onValueChange={field.onChange} value={field.value}>
                                 <FormControl>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select status" />
@@ -184,51 +204,48 @@ export function AddEditMedicineDialog({ isOpen, onClose, medicine }: AddEditMedi
                         </FormItem>
                       )}
                     />
-              </div>
-
-              <div className="grid grid-cols-1">
-                 <FormField
-                  control={form.control}
-                  name="expDate"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Expiry Date</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "w-full pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) =>
-                              date < new Date(new Date().setHours(0, 0, 0, 0))
-                            }
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                     <FormField
+                      control={form.control}
+                      name="expDate"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col">
+                          <FormLabel>Expiry Date</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant={"outline"}
+                                  className={cn(
+                                    "w-full pl-3 text-left font-normal",
+                                    !field.value && "text-muted-foreground"
+                                  )}
+                                >
+                                  {field.value ? (
+                                    format(field.value, "PPP")
+                                  ) : (
+                                    <span>Pick a date</span>
+                                  )}
+                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0" align="start">
+                              <Calendar
+                                mode="single"
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) =>
+                                  date < new Date(new Date().setHours(0, 0, 0, 0))
+                                }
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                </div>
 
             <DialogFooter className="pt-4">
               <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>

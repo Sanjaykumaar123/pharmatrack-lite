@@ -123,8 +123,8 @@ export default function StockManagementPage() {
           aValue = new Date(a.expDate).getTime();
           bValue = new Date(b.expDate).getTime();
         } else {
-            aValue = a[sortConfig.key as 'name' | 'manufacturer' | 'supplyChainStatus'].toLowerCase();
-            bValue = b[sortConfig.key as 'name' | 'manufacturer' | 'supplyChainStatus'].toLowerCase();
+            aValue = a[sortConfig.key as 'name' | 'manufacturer' | 'supplyChainStatus']?.toLowerCase() || '';
+            bValue = b[sortConfig.key as 'name' | 'manufacturer' | 'supplyChainStatus']?.toLowerCase() || '';
         }
         
         if (aValue < bValue) {
@@ -171,19 +171,21 @@ export default function StockManagementPage() {
     setIsEditDialogOpen(true);
   };
 
-  const handleDeleteClick = (medicineId: string) => {
-    deleteMedicine(medicineId);
+  const handleDeleteClick = (medicine: Medicine) => {
+    // This is a local delete for prototyping.
+    // In a real app, this might archive or mark an item as void on the chain.
+    deleteMedicine(medicine.id);
     toast({
-        title: "Medicine Removed",
-        description: "The medicine has been removed from the local view.",
+        title: "Medicine Removed (Locally)",
+        description: `${medicine.name} has been removed from the local view.`,
     });
   };
 
   if (loading && !isInitialized) {
       return (
-          <div className="flex items-center justify-center h-full">
+          <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <p className="ml-4 text-lg">Loading Inventory from Ledger...</p>
+              <p className="ml-4 text-lg">Loading Inventory from Database...</p>
           </div>
       )
   }
@@ -196,7 +198,7 @@ export default function StockManagementPage() {
             <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
               Stock Management
             </h1>
-            <p className="text-muted-foreground mt-1">Oversee the entire inventory from the simulated decentralized ledger.</p>
+            <p className="text-muted-foreground mt-1">Oversee the entire inventory from the live database.</p>
           </div>
           <div className="flex items-center gap-2">
             <Link href="/manufacturer/add-medicine">
@@ -248,7 +250,7 @@ export default function StockManagementPage() {
             <CardHeader>
               <CardTitle>Inventory Details</CardTitle>
               <CardDescription>
-                A detailed list of all medicines recorded on the ledger.
+                A detailed list of all medicines recorded in the database.
                 {filter !== 'All' && ` (Filtering by: ${filter})`}
               </CardDescription>
             </CardHeader>
@@ -287,7 +289,7 @@ export default function StockManagementPage() {
                         <TableCell>
                            <Badge variant={med.onChain ? "secondary" : "destructive"} className={cn(med.onChain ? 'bg-green-100 text-green-800 border-green-200' : 'bg-yellow-100 text-yellow-800 border-yellow-200')}>
                             {med.onChain ? <CheckCircle className="h-3 w-3 mr-1" /> : <Clock className="h-3 w-3 mr-1" />}
-                            {med.onChain ? 'On-Chain' : 'Pending'}
+                            {med.onChain ? 'Confirmed' : 'Pending'}
                            </Badge>
                         </TableCell>
                         <TableCell className="text-right">
@@ -303,7 +305,7 @@ export default function StockManagementPage() {
                                 <Pencil className="mr-2 h-4 w-4" />
                                 <span>Edit</span>
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handleDeleteClick(med.id)} className="text-destructive focus:text-destructive">
+                              <DropdownMenuItem onClick={() => handleDeleteClick(med)} className="text-destructive focus:text-destructive">
                                 <Trash2 className="mr-2 h-4 w-4" />
                                 <span>Delete (Local)</span>
                               </DropdownMenuItem>

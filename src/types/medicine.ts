@@ -1,4 +1,5 @@
 
+
 export type SupplyChainStatus = 'At Manufacturer' | 'In Transit' | 'At Pharmacy';
 
 export type OrderStatus = 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
@@ -21,7 +22,7 @@ export type Order = {
 
 
 export type Medicine = {
-  id: string; // app-level id for list rendering
+  id: string; // Firestore document ID
   name: string;
   batchNo: string;
   mfgDate: string; // ISO date
@@ -42,15 +43,9 @@ export type Medicine = {
   }[];
 };
 
-export type NewMedicine = Omit<Medicine, "id" | "onChain" | "history" | "supplyChainStatus" | "stock" | "price"> & {
-    quantity: number;
-    price: number;
-};
+export type NewMedicine = Omit<Medicine, "id" | "onChain" | "history" | "supplyChainStatus" | "stock" >;
 
-export type UpdateMedicine = Partial<Omit<Medicine, "id" | "onChain" | "history" | "stock" >> & {
-    quantity: number;
-    supplyChainStatus: SupplyChainStatus;
-};
+export type UpdateMedicine = Partial<Omit<Medicine, "id" | "onChain" | "history" | "stock" >>;
 
 export type CartItem = {
     id: string;

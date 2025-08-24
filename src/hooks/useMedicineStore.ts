@@ -1,7 +1,11 @@
 "use client";
 import { create } from "zustand";
 import type { Medicine, NewMedicine, UpdateMedicine } from "@/types/medicine";
-import { getMedicinesFromChain, addMedicineToChain, updateMedicineOnChain } from "@/lib/solana/medicine.service";
+import { 
+    getMedicinesFromFirestore, 
+    addMedicineToFirestore, 
+    updateMedicineInFirestore 
+} from "@/lib/firebase/medicines";
 
 interface MedicineState {
   medicines: Medicine[];
@@ -12,7 +16,6 @@ interface MedicineState {
   fetchMedicines: () => Promise<void>;
   addMedicine: (payload: NewMedicine) => Promise<Medicine | null>;
   updateMedicine: (id: string, payload: UpdateMedicine) => Promise<Medicine | null>;
-  // Local state updates for prototype (would be replaced by on-chain refetches)
   deleteMedicine: (id: string) => void;
 }
 
@@ -23,12 +26,13 @@ export const useMedicineStore = create<MedicineState>((set, get) => ({
   isInitialized: false,
 
   fetchMedicines: async () => {
-    if (get().isInitialized || get().loading) return; // Prevent multiple fetches
+    if (get().loading) return; 
     try {
       set({ loading: true, error: undefined });
-      const meds = await getMedicinesFromChain();
+      const meds = await getMedicinesFromFirestore();
       set({ medicines: meds, loading: false, isInitialized: true });
     } catch (e: any) {
+      console.error("Failed to load medicines from Firestore:", e);
       set({ error: e?.message ?? "Failed to load medicines", loading: false, isInitialized: true });
     }
   },
@@ -36,13 +40,14 @@ export const useMedicineStore = create<MedicineState>((set, get) => ({
   addMedicine: async (payload) => {
     try {
       set({ loading: true, error: undefined });
-      const created = await addMedicineToChain(payload);
+      const created = await addMedicineToFirestore(payload);
       set((state) => ({ 
         medicines: [created, ...state.medicines], 
         loading: false 
       }));
       return created;
     } catch (e: any) {
+      console.error("Failed to add medicine to Firestore:", e);
       set({ error: e?.message ?? "Failed to add medicine", loading: false });
       return null;
     }
@@ -51,7 +56,7 @@ export const useMedicineStore = create<MedicineState>((set, get) => ({
   updateMedicine: async (id, payload) => {
     try {
       set({ loading: true, error: undefined });
-      const updated = await updateMedicineOnChain(id, payload);
+      const updated = await updateMedicineInFirestore(id, payload);
       set((state) => ({
         medicines: state.medicines.map((med) =>
           med.id === id ? { ...med, ...updated } : med
@@ -60,12 +65,12 @@ export const useMedicineStore = create<MedicineState>((set, get) => ({
       }));
       return updated;
     } catch (e: any) {
+        console.error("Failed to update medicine in Firestore:", e);
         set({ error: e?.message ?? "Failed to update medicine", loading: false });
         return null;
     }
   },
 
-  // This is for local simulation and would be removed in a real dApp
   deleteMedicine: (id) => {
     set((state) => ({
       medicines: state.medicines.filter((med) => med.id !== id),

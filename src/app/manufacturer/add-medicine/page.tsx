@@ -29,6 +29,7 @@ const formSchema = z.object({
   mfgDate: z.date({ required_error: 'A manufacturing date is required.' }),
   expDate: z.date({ required_error: 'An expiry date is required.' }),
   quantity: z.coerce.number().min(0, { message: 'Quantity cannot be negative.' }),
+  price: z.coerce.number().min(0, { message: 'Price cannot be negative.' }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -48,6 +49,7 @@ export default function AddMedicinePage() {
       mfgDate: new Date(),
       expDate: new Date(Date.now() + 31536000000), // +1 year
       quantity: 0,
+      price: 0,
     },
   });
 
@@ -62,15 +64,15 @@ export default function AddMedicinePage() {
 
     if(created) {
       toast({
-        title: 'Medicine Added to Ledger',
-        description: `${created.name} has been successfully submitted to the ledger.`,
+        title: 'Medicine Submitted',
+        description: `${created.name} has been successfully submitted to the database.`,
       });
       router.push('/admin/stock');
     } else {
         toast({
             variant: "destructive",
             title: 'Failed to Add Medicine',
-            description: `There was an error submitting the medicine to the ledger.`,
+            description: `There was an error submitting the medicine to the database.`,
         });
     }
   };
@@ -87,7 +89,7 @@ export default function AddMedicinePage() {
             <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
                 Register New Medicine Batch
             </h1>
-            <p className="text-muted-foreground">Fill out the form below to register a new medicine on the simulated decentralized ledger.</p>
+            <p className="text-muted-foreground">Fill out the form below to register a new medicine in the database.</p>
             </div>
         </div>
 
@@ -95,7 +97,7 @@ export default function AddMedicinePage() {
         <CardHeader>
           <CardTitle>Medicine Details</CardTitle>
           <CardDescription>
-            Enter the information for the new medicine batch. This will create a record on the ledger.
+            Enter the information for the new medicine batch. This will create a new record.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -142,7 +144,7 @@ export default function AddMedicinePage() {
                     </FormItem>
                   )}
                 />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <FormField
                     control={form.control}
                     name="batchNo"
@@ -164,6 +166,19 @@ export default function AddMedicinePage() {
                         <FormLabel>Initial Quantity</FormLabel>
                         <FormControl>
                             <Input type="number" placeholder="e.g. 1000" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                     <FormField
+                    control={form.control}
+                    name="price"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Price (₹)</FormLabel>
+                        <FormControl>
+                            <Input type="number" placeholder="e.g. 45.50" {...field} />
                         </FormControl>
                         <FormMessage />
                         </FormItem>
@@ -265,7 +280,7 @@ export default function AddMedicinePage() {
                   ) : (
                      <PackagePlus className="mr-2 h-5 w-5" />
                   )}
-                  Add Medicine to Ledger
+                  Add Medicine
                 </Button>
               </div>
             </form>
@@ -275,4 +290,3 @@ export default function AddMedicinePage() {
     </div>
   );
 }
-
