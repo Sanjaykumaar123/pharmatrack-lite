@@ -18,7 +18,7 @@
  * - ChatOutput - The return type for the chatWithAi function.
  */
 
-import {ai} from '@/backend/genkit';
+import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import type { Medicine } from '@/types/medicine';
 
@@ -29,7 +29,7 @@ const ChatMessageSchema = z.object({
 
 const ChatInputSchema = z.object({
   history: z.array(ChatMessageSchema).describe('The chat history so far.'),
-  medicines: z.string().describe('A JSON string of all available medicines.'),
+  allMedicines: z.array(z.any()).describe('A list of all available medicines.'),
 });
 export type ChatInput = z.infer<typeof ChatInputSchema>;
 
@@ -41,21 +41,8 @@ export type ChatOutput = z.infer<typeof ChatOutputSchema>;
 // This function is the main entry point called by the frontend.
 // It accepts the chat history and the current state of the medicine inventory.
 export async function chatWithAi(input: { history: z.infer<typeof ChatMessageSchema>[], allMedicines: Medicine[] }): Promise<ChatOutput> {
-  // We format the medicine data into a simple string for the AI to understand.
-  const medicineInfo = input.allMedicines.map(med => 
-    `- Name: ${med.name}\n` +
-    `  - Manufacturer: ${med.manufacturer}\n` +
-    `  - Batch Number: ${med.batchNo}\n` +
-    `  - Expiry Date: ${med.expDate}\n` +
-    `  - Description: ${med.description}\n` +
-    `  - Stock: ${med.stock.quantity} units, status is ${med.stock.status}`
-  ).join('\n');
-
   // We call the Genkit flow with the prepared data.
-  return chatFlow({
-    history: input.history,
-    medicines: medicineInfo,
-  });
+  return chatFlow(input);
 }
 
 // This is the Genkit prompt definition.
@@ -71,7 +58,14 @@ Do not provide any medical advice or information not present in the provided dat
 If the user asks a question you cannot answer with the provided data, politely say that you cannot answer that question.
 
 Available Medicines:
-{{{medicines}}}
+{{#each allMedicines}}
+- Name: {{name}}
+  - Manufacturer: {{manufacturer}}
+  - Batch Number: {{batchNo}}
+  - Expiry Date: {{expDate}}
+  - Description: {{description}}
+  - Stock: {{stock.quantity}} units, status is {{stock.status}}
+{{/each}}
 
 Chat History:
 {{#each history}}
