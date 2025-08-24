@@ -1,135 +1,71 @@
+
 "use client";
 
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Button } from './ui/button';
-import { LayoutDashboard, BrainCircuit, LogIn, UserPlus, LogOut, User, Factory, ShieldCheck, Loader2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { create } from 'zustand';
+import { onAuthStateChanged, User } from 'firebase/auth';
+import { auth, db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { persist, createJSONStorage } from 'zustand/middleware'
+import type { Role } from '@/lib/firebase/auth';
 
-const PillIcon = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    {...props}
-  >
-    <path d="M12.337 2.012a9.75 9.75 0 0 0-9.325 9.325 9.75 9.75 0 0 0 9.325 9.325 9.75 9.75 0 0 0 9.325-9.325A9.75 9.75 0 0 0 12.337 2.012ZM11.25 8.637a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 .75.75v3h3a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-3v3a.75.75 0 0 1-.75.75h-.75a.75.75 0 0 1-.75-.75v-3h-3a.75.75 0 0 1-.75-.75v-.75a.75.75 0 0 1 .75-.75h3v-3Z" />
-  </svg>
+interface AuthUser {
+    uid: string;
+    email: string;
+    role: Role;
+    firstName?: string;
+    lastName?: string;
+}
+
+interface AuthState {
+  user: AuthUser | null;
+  loading: boolean;
+  setUser: (user: AuthUser | null) => void;
+  clearUser: () => void;
+}
+
+export const useAuthStore = create<AuthState>()(
+    persist(
+        (set) => ({
+            user: null,
+            loading: true, // Initially loading until auth state is determined
+            setUser: (user) => set({ user, loading: false }),
+            clearUser: () => set({ user: null, loading: false }),
+        }),
+        {
+            name: 'auth-storage',
+            storage: createJSONStorage(() => sessionStorage),
+        }
+    )
 );
 
-const roleConfig = {
-    admin: {
-        icon: ShieldCheck,
-        dashboard: '/admin/dashboard',
-        label: 'Admin'
-    },
-    manufacturer: {
-        icon: Factory,
-        dashboard: '/manufacturer/dashboard',
-        label: 'Manufacturer'
-    },
-    customer: {
-        icon: User,
-        dashboard: '/customer/dashboard',
-        label: 'Customer'
+// This function listens to Firebase's auth state changes
+// and keeps our Zustand store in sync.
+onAuthStateChanged(auth, async (firebaseUser: User | null) => {
+    if (firebaseUser) {
+        // User is signed in. Fetch their role from Firestore.
+        const userDocRef = doc(db, 'users', firebaseUser.uid);
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            useAuthStore.getState().setUser({
+                uid: firebaseUser.uid,
+                email: firebaseUser.email!,
+                role: userData.role || 'customer', // Default to customer
+                firstName: userData.firstName,
+                lastName: userData.lastName,
+            });
+        } else {
+             // This case can happen if user doc creation fails during signup.
+             // We'll log them in with a default role.
+             useAuthStore.getState().setUser({
+                uid: firebaseUser.uid,
+                email: firebaseUser.email!,
+                role: 'customer',
+            });
+        }
+    } else {
+        // User is signed out.
+        useAuthStore.getState().clearUser();
     }
-}
-
-export default function Header() {
-  const [loggedInRole, setLoggedInRole] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const router = useRouter();
-
-  useEffect(() => {
-    // This effect runs on the client after hydration
-    // so it's safe to access sessionStorage.
-    const role = sessionStorage.getItem('loggedInUserRole');
-    setLoggedInRole(role);
-    setIsLoading(false);
-
-    const handleStorageChange = () => {
-        setLoggedInRole(sessionStorage.getItem('loggedInUserRole'));
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    
-    return () => {
-        window.removeEventListener('storage', handleStorageChange);
-    };
-
-  }, []);
-
-  const handleLogout = () => {
-    sessionStorage.removeItem('loggedInUserRole');
-    setLoggedInRole(null);
-    router.push('/login');
-  };
-
-  const roleKey = loggedInRole as keyof typeof roleConfig;
-  const currentRole = loggedInRole ? roleConfig[roleKey] : null;
-  const RoleIcon = currentRole?.icon;
-
-
-  return (
-    <header className="bg-background/80 backdrop-blur-sm sticky top-0 z-50 border-b">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <PillIcon className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold text-foreground font-headline">
-              PharmaTrack Lite
-            </span>
-          </Link>
-
-          <nav className="hidden md:flex items-center gap-2">
-            <Link href="/medicines" passHref>
-              <Button variant="ghost">
-                <LayoutDashboard className="mr-2 h-5 w-5" />
-                Pharmacy
-              </Button>
-            </Link>
-            <Link href="/chat" passHref>
-              <Button variant="ghost">
-                <BrainCircuit className="mr-2 h-5 w-5" />
-                AI Assistant
-              </Button>
-            </Link>
-             <div className="flex items-center gap-2 ml-4">
-                {isLoading ? (
-                    <Loader2 className="h-6 w-6 animate-spin" />
-                ) : loggedInRole && currentRole && RoleIcon ? (
-                     <>
-                        <Link href={currentRole.dashboard} passHref>
-                            <Button variant="outline">
-                                <RoleIcon className="mr-2 h-5 w-5" />
-                                {currentRole.label} Dashboard
-                            </Button>
-                        </Link>
-                        <Button onClick={handleLogout}>
-                            <LogOut className="mr-2 h-5 w-5" />
-                            Logout
-                        </Button>
-                     </>
-                ) : (
-                    <>
-                        <Link href="/login" passHref>
-                            <Button variant="ghost">
-                                <LogIn className="mr-2 h-5 w-5" />
-                                Login
-                            </Button>
-                        </Link>
-                        <Link href="/signup" passHref>
-                            <Button>
-                                <UserPlus className="mr-2 h-5 w-5" />
-                                Sign Up
-                            </Button>
-                        </Link>
-                    </>
-                )}
-            </div>
-          </nav>
-        </div>
-      </div>
-    </header>
-  );
-}
+});

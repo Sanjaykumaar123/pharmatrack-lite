@@ -8,6 +8,9 @@ import { LayoutDashboard, BrainCircuit, LogIn, UserPlus, LogOut, User, Factory, 
 import { useEffect, useState } from 'react';
 import { useCartStore } from '@/hooks/useCartStore';
 import { Badge } from './ui/badge';
+import { useAuthStore } from '@/hooks/useAuthStore';
+import { signOutUser } from '@/lib/firebase/auth';
+import { useToast } from '@/hooks/use-toast';
 
 const PillIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -91,35 +94,31 @@ function CartButton() {
 
 
 export default function Header() {
-  const [loggedInRole, setLoggedInRole] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { user, loading, clearUser } = useAuthStore();
   const router = useRouter();
+  const { toast } = useToast();
 
-  useEffect(() => {
-    const role = sessionStorage.getItem('loggedInUserRole');
-    setLoggedInRole(role);
-    setIsLoading(false);
-
-    const handleStorageChange = () => {
-        setLoggedInRole(sessionStorage.getItem('loggedInUserRole'));
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    
-    return () => {
-        window.removeEventListener('storage', handleStorageChange);
-    };
-
-  }, []);
-
-  const handleLogout = () => {
-    sessionStorage.removeItem('loggedInUserRole');
-    setLoggedInRole(null);
-    router.push('/login');
+  const handleLogout = async () => {
+    try {
+        await signOutUser();
+        clearUser();
+        toast({
+            title: "Logged Out",
+            description: "You have been successfully logged out."
+        })
+        router.push('/login');
+    } catch (error) {
+        console.error("Logout failed:", error);
+        toast({
+            variant: "destructive",
+            title: "Logout Failed",
+            description: "There was an error logging you out. Please try again."
+        })
+    }
   };
 
-  const roleKey = loggedInRole as keyof typeof roleConfig;
-  const currentRole = loggedInRole ? roleConfig[roleKey] : null;
+  const roleKey = user?.role as keyof typeof roleConfig;
+  const currentRole = user ? roleConfig[roleKey] : null;
   const RoleIcon = currentRole?.icon;
 
 
@@ -151,9 +150,9 @@ export default function Header() {
             </nav>
             <div className="w-px h-6 bg-border mx-2 hidden md:block" />
             <div className="flex items-center gap-2">
-                {isLoading ? (
+                {loading ? (
                     <Loader2 className="h-6 w-6 animate-spin" />
-                ) : loggedInRole && currentRole && RoleIcon ? (
+                ) : user && currentRole && RoleIcon ? (
                      <>
                         <Link href={currentRole.dashboard} passHref>
                             <Button variant="outline">
