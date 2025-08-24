@@ -16,7 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 
 export default function MedicineDetailPage() {
-  const { medicines, isInitialized, fetchMedicines } = useMedicineStore();
+  const { medicines, isInitialized } = useMedicineStore();
   const [medicine, setMedicine] = useState<Medicine | null | undefined>(undefined); // undefined: loading, null: not found
   const params = useParams();
   const id = params.id as string;
@@ -48,19 +48,17 @@ export default function MedicineDetailPage() {
       }
     };
 
-    if (!isInitialized) {
-      fetchMedicines();
-    } else {
+    if (isInitialized) {
       findMedicine();
     }
-  }, [id, isInitialized, fetchMedicines, medicines]);
+  }, [id, isInitialized, medicines]);
 
 
   if (medicine === undefined || !isInitialized) {
     return (
         <div className="flex items-center justify-center h-full">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-4 text-lg">Loading Medicine Details from Ledger...</p>
+            <p className="ml-4 text-lg">Loading Medicine Details...</p>
         </div>
     )
   }
@@ -133,7 +131,7 @@ export default function MedicineDetailPage() {
                   <Boxes className="h-6 w-6 text-muted-foreground" />
                   <div>
                     <p className="text-sm text-muted-foreground">Stock Quantity</p>
-                    <p className="font-semibold">{medicine.stock.quantity} units</p>
+                    <p className="font-semibold">{medicine.quantity} units</p>
                   </div>
                 </div>
                 <div className={cn("sm:col-span-2 flex items-center gap-4 p-4 rounded-lg", medicine.onChain ? 'bg-green-500/10' : 'bg-yellow-500/10')}>

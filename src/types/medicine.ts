@@ -20,32 +20,25 @@ export type Order = {
     orderDate: string; // ISO date string
 };
 
-
 export type Medicine = {
-  id: string; // Firestore document ID
+  id: string;
   name: string;
-  batchNo: string;
-  mfgDate: string; // ISO date
-  expDate: string; // ISO date
   manufacturer: string;
-  onChain: boolean; // whether we’ve confirmed a ledger write
-  description: string;
+  batchNo: string;
+  mfgDate: string;
+  expDate: string;
   price: number;
-  stock: {
-      quantity: number;
-      status: 'In Stock' | 'Low Stock' | 'Out of Stock';
-  };
+  onChain: boolean;
+  description: string;
   supplyChainStatus: SupplyChainStatus;
-  history?: {
+  history: {
       timestamp: string;
       action: 'CREATED' | 'UPDATED';
       changes: string;
   }[];
+  quantity: number;
+  stockStatus: 'In Stock' | 'Low Stock' | 'Out of Stock';
 };
-
-export type NewMedicine = Omit<Medicine, "id" | "onChain" | "history" | "supplyChainStatus" | "stock" >;
-
-export type UpdateMedicine = Partial<Omit<Medicine, "id" | "onChain" | "history" | "stock" >>;
 
 export type CartItem = {
     id: string;

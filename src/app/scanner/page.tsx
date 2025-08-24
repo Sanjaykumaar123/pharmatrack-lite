@@ -11,16 +11,10 @@ import { useMedicineStore } from '@/hooks/useMedicineStore';
 
 export default function ScannerPage() {
   const router = useRouter();
-  const { medicines, isInitialized, fetchMedicines } = useMedicineStore();
+  const { medicines, isInitialized } = useMedicineStore();
   const { toast } = useToast();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    if(!isInitialized) {
-      fetchMedicines();
-    }
-  }, [isInitialized, fetchMedicines])
 
   useEffect(() => {
     const getCameraPermission = async () => {

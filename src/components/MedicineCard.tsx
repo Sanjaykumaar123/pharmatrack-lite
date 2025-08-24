@@ -9,7 +9,7 @@ import {
   CardContent,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, CheckCircle, Clock, ShoppingCart } from 'lucide-react';
+import { CheckCircle, Clock, ShoppingCart } from 'lucide-react';
 import type { Medicine } from '@/types/medicine';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
@@ -23,7 +23,7 @@ interface MedicineCardProps {
 }
 
 export function MedicineCard({ medicine }: MedicineCardProps) {
-  const isOutOfStock = medicine.stock.status === 'Out of Stock';
+  const isOutOfStock = medicine.stockStatus === 'Out of Stock';
   const { addItem } = useCartStore();
   const { toast } = useToast();
   const router = useRouter();
@@ -68,11 +68,11 @@ export function MedicineCard({ medicine }: MedicineCardProps) {
           <Link href={`/medicine/${medicine.id}`} className="block">
               <p className="text-2xl font-bold text-primary mb-2">₹{medicine.price.toFixed(2)}</p>
               <div className="flex items-center text-sm text-muted-foreground">
-                  <p>Qty: {medicine.stock.quantity} &bull; Status: <span className={cn(
-                      medicine.stock.status === 'In Stock' && 'text-green-600',
-                      medicine.stock.status === 'Low Stock' && 'text-yellow-600',
-                      medicine.stock.status === 'Out of Stock' && 'text-red-600'
-                  )}>{medicine.stock.status}</span></p>
+                  <p>Qty: {medicine.quantity} &bull; Status: <span className={cn(
+                      medicine.stockStatus === 'In Stock' && 'text-green-600',
+                      medicine.stockStatus === 'Low Stock' && 'text-yellow-600',
+                      medicine.stockStatus === 'Out of Stock' && 'text-red-600'
+                  )}>{medicine.stockStatus}</span></p>
               </div>
           </Link>
       </CardContent>

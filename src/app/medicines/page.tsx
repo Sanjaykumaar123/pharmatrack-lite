@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search, ScanLine, X, Loader2, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, ScanLine, Loader2, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { MedicineCard } from '@/components/MedicineCard';
 import { useMedicineStore } from '@/hooks/useMedicineStore';
 import type { Medicine } from '@/types/medicine';
@@ -15,15 +15,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 const ITEMS_PER_PAGE = 12;
 
 function MedicinesPageContent() {
-  const { medicines, loading, error, isInitialized, fetchMedicines } = useMedicineStore();
+  const { medicines, error, isInitialized } = useMedicineStore();
   
-  useEffect(() => {
-    // Fetch medicines only if not already initialized
-    if (!isInitialized) {
-      fetchMedicines();
-    }
-  }, [isInitialized, fetchMedicines]);
-
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   
@@ -48,11 +41,11 @@ function MedicinesPageContent() {
   }, [searchTerm]);
 
 
-  if (loading && !isInitialized) {
+  if (!isInitialized) {
       return (
           <div className="flex h-full flex-col items-center justify-center">
               <Loader2 className="h-10 w-10 animate-spin text-primary" />
-              <p className="mt-4 text-lg text-muted-foreground">Connecting to the Ledger...</p>
+              <p className="mt-4 text-lg text-muted-foreground">Loading Inventory from Local File...</p>
           </div>
       )
   }
@@ -62,7 +55,7 @@ function MedicinesPageContent() {
         <div className="container mx-auto p-4 sm:p-6 lg:p-8">
             <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Connection Error</AlertTitle>
+                <AlertTitle>Error Loading Data</AlertTitle>
                 <AlertDescription>
                     {error}
                 </AlertDescription>

@@ -1,79 +1,41 @@
+
 "use client";
+
 import { create } from "zustand";
-import type { Medicine, NewMedicine, UpdateMedicine } from "@/types/medicine";
-import { 
-    getMedicinesFromFirestore, 
-    addMedicineToFirestore, 
-    updateMedicineInFirestore 
-} from "@/lib/firebase/medicines";
+import allMedicines from '../../MOCK_DATA.json';
+import type { Medicine } from "@/types/medicine";
+
+// ===================================================================================
+// LOCAL DATA SIMULATION
+// ===================================================================================
+// This file now acts as a client-side "store" that loads data directly
+// from the local MOCK_DATA.json file. This removes the dependency on an external
+// database (like Firestore) and allows the prototype to work offline and without
+// any special setup.
+// ===================================================================================
+
+
+const getStockStatus = (quantity: number): Medicine['stockStatus'] => {
+    if (quantity <= 0) return 'Out of Stock';
+    if (quantity <= 50) return 'Low Stock';
+    return 'In Stock';
+};
+
+// Process the raw data to add the calculated stockStatus
+const processedMedicines: Medicine[] = allMedicines.map(med => ({
+    ...med,
+    stockStatus: getStockStatus(med.quantity)
+}));
 
 interface MedicineState {
   medicines: Medicine[];
-  loading: boolean;
-  error?: string;
   isInitialized: boolean;
-
-  fetchMedicines: () => Promise<void>;
-  addMedicine: (payload: NewMedicine) => Promise<Medicine | null>;
-  updateMedicine: (id: string, payload: UpdateMedicine) => Promise<Medicine | null>;
-  deleteMedicine: (id: string) => void;
+  error?: string;
+  // Note: add, update, delete functions are removed as we are reading from a static file.
 }
 
-export const useMedicineStore = create<MedicineState>((set, get) => ({
-  medicines: [],
-  loading: false,
+export const useMedicineStore = create<MedicineState>(() => ({
+  medicines: processedMedicines,
+  isInitialized: true, // Data is loaded synchronously, so it's always initialized.
   error: undefined,
-  isInitialized: false,
-
-  fetchMedicines: async () => {
-    if (get().loading) return; 
-    try {
-      set({ loading: true, error: undefined });
-      const meds = await getMedicinesFromFirestore();
-      set({ medicines: meds, loading: false, isInitialized: true });
-    } catch (e: any) {
-      console.error("Failed to load medicines from Firestore:", e);
-      set({ error: e?.message ?? "Failed to load medicines", loading: false, isInitialized: true });
-    }
-  },
-
-  addMedicine: async (payload) => {
-    try {
-      set({ loading: true, error: undefined });
-      const created = await addMedicineToFirestore(payload);
-      set((state) => ({ 
-        medicines: [created, ...state.medicines], 
-        loading: false 
-      }));
-      return created;
-    } catch (e: any) {
-      console.error("Failed to add medicine to Firestore:", e);
-      set({ error: e?.message ?? "Failed to add medicine", loading: false });
-      return null;
-    }
-  },
-
-  updateMedicine: async (id, payload) => {
-    try {
-      set({ loading: true, error: undefined });
-      const updated = await updateMedicineInFirestore(id, payload);
-      set((state) => ({
-        medicines: state.medicines.map((med) =>
-          med.id === id ? { ...med, ...updated } : med
-        ),
-        loading: false,
-      }));
-      return updated;
-    } catch (e: any) {
-        console.error("Failed to update medicine in Firestore:", e);
-        set({ error: e?.message ?? "Failed to update medicine", loading: false });
-        return null;
-    }
-  },
-
-  deleteMedicine: (id) => {
-    set((state) => ({
-      medicines: state.medicines.filter((med) => med.id !== id),
-    }));
-  },
 }));

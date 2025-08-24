@@ -24,10 +24,7 @@ import {
   Home,
   ArrowUp,
   ArrowDown,
-  PlusCircle,
   MoreHorizontal,
-  Pencil,
-  Trash2,
   Loader2,
   CheckCircle,
   Clock,
@@ -49,12 +46,10 @@ import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip } from '
 
 import type { Medicine, SupplyChainStatus } from '@/types';
 import { cn } from '@/lib/utils';
-import { useToast } from '@/hooks/use-toast';
 import { useMedicineStore } from '@/hooks/useMedicineStore';
-import { AddEditMedicineDialog } from '@/components/AddEditMedicineDialog';
 
-type StockStatus = Medicine['stock']['status'];
-type SortKey = keyof Pick<Medicine, 'name' | 'manufacturer' | 'expDate' > | 'quantity' | 'supplyChainStatus';
+type StockStatus = Medicine['stockStatus'];
+type SortKey = keyof Pick<Medicine, 'name' | 'manufacturer' | 'expDate' | 'quantity' | 'supplyChainStatus'>;
 
 const chartConfig = {
   quantity: {
@@ -62,7 +57,6 @@ const chartConfig = {
     color: 'hsl(var(--primary))',
   },
 } satisfies ChartConfig;
-
 
 const statusConfig: Record<
   StockStatus,
@@ -81,25 +75,15 @@ const supplyChainStatusConfig: Record<SupplyChainStatus, { icon: React.ElementTy
 
 
 export default function StockManagementPage() {
-  const { medicines, loading, isInitialized, fetchMedicines, deleteMedicine } = useMedicineStore();
+  const { medicines, isInitialized } = useMedicineStore();
   
-  useEffect(() => {
-    if (!isInitialized) {
-      fetchMedicines();
-    }
-  }, [isInitialized, fetchMedicines]);
-
   const [filter, setFilter] = useState<StockStatus | 'All'>('All');
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'ascending' | 'descending' } | null>(null);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(null);
   
-  const { toast } = useToast();
-
    const summary = useMemo(() => {
     return medicines.reduce(
       (acc, med) => {
-        acc[med.stock.status]++;
+        acc[med.stockStatus]++;
         acc.Total++;
         return acc;
       },
@@ -109,7 +93,7 @@ export default function StockManagementPage() {
 
   const sortedAndFilteredMedicines = useMemo(() => {
     let filtered =
-      filter === 'All' ? medicines : medicines.filter((med) => med.stock.status === filter);
+      filter === 'All' ? medicines : medicines.filter((med) => med.stockStatus === filter);
 
     if (sortConfig !== null) {
       filtered.sort((a, b) => {
@@ -117,8 +101,8 @@ export default function StockManagementPage() {
         let bValue: string | number;
 
         if (sortConfig.key === 'quantity') {
-          aValue = a.stock.quantity;
-          bValue = b.stock.quantity;
+          aValue = a.quantity;
+          bValue = b.quantity;
         } else if (sortConfig.key === 'expDate') {
           aValue = new Date(a.expDate).getTime();
           bValue = new Date(b.expDate).getTime();
@@ -157,35 +141,21 @@ export default function StockManagementPage() {
 
   const chartData = useMemo(() => {
     return medicines
-      .filter((med) => med.stock.quantity > 0)
-      .sort((a, b) => b.stock.quantity - a.stock.quantity)
+      .filter((med) => med.quantity > 0)
+      .sort((a, b) => b.quantity - a.quantity)
       .slice(0, 10) // Top 10 most stocked items
       .map((med) => ({
         name: med.name,
-        quantity: med.stock.quantity,
+        quantity: med.quantity,
       }));
   }, [medicines]);
 
-  const handleEditClick = (medicine: Medicine) => {
-    setSelectedMedicine(medicine);
-    setIsEditDialogOpen(true);
-  };
 
-  const handleDeleteClick = (medicine: Medicine) => {
-    // This is a local delete for prototyping.
-    // In a real app, this might archive or mark an item as void on the chain.
-    deleteMedicine(medicine.id);
-    toast({
-        title: "Medicine Removed (Locally)",
-        description: `${medicine.name} has been removed from the local view.`,
-    });
-  };
-
-  if (loading && !isInitialized) {
+  if (!isInitialized) {
       return (
           <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <p className="ml-4 text-lg">Loading Inventory from Database...</p>
+              <p className="ml-4 text-lg">Loading Local Inventory...</p>
           </div>
       )
   }
@@ -198,22 +168,14 @@ export default function StockManagementPage() {
             <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
               Stock Management
             </h1>
-            <p className="text-muted-foreground mt-1">Oversee the entire inventory from the live database.</p>
+            <p className="text-muted-foreground mt-1">Oversee the entire inventory from the local data file.</p>
           </div>
-          <div className="flex items-center gap-2">
-            <Link href="/manufacturer/add-medicine">
-                <Button>
-                    <PlusCircle className="mr-2 h-5 w-5" />
-                    Add Medicine
-                </Button>
-            </Link>
-            <Link href="/admin/dashboard" passHref>
-              <Button variant="outline">
-                <Home className="mr-2 h-5 w-5" />
-                Admin Dashboard
-              </Button>
-            </Link>
-          </div>
+          <Link href="/admin/dashboard" passHref>
+            <Button variant="outline">
+              <Home className="mr-2 h-5 w-5" />
+              Admin Dashboard
+            </Button>
+          </Link>
         </div>
 
         {/* Summary Cards */}
@@ -250,7 +212,7 @@ export default function StockManagementPage() {
             <CardHeader>
               <CardTitle>Inventory Details</CardTitle>
               <CardDescription>
-                A detailed list of all medicines recorded in the database.
+                A detailed list of all medicines.
                 {filter !== 'All' && ` (Filtering by: ${filter})`}
               </CardDescription>
             </CardHeader>
@@ -269,7 +231,6 @@ export default function StockManagementPage() {
                           <Button variant="ghost" onClick={() => requestSort('quantity')}>Quantity {getSortIcon('quantity')}</Button>
                       </TableHead>
                       <TableHead>Ledger Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -285,32 +246,12 @@ export default function StockManagementPage() {
                                 <span>{supplyChainInfo.label}</span>
                             </div>
                         </TableCell>
-                        <TableCell className="text-right">{med.stock.quantity}</TableCell>
+                        <TableCell className="text-right">{med.quantity}</TableCell>
                         <TableCell>
                            <Badge variant={med.onChain ? "secondary" : "destructive"} className={cn(med.onChain ? 'bg-green-100 text-green-800 border-green-200' : 'bg-yellow-100 text-yellow-800 border-yellow-200')}>
                             {med.onChain ? <CheckCircle className="h-3 w-3 mr-1" /> : <Clock className="h-3 w-3 mr-1" />}
                             {med.onChain ? 'Confirmed' : 'Pending'}
                            </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                           <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => handleEditClick(med)}>
-                                <Pencil className="mr-2 h-4 w-4" />
-                                <span>Edit</span>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => handleDeleteClick(med)} className="text-destructive focus:text-destructive">
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                <span>Delete (Local)</span>
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
                         </TableCell>
                       </TableRow>
                        )
@@ -341,11 +282,7 @@ export default function StockManagementPage() {
           </Card>
         </div>
       </div>
-       <AddEditMedicineDialog 
-        isOpen={isEditDialogOpen}
-        onClose={() => setIsEditDialogOpen(false)}
-        medicine={selectedMedicine}
-      />
     </>
   );
 }
+
