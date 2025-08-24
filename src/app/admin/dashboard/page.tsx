@@ -1,10 +1,38 @@
 
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, Home, Warehouse, ArrowRight, Users, LineChart, ShoppingCart } from 'lucide-react';
+import { ShieldCheck, Home, Warehouse, ArrowRight, Users, LineChart, ShoppingCart, Database, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { seedDatabase } from '@/lib/firebase/seed';
+import { useToast } from '@/hooks/use-toast';
+import { useState } from 'react';
 
 export default function AdminDashboardPage() {
+    const [isSeeding, setIsSeeding] = useState(false);
+    const { toast } = useToast();
+
+    const handleSeedDatabase = async () => {
+        setIsSeeding(true);
+        try {
+            await seedDatabase();
+            toast({
+                title: 'Database Seeded!',
+                description: 'The mock medicine data has been added to your Firestore database.',
+            });
+        } catch (error) {
+            console.error(error);
+            toast({
+                variant: 'destructive',
+                title: 'Seeding Failed',
+                description: 'There was an error seeding the database. Check the console for details.',
+            });
+        } finally {
+            setIsSeeding(false);
+        }
+    };
+
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
       <div className="flex items-center justify-between gap-4 mb-8">
@@ -103,6 +131,24 @@ export default function AdminDashboardPage() {
                <Button disabled variant="secondary">Coming Soon</Button>
             </CardFooter>
         </Card>
+
+         <Card className="h-full border-primary/20 bg-primary/5 hover:shadow-lg transition-all flex flex-col">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Seed Database</CardTitle>
+              <Database className="h-6 w-6 text-primary" />
+            </CardHeader>
+            <CardContent className="flex-grow">
+              <CardDescription>
+                  Populate your Firestore database with the initial set of mock medicine data. This is useful for testing and development.
+              </CardDescription>
+            </CardContent>
+            <CardFooter>
+              <Button onClick={handleSeedDatabase} disabled={isSeeding}>
+                {isSeeding ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
+                {isSeeding ? 'Seeding...' : 'Seed Data'}
+              </Button>
+            </CardFooter>
+          </Card>
       </div>
     </div>
   );
