@@ -79,6 +79,12 @@ export async function signInWithEmail(email: string, password: string, role: Rol
         throw new Error("User data not found. Please contact support.");
     }
   } catch (error: any) {
+     // Re-throw custom errors from our role check first
+    if (error.message.includes('permission') || error.message.includes('User data not found')) {
+        throw error;
+    }
+    
+    // Then handle Firebase-specific auth errors
      switch (error.code) {
       case 'auth/user-not-found':
       case 'auth/wrong-password':
@@ -87,10 +93,6 @@ export async function signInWithEmail(email: string, password: string, role: Rol
       case 'auth/invalid-email':
         throw new Error('Please enter a valid email address.');
       default:
-        // Re-throw custom errors from our role check
-        if (error.message.includes('permission')) {
-            throw error;
-        }
         throw new Error('An unexpected error occurred. Please try again.');
     }
   }
