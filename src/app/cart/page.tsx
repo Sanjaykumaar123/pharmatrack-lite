@@ -56,7 +56,7 @@ export default function CartPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Cart Items ({items.length})</CardTitle>
-              </Header>
+              </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
