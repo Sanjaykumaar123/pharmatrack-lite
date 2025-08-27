@@ -9,16 +9,12 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Minus, Plus, ShoppingCart, Trash2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { useOrderStore } from '@/hooks/useOrderStore';
-import { useRouter } from 'next/navigation';
+import { CheckoutDialog } from '@/components/CheckoutDialog';
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, clearCart } = useCartStore();
-  const { addOrder } = useOrderStore();
-  const { toast } = useToast();
-  const router = useRouter();
+  const { items, removeItem, updateQuantity } = useCartStore();
   const [isClient, setIsClient] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -30,21 +26,7 @@ export default function CartPage() {
 
   const handleCheckout = () => {
     if (items.length === 0) return;
-
-    addOrder({
-      customerName: 'Guest Customer', // Simulated user
-      items: items.map(item => ({ medicineId: item.id, name: item.name, quantity: item.quantity, price: item.price })),
-      total: finalTotal,
-      status: 'Pending',
-    });
-
-    toast({
-      title: "Order Placed!",
-      description: "Your order has been successfully submitted.",
-    });
-    
-    clearCart();
-    router.push('/medicines');
+    setIsCheckoutOpen(true);
   };
 
   if (!isClient) {
@@ -52,6 +34,7 @@ export default function CartPage() {
   }
   
   return (
+    <>
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
       <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline mb-8">
         Your Shopping Cart
@@ -73,7 +56,7 @@ export default function CartPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Cart Items ({items.length})</CardTitle>
-              </CardHeader>
+              </Header>
               <CardContent>
                 <Table>
                   <TableHeader>
@@ -153,5 +136,11 @@ export default function CartPage() {
         </div>
       )}
     </div>
+    <CheckoutDialog 
+      isOpen={isCheckoutOpen}
+      onClose={() => setIsCheckoutOpen(false)}
+      items={items}
+    />
+    </>
   );
 }

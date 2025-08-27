@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { useCartStore } from '@/hooks/useCartStore';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { CheckoutDialog } from '@/components/CheckoutDialog';
 
 export default function MedicineDetailPage() {
   const { medicines, isInitialized } = useMedicineStore();
@@ -22,6 +23,8 @@ export default function MedicineDetailPage() {
   const id = params.id as string;
   const { toast } = useToast();
   const router = useRouter();
+
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   const { addItem } = useCartStore();
 
@@ -36,8 +39,7 @@ export default function MedicineDetailPage() {
 
   const handleBuyNow = () => {
     if (!medicine) return;
-    addItem({ id: medicine.id, name: medicine.name, price: medicine.price, quantity: 1 });
-    router.push('/cart');
+    setIsCheckoutOpen(true);
   };
   
   useEffect(() => {
@@ -70,6 +72,7 @@ export default function MedicineDetailPage() {
   const isExpired = new Date(medicine.expDate) < new Date();
 
   return (
+    <>
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -200,5 +203,13 @@ export default function MedicineDetailPage() {
         </div>
       </div>
     </div>
+    {medicine && (
+      <CheckoutDialog
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+        items={[{ ...medicine, quantity: 1 }]}
+      />
+    )}
+    </>
   );
 }

@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Home, MoreHorizontal, Clock, Package, Truck, ThumbsUp } from 'lucide-react';
+import { Home, MoreHorizontal, Clock, Package, Truck, ThumbsUp, MapPin, Phone } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -77,64 +77,77 @@ export default function OrderManagementPage() {
           <CardDescription>A list of all orders placed by customers.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Order ID</TableHead>
-                <TableHead>Customer</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Items</TableHead>
-                <TableHead>Total</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {orders.map((order) => {
-                const config = statusConfig[order.status];
-                const Icon = config.icon;
-                return (
-                  <TableRow key={order.id}>
-                    <TableCell className="font-mono text-xs">{order.id.split('-')[1]}</TableCell>
-                    <TableCell className="font-medium">{order.customerName}</TableCell>
-                    <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
-                    <TableCell>{order.items.length}</TableCell>
-                    <TableCell>₹{order.total.toFixed(2)}</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={cn("font-medium", config.color)}>
-                        <Icon className="h-3 w-3 mr-1.5" />
-                        {order.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                           <DropdownMenuSub>
-                             <DropdownMenuSubTrigger>
-                                <span>Update Status</span>
-                             </DropdownMenuSubTrigger>
-                             <DropdownMenuSubContent>
-                                {Object.keys(statusConfig).map((status) => (
-                                     <DropdownMenuItem key={status} onClick={() => updateOrderStatus(order.id, status as Order['status'])}>
-                                        {status}
-                                     </DropdownMenuItem>
-                                ))}
-                             </DropdownMenuSubContent>
-                           </DropdownMenuSub>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
+          <div className="overflow-x-auto">
+            <Table>
+                <TableHeader>
+                <TableRow>
+                    <TableHead>Order ID</TableHead>
+                    <TableHead>Customer</TableHead>
+                    <TableHead>Shipping Info</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Items</TableHead>
+                    <TableHead>Total</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+                </TableHeader>
+                <TableBody>
+                {orders.map((order) => {
+                    const config = statusConfig[order.status];
+                    const Icon = config.icon;
+                    return (
+                    <TableRow key={order.id}>
+                        <TableCell className="font-mono text-xs">{order.id.split('-')[1]}</TableCell>
+                        <TableCell className="font-medium">{order.customerName}</TableCell>
+                        <TableCell>
+                            <div className="flex items-start gap-2 text-xs">
+                                <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0"/>
+                                <span className="flex-1">{order.shippingAddress}</span>
+                            </div>
+                            <div className="flex items-center gap-2 text-xs mt-1">
+                                <Phone className="h-4 w-4 text-muted-foreground shrink-0"/>
+                                <span>{order.mobileNumber}</span>
+                            </div>
+                        </TableCell>
+                        <TableCell>{new Date(order.orderDate).toLocaleDateString()}</TableCell>
+                        <TableCell>{order.items.length}</TableCell>
+                        <TableCell>₹{order.total.toFixed(2)}</TableCell>
+                        <TableCell>
+                        <Badge variant="outline" className={cn("font-medium", config.color)}>
+                            <Icon className="h-3 w-3 mr-1.5" />
+                            {order.status}
+                        </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                            <DropdownMenuSub>
+                                <DropdownMenuSubTrigger>
+                                    <span>Update Status</span>
+                                </DropdownMenuSubTrigger>
+                                <DropdownMenuSubContent>
+                                    {Object.keys(statusConfig).map((status) => (
+                                        <DropdownMenuItem key={status} onClick={() => updateOrderStatus(order.id, status as Order['status'])}>
+                                            {status}
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuSubContent>
+                            </DropdownMenuSub>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        </TableCell>
+                    </TableRow>
+                    );
+                })}
+                </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -3,7 +3,7 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { Order, OrderItem, OrderStatus } from '@/types/medicine';
+import type { Order, OrderStatus } from '@/types/medicine';
 import { toast } from './use-toast';
 
 interface OrderState {

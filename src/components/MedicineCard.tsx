@@ -1,5 +1,8 @@
 
+"use client";
+
 import Link from 'next/link';
+import React, { useState } from 'react';
 import {
   Card,
   CardHeader,
@@ -9,13 +12,13 @@ import {
   CardContent,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, Clock, ShoppingCart } from 'lucide-react';
+import { CheckCircle, ShoppingCart } from 'lucide-react';
 import type { Medicine } from '@/types/medicine';
 import { Badge } from './ui/badge';
 import { cn } from '@/lib/utils';
 import { useCartStore } from '@/hooks/useCartStore';
 import { useToast } from '@/hooks/use-toast';
-import { useRouter } from 'next/navigation';
+import { CheckoutDialog } from './CheckoutDialog';
 
 
 interface MedicineCardProps {
@@ -26,8 +29,8 @@ export function MedicineCard({ medicine }: MedicineCardProps) {
   const isOutOfStock = medicine.stockStatus === 'Out of Stock';
   const { addItem } = useCartStore();
   const { toast } = useToast();
-  const router = useRouter();
-
+  
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -42,11 +45,11 @@ export function MedicineCard({ medicine }: MedicineCardProps) {
   const handleBuyNow = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addItem({ id: medicine.id, name: medicine.name, price: medicine.price, quantity: 1 });
-    router.push('/cart');
+    setIsCheckoutOpen(true);
   };
 
   return (
+    <>
     <Card className={cn("h-full flex flex-col transition-all duration-300 ease-in-out group hover:shadow-xl hover:border-primary/50 hover:shadow-primary/10", isOutOfStock && "bg-muted/50 opacity-70")}>
       <CardHeader>
         <Link href={`/medicine/${medicine.id}`} className="group/link">
@@ -85,5 +88,11 @@ export function MedicineCard({ medicine }: MedicineCardProps) {
           </Button>
       </CardFooter>
     </Card>
+    <CheckoutDialog
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+        items={[{ ...medicine, quantity: 1 }]}
+      />
+    </>
   );
 }

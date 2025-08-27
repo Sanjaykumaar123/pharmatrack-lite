@@ -1,4 +1,5 @@
 
+
 export type SupplyChainStatus = 'At Manufacturer' | 'In Transit' | 'At Pharmacy';
 
 export type OrderStatus = 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
@@ -19,6 +20,8 @@ export type Order = {
     total: number;
     status: OrderStatus;
     orderDate: string; // ISO date string
+    shippingAddress: string;
+    mobileNumber: string;
 };
 
 export type Medicine = {
