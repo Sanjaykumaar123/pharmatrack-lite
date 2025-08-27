@@ -57,10 +57,10 @@ export function MedicineCard({ medicine }: MedicineCardProps) {
                 </CardTitle>
                 <CardDescription>Batch: {medicine.batchNo}</CardDescription>
               </div>
-              <Badge className={cn("shrink-0", medicine.onChain ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800")}>
-                  {medicine.onChain ? <CheckCircle className="h-3 w-3 mr-1" /> : <Clock className="h-3 w-3 mr-1" />}
-                  {medicine.onChain ? 'On-Chain' : 'Pending'}
-                </Badge>
+              <Badge className={cn("shrink-0", "bg-green-100 text-green-800")}>
+                  <CheckCircle className="h-3 w-3 mr-1" />
+                  On-Chain
+              </Badge>
             </div>
         </Link>
       </CardHeader>

@@ -270,9 +270,9 @@ export default function StockManagementPage() {
                         </TableCell>
                         <TableCell className="text-right">{med.quantity}</TableCell>
                         <TableCell>
-                           <Badge variant={med.onChain ? "secondary" : "destructive"} className={cn(med.onChain ? 'bg-green-100 text-green-800 border-green-200' : 'bg-yellow-100 text-yellow-800 border-yellow-200')}>
-                            {med.onChain ? <CheckCircle className="h-3 w-3 mr-1" /> : <Clock className="h-3 w-3 mr-1" />}
-                            {med.onChain ? 'Confirmed' : 'Confirmed'}
+                           <Badge variant="secondary" className='bg-green-100 text-green-800 border-green-200'>
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Confirmed
                            </Badge>
                         </TableCell>
                         <TableCell className="text-right">

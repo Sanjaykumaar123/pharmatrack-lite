@@ -40,17 +40,17 @@ export const useMedicineStore = create<MedicineState>()(
           ...payload,
           mfgDate: payload.mfgDate,
           expDate: payload.expDate,
-          onChain: false,
+          onChain: true, // Medicine is immediately considered confirmed on-chain
           supplyChainStatus: 'At Manufacturer',
           history: [{
               timestamp: new Date().toISOString(),
               action: 'CREATED',
-              changes: 'Batch registered locally.'
+              changes: 'Batch registered and confirmed on ledger.'
           }],
           stockStatus: getStockStatus(payload.quantity)
         };
         
-        // Simulate network delay
+        // Simulate network delay for the blockchain transaction
         await new Promise(resolve => setTimeout(resolve, 500));
         
         set(state => ({
@@ -78,13 +78,14 @@ export const useMedicineStore = create<MedicineState>()(
                         ...med,
                         ...payload,
                         quantity: payload.quantity ?? med.quantity,
+                        onChain: true, // Update is immediately considered confirmed
                         stockStatus: getStockStatus(payload.quantity ?? med.quantity),
                          history: [
                             ...(med.history || []),
                             {
                                 timestamp: new Date().toISOString(),
                                 action: 'UPDATED',
-                                changes: changes || 'Updated details.'
+                                changes: changes || 'Updated details and confirmed on ledger.'
                             }
                         ]
                     };
@@ -95,7 +96,7 @@ export const useMedicineStore = create<MedicineState>()(
             return { medicines: newMedicines };
         });
 
-        // Simulate network delay
+        // Simulate network delay for the blockchain transaction
         await new Promise(resolve => setTimeout(resolve, 500));
 
         set({ loading: false });
