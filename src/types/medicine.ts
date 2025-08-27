@@ -3,6 +3,8 @@ export type SupplyChainStatus = 'At Manufacturer' | 'In Transit' | 'At Pharmacy'
 
 export type OrderStatus = 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
 
+export type ListingStatus = 'Pending' | 'Approved';
+
 export type OrderItem = {
     medicineId: string;
     name: string;
@@ -30,9 +32,10 @@ export type Medicine = {
   onChain: boolean;
   description: string;
   supplyChainStatus: SupplyChainStatus;
+  listingStatus: ListingStatus;
   history: {
       timestamp: string;
-      action: 'CREATED' | 'UPDATED';
+      action: 'CREATED' | 'UPDATED' | 'APPROVED';
       changes: string;
   }[];
   quantity: number;
@@ -47,12 +50,12 @@ export type CartItem = {
 };
 
 // Type for creating a new medicine, without the fields that are auto-generated
-export type NewMedicine = Omit<Medicine, 'id' | 'onChain' | 'supplyChainStatus' | 'history' | 'stockStatus' | 'mfgDate' | 'expDate'> & {
+export type NewMedicine = Omit<Medicine, 'id' | 'onChain' | 'supplyChainStatus' | 'history' | 'stockStatus' | 'mfgDate' | 'expDate' | 'listingStatus'> & {
     mfgDate: string;
     expDate: string;
 };
 
 // Type for updating an existing medicine, all fields are optional
-export type UpdateMedicine = Partial<Omit<Medicine, 'id' | 'stockStatus' | 'mfgDate'>> & {
+export type UpdateMedicine = Partial<Omit<Medicine, 'id' | 'stockStatus' | 'mfgDate' | 'listingStatus'>> & {
     expDate?: string;
 };

@@ -64,8 +64,8 @@ export default function AddMedicinePage() {
 
     if(created) {
       toast({
-        title: 'Medicine Submitted',
-        description: `${created.name} has been successfully submitted to the database.`,
+        title: 'Medicine Submitted for Review',
+        description: `${created.name} has been successfully submitted and is awaiting admin approval.`,
       });
       router.push('/admin/stock');
     } else {
@@ -97,7 +97,7 @@ export default function AddMedicinePage() {
         <CardHeader>
           <CardTitle>Medicine Details</CardTitle>
           <CardDescription>
-            Enter the information for the new medicine batch. This will create a new record.
+            Enter the information for the new medicine batch. This will create a new record that requires admin approval.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -280,7 +280,7 @@ export default function AddMedicinePage() {
                   ) : (
                      <PackagePlus className="mr-2 h-5 w-5" />
                   )}
-                  Add Medicine
+                  Submit for Approval
                 </Button>
               </div>
             </form>

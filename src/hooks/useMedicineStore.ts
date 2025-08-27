@@ -3,7 +3,7 @@
 
 import { create } from "zustand";
 import allMedicines from '../../MOCK_DATA.json';
-import type { Medicine, NewMedicine, UpdateMedicine } from "@/types/medicine";
+import type { Medicine, NewMedicine, UpdateMedicine, ListingStatus } from "@/types/medicine";
 import { persist, createJSONStorage } from 'zustand/middleware';
 
 const getStockStatus = (quantity: number): Medicine['stockStatus'] => {
@@ -14,7 +14,8 @@ const getStockStatus = (quantity: number): Medicine['stockStatus'] => {
 
 const processedMedicines: Medicine[] = allMedicines.map(med => ({
     ...med,
-    stockStatus: getStockStatus(med.quantity)
+    stockStatus: getStockStatus(med.quantity),
+    listingStatus: 'Approved' as ListingStatus, // All mock data is considered approved
 }));
 
 interface MedicineState {
@@ -24,6 +25,7 @@ interface MedicineState {
   loading: boolean;
   addMedicine: (payload: NewMedicine) => Promise<Medicine | null>;
   updateMedicine: (id: string, payload: UpdateMedicine) => Promise<Medicine | null>;
+  approveMedicine: (id: string) => Promise<Medicine | null>;
 }
 
 export const useMedicineStore = create<MedicineState>()(
@@ -40,17 +42,17 @@ export const useMedicineStore = create<MedicineState>()(
           ...payload,
           mfgDate: payload.mfgDate,
           expDate: payload.expDate,
-          onChain: true, // Medicine is immediately considered confirmed on-chain
+          onChain: true,
+          listingStatus: 'Pending', // New medicines require approval
           supplyChainStatus: 'At Manufacturer',
           history: [{
               timestamp: new Date().toISOString(),
               action: 'CREATED',
-              changes: 'Batch registered and confirmed on ledger.'
+              changes: 'Batch registered by manufacturer. Awaiting admin approval.'
           }],
           stockStatus: getStockStatus(payload.quantity)
         };
         
-        // Simulate network delay for the blockchain transaction
         await new Promise(resolve => setTimeout(resolve, 500));
         
         set(state => ({
@@ -78,7 +80,7 @@ export const useMedicineStore = create<MedicineState>()(
                         ...med,
                         ...payload,
                         quantity: payload.quantity ?? med.quantity,
-                        onChain: true, // Update is immediately considered confirmed
+                        onChain: true,
                         stockStatus: getStockStatus(payload.quantity ?? med.quantity),
                          history: [
                             ...(med.history || []),
@@ -96,11 +98,40 @@ export const useMedicineStore = create<MedicineState>()(
             return { medicines: newMedicines };
         });
 
-        // Simulate network delay for the blockchain transaction
         await new Promise(resolve => setTimeout(resolve, 500));
 
         set({ loading: false });
         return updatedMedicine;
+      },
+      approveMedicine: async (id: string) => {
+        set({ loading: true });
+        let approvedMedicine: Medicine | null = null;
+
+        set(state => {
+            const newMedicines = state.medicines.map(med => {
+                if (med.id === id) {
+                    approvedMedicine = {
+                        ...med,
+                        listingStatus: 'Approved',
+                        history: [
+                            ...(med.history || []),
+                            {
+                                timestamp: new Date().toISOString(),
+                                action: 'APPROVED',
+                                changes: 'Medicine batch approved by Admin. Now visible to customers.'
+                            }
+                        ]
+                    };
+                    return approvedMedicine;
+                }
+                return med;
+            });
+            return { medicines: newMedicines };
+        });
+
+        await new Promise(resolve => setTimeout(resolve, 250));
+        set({ loading: false });
+        return approvedMedicine;
       }
     }),
     {

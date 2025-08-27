@@ -22,9 +22,12 @@ function MedicinesPageContent() {
   
   const filteredMedicines = useMemo(() => {
     if (!medicines) return [];
+    // Customers only see 'Approved' medicines
     return medicines.filter((med) => {
-      return med.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-             med.batchNo.toLowerCase().includes(searchTerm.toLowerCase());
+      const isApproved = med.listingStatus === 'Approved';
+      const matchesSearch = med.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            med.batchNo.toLowerCase().includes(searchTerm.toLowerCase());
+      return isApproved && matchesSearch;
     });
   }, [searchTerm, medicines]);
 
@@ -125,7 +128,7 @@ function MedicinesPageContent() {
           <div className="text-center py-10 px-6 bg-card rounded-lg border">
             <h3 className="text-lg font-semibold text-foreground">No Results Found</h3>
             <p className="text-muted-foreground mt-2">
-              We couldn't find any medicine matching your search criteria.
+              We couldn't find any approved medicine matching your search criteria.
             </p>
           </div>
         )}

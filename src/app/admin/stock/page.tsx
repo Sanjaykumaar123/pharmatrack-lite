@@ -36,20 +36,23 @@ import {
   Building,
   PlusCircle,
   Pencil,
+  ThumbsUp,
 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { ChartContainer, ChartConfig, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
-import type { Medicine, SupplyChainStatus } from '@/types/medicine';
+import type { Medicine, SupplyChainStatus, ListingStatus } from '@/types/medicine';
 import { cn } from '@/lib/utils';
 import { useMedicineStore } from '@/hooks/useMedicineStore';
 import { AddEditMedicineDialog } from '@/components/AddEditMedicineDialog';
+import { useToast } from '@/hooks/use-toast';
 
 type StockStatus = Medicine['stockStatus'];
 type SortKey = keyof Pick<Medicine, 'name' | 'manufacturer' | 'expDate' | 'quantity' | 'supplyChainStatus'>;
@@ -76,9 +79,15 @@ const supplyChainStatusConfig: Record<SupplyChainStatus, { icon: React.ElementTy
     'At Pharmacy': { icon: Building, label: 'At Pharmacy' },
 }
 
+const listingStatusConfig: Record<ListingStatus, { icon: React.ElementType, label: string, color: string }> = {
+    'Pending': { icon: Clock, label: 'Pending', color: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
+    'Approved': { icon: CheckCircle, label: 'Approved', color: 'bg-green-100 text-green-800 border-green-200' },
+}
+
 
 export default function StockManagementPage() {
-  const { medicines, isInitialized } = useMedicineStore();
+  const { medicines, isInitialized, approveMedicine } = useMedicineStore();
+  const { toast } = useToast();
   
   const [filter, setFilter] = useState<StockStatus | 'All'>('All');
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'ascending' | 'descending' } | null>(null);
@@ -166,6 +175,22 @@ export default function StockManagementPage() {
     setIsDialogOpen(true);
   };
 
+  const handleApproveClick = async (medicine: Medicine) => {
+    const approved = await approveMedicine(medicine.id);
+    if(approved) {
+        toast({
+            title: 'Medicine Approved',
+            description: `${medicine.name} is now approved and visible to customers.`
+        })
+    } else {
+        toast({
+            variant: 'destructive',
+            title: 'Approval Failed',
+            description: 'There was an error approving the medicine.'
+        })
+    }
+  }
+
   if (!isInitialized) {
       return (
           <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
@@ -183,7 +208,7 @@ export default function StockManagementPage() {
             <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl font-headline">
               Stock Management
             </h1>
-            <p className="text-muted-foreground mt-1">Oversee the entire inventory from the local data file.</p>
+            <p className="text-muted-foreground mt-1">Oversee the entire inventory and manage approvals.</p>
           </div>
           <div className="flex items-center gap-4">
             <Button onClick={handleAddClick}>
@@ -251,7 +276,7 @@ export default function StockManagementPage() {
                       <TableHead className="text-right">
                           <Button variant="ghost" onClick={() => requestSort('quantity')}>Quantity {getSortIcon('quantity')}</Button>
                       </TableHead>
-                      <TableHead>Ledger Status</TableHead>
+                      <TableHead>Approval Status</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -259,6 +284,8 @@ export default function StockManagementPage() {
                     {sortedAndFilteredMedicines.map((med) => {
                        const supplyChainInfo = supplyChainStatusConfig[med.supplyChainStatus];
                        const SupplyChainIcon = supplyChainInfo.icon;
+                       const listingInfo = listingStatusConfig[med.listingStatus];
+                       const ListingIcon = listingInfo.icon;
                        return (
                       <TableRow key={med.id}>
                         <TableCell className="font-medium">{med.name}</TableCell>
@@ -270,9 +297,9 @@ export default function StockManagementPage() {
                         </TableCell>
                         <TableCell className="text-right">{med.quantity}</TableCell>
                         <TableCell>
-                           <Badge variant="secondary" className='bg-green-100 text-green-800 border-green-200'>
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                            Confirmed
+                           <Badge variant="secondary" className={cn('font-medium', listingInfo.color)}>
+                            <ListingIcon className="h-3 w-3 mr-1" />
+                            {listingInfo.label}
                            </Badge>
                         </TableCell>
                         <TableCell className="text-right">
@@ -288,6 +315,15 @@ export default function StockManagementPage() {
                                 <Pencil className="mr-2 h-4 w-4" />
                                 <span>Edit</span>
                               </DropdownMenuItem>
+                              {med.listingStatus === 'Pending' && (
+                                <>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem onClick={() => handleApproveClick(med)} className="text-green-600 focus:bg-green-50 focus:text-green-700">
+                                    <ThumbsUp className="mr-2 h-4 w-4" />
+                                    <span>Approve</span>
+                                  </DropdownMenuItem>
+                                </>
+                              )}
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>
