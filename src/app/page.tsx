@@ -42,9 +42,24 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-             <div className="relative h-96 lg:h-auto flex justify-center items-center">
-                <div className="absolute w-80 h-80 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
-                <PillIcon className="w-72 h-72 text-primary relative z-10 opacity-80" />
+             <div className="relative h-96 lg:h-auto flex flex-col justify-center items-center gap-8">
+                <div className="absolute w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-pulse -z-10"></div>
+                <Card className="bg-background/50 border-primary/10 backdrop-blur-sm shadow-lg w-full">
+                    <CardContent className="p-6">
+                        <blockquote className="text-lg italic text-foreground">
+                            "The good physician treats the disease; the great physician treats the patient who has the disease."
+                        </blockquote>
+                        <p className="text-right mt-2 font-semibold text-primary">- William Osler</p>
+                    </CardContent>
+                </Card>
+                 <Card className="bg-background/50 border-primary/10 backdrop-blur-sm shadow-lg w-full">
+                    <CardContent className="p-6">
+                        <blockquote className="text-lg italic text-foreground">
+                            "Wherever the art of medicine is loved, there is also a love of humanity."
+                        </blockquote>
+                        <p className="text-right mt-2 font-semibold text-primary">- Hippocrates</p>
+                    </CardContent>
+                </Card>
             </div>
           </div>
         </div>
