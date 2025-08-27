@@ -76,10 +76,11 @@ export default function AdminDashboardPage() {
           </Card>
         </Link>
         
-        <Card className="h-full bg-muted/40 border-dashed">
+        <Link href="/admin/users" className="group">
+        <Card className="h-full hover:border-primary/50 hover:shadow-lg transition-all flex flex-col">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>User Management</CardTitle>
-              <Users className="h-6 w-6 text-muted-foreground" />
+              <Users className="h-6 w-6 text-primary" />
             </CardHeader>
             <CardContent className="flex-grow">
               <CardDescription>
@@ -87,9 +88,13 @@ export default function AdminDashboardPage() {
               </CardDescription>
             </CardContent>
             <CardFooter>
-               <Button disabled variant="secondary">Coming Soon</Button>
+               <Button>
+                  Manage Users
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Button>
             </CardFooter>
         </Card>
+        </Link>
 
         <Card className="h-full bg-muted/40 border-dashed">
             <CardHeader className="flex flex-row items-center justify-between">
