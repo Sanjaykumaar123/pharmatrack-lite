@@ -11,6 +11,7 @@ To run this project on your local machine using Visual Studio Code, please follo
 - [Node.js](https://nodejs.org/) (version 20 or later is recommended)
 - [npm](https://www.npmjs.com/) (which comes bundled with Node.js)
 - A **Google AI Gemini API Key**. You can generate a free key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+- [Firebase CLI](https://firebase.google.com/docs/cli) for deployment.
 
 ### Setup and Installation
 
@@ -52,3 +53,27 @@ This project has two parts that need to run simultaneously: the main web applica
     This starts the local server that powers the AI assistant and other generative features.
 
 You should now have both servers running, and you can access the web application in your browser at the address provided in the first terminal.
+
+## Deploying to Firebase
+
+This application is configured for easy deployment to **Firebase App Hosting**.
+
+1.  **Login to Firebase**:
+    If you haven't already, log in to your Google account using the Firebase CLI:
+    ```bash
+    firebase login
+    ```
+
+2.  **Initialize Firebase in your Project**:
+    Run the following command and follow the prompts. Select the Firebase project you are using for this app.
+    ```bash
+    firebase init
+    ```
+
+3.  **Deploy**:
+    Once initialized, you can deploy the application with a single command:
+    ```bash
+    firebase deploy
+    ```
+
+The CLI will provide you with a URL to your live application once the deployment is complete.
