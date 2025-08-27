@@ -284,7 +284,9 @@ export default function StockManagementPage() {
                     {sortedAndFilteredMedicines.map((med) => {
                        const supplyChainInfo = supplyChainStatusConfig[med.supplyChainStatus];
                        const SupplyChainIcon = supplyChainInfo.icon;
-                       const listingInfo = listingStatusConfig[med.listingStatus];
+                       // FIX: Provide a fallback for listingStatus to prevent crash
+                       const currentListingStatus = med.listingStatus || 'Pending';
+                       const listingInfo = listingStatusConfig[currentListingStatus];
                        const ListingIcon = listingInfo.icon;
                        return (
                       <TableRow key={med.id}>
@@ -315,7 +317,7 @@ export default function StockManagementPage() {
                                 <Pencil className="mr-2 h-4 w-4" />
                                 <span>Edit</span>
                               </DropdownMenuItem>
-                              {med.listingStatus === 'Pending' && (
+                              {currentListingStatus === 'Pending' && (
                                 <>
                                   <DropdownMenuSeparator />
                                   <DropdownMenuItem onClick={() => handleApproveClick(med)} className="text-green-600 focus:bg-green-50 focus:text-green-700">
