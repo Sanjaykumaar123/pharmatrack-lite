@@ -5,13 +5,22 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ShieldCheck, Lock, GitBranch, Database, Shield, FileCheck, UserCheck, Bot, ScanLine } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
-const PillIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" {...props}>
-        <path d="M12.337 2.012a9.75 9.75 0 0 0-9.325 9.325 9.75 9.75 0 0 0 9.325 9.325 9.75 9.75 0 0 0 9.325-9.325A9.75 9.75 0 0 0 12.337 2.012ZM11.25 8.637a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 .75.75v3h3a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-3v3a.75.75 0 0 1-.75.75h-.75a.75.75 0 0 1-.75-.75v-3h-3a.75.75 0 0 1-.75-.75v-.75a.75.75 0 0 1 .75-.75h3v-3Z"></path>
-    </svg>
-);
-
+const quotes = [
+    {
+        quote: "The good physician treats the disease; the great physician treats the patient who has the disease.",
+        author: "William Osler"
+    },
+    {
+        quote: "Wherever the art of medicine is loved, there is also a love of humanity.",
+        author: "Hippocrates"
+    },
+    {
+        quote: "The art of healing comes from nature, not from the physician. Therefore the physician must start from nature, with an open mind.",
+        author: "Paracelsus"
+    }
+];
 
 export default function Home() {
   return (
@@ -42,24 +51,32 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-             <div className="relative h-96 lg:h-auto flex flex-col justify-center items-center gap-8">
+             <div className="relative flex justify-center items-center">
                 <div className="absolute w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-pulse -z-10"></div>
-                <Card className="bg-background/50 border-primary/10 backdrop-blur-sm shadow-lg w-full">
-                    <CardContent className="p-6">
-                        <blockquote className="text-lg italic text-foreground">
-                            "The good physician treats the disease; the great physician treats the patient who has the disease."
-                        </blockquote>
-                        <p className="text-right mt-2 font-semibold text-primary">- William Osler</p>
-                    </CardContent>
-                </Card>
-                 <Card className="bg-background/50 border-primary/10 backdrop-blur-sm shadow-lg w-full">
-                    <CardContent className="p-6">
-                        <blockquote className="text-lg italic text-foreground">
-                            "Wherever the art of medicine is loved, there is also a love of humanity."
-                        </blockquote>
-                        <p className="text-right mt-2 font-semibold text-primary">- Hippocrates</p>
-                    </CardContent>
-                </Card>
+                <Carousel
+                  opts={{
+                    align: "start",
+                    loop: true,
+                  }}
+                  className="w-full max-w-md"
+                >
+                  <CarouselContent>
+                    {quotes.map((item, index) => (
+                      <CarouselItem key={index}>
+                        <Card className="bg-background/50 border-primary/10 backdrop-blur-sm shadow-lg w-full">
+                            <CardContent className="flex flex-col h-48 items-center justify-center p-6 text-center">
+                                <blockquote className="text-lg italic text-foreground">
+                                    "{item.quote}"
+                                </blockquote>
+                                <p className="text-right mt-4 font-semibold text-primary w-full">- {item.author}</p>
+                            </CardContent>
+                        </Card>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="hidden sm:flex" />
+                  <CarouselNext className="hidden sm:flex" />
+                </Carousel>
             </div>
           </div>
         </div>
@@ -210,3 +227,5 @@ export default function Home() {
     </div>
   );
 }
+
+    
