@@ -15,10 +15,6 @@ const quotes = [
     {
         quote: "Wherever the art of medicine is loved, there is also a love of humanity.",
         author: "Hippocrates"
-    },
-    {
-        quote: "The art of healing comes from nature, not from the physician. Therefore the physician must start from nature, with an open mind.",
-        author: "Paracelsus"
     }
 ];
 
@@ -74,8 +70,6 @@ export default function Home() {
                       </CarouselItem>
                     ))}
                   </CarouselContent>
-                  <CarouselPrevious className="hidden sm:flex" />
-                  <CarouselNext className="hidden sm:flex" />
                 </Carousel>
             </div>
           </div>
@@ -227,5 +221,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
