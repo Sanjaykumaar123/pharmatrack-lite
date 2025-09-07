@@ -1,0 +1,4 @@
+{
+  "buildCommand": "cd pharmatrack-lite && npm install && npm run build",
+  "outputDirectory": "pharmatrack-lite/.next"
+}

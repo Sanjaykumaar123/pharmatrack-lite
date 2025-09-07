@@ -7,7 +7,8 @@ import {
     updateDoc, 
     serverTimestamp,
     query,
-    orderBy
+    orderBy,
+    getDoc
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import type { Medicine, NewMedicine, UpdateMedicine } from '@/types/medicine';
@@ -15,11 +16,21 @@ import type { Medicine, NewMedicine, UpdateMedicine } from '@/types/medicine';
 const medicinesCollection = collection(db, 'medicines');
 
 // Helper to determine stock status
-const getStockStatus = (quantity: number): Medicine['stock']['status'] => {
+const getStockStatus = (quantity: number): Medicine['stockStatus'] => {
     if (quantity <= 0) return 'Out of Stock';
     if (quantity <= 50) return 'Low Stock';
     return 'In Stock';
 };
+
+const formatMedicineDoc = (doc: any): Medicine => {
+    const data = doc.data();
+    return {
+        id: doc.id,
+        ...data,
+        stockStatus: getStockStatus(data.quantity)
+    } as Medicine;
+}
+
 
 // ========================================================
 // READ
@@ -28,18 +39,7 @@ export async function getMedicinesFromFirestore(): Promise<Medicine[]> {
     try {
         const q = query(medicinesCollection, orderBy('name', 'asc'));
         const querySnapshot = await getDocs(q);
-        return querySnapshot.docs.map(doc => {
-            const data = doc.data();
-            return {
-                id: doc.id,
-                ...data,
-                // Ensure stock object is correctly formed
-                stock: {
-                    quantity: data.quantity,
-                    status: getStockStatus(data.quantity)
-                }
-            } as Medicine;
-        });
+        return querySnapshot.docs.map(formatMedicineDoc);
     } catch (error) {
         console.error("Error fetching medicines from Firestore: ", error);
         throw new Error("Could not fetch medicines.");
@@ -54,35 +54,23 @@ export async function addMedicineToFirestore(payload: NewMedicine): Promise<Medi
         const docData = {
             ...payload,
             supplyChainStatus: 'At Manufacturer',
-            onChain: false, // Simulating initial off-chain state
+            listingStatus: 'Pending',
+            onChain: false,
             createdAt: serverTimestamp(),
             history: [
                 {
                     timestamp: new Date().toISOString(),
                     action: 'CREATED',
-                    changes: 'Batch registered in the database.'
+                    changes: 'Batch registered in the database, awaiting approval.'
                 }
             ]
         };
 
         const docRef = await addDoc(medicinesCollection, docData);
 
-        // Simulate on-chain confirmation delay
-        setTimeout(() => {
-            const medicineDoc = doc(db, 'medicines', docRef.id);
-            updateDoc(medicineDoc, { onChain: true });
-        }, 2000);
-
-        return {
-            id: docRef.id,
-            ...docData,
-            mfgDate: payload.mfgDate,
-            expDate: payload.expDate,
-            stock: {
-                quantity: payload.quantity,
-                status: getStockStatus(payload.quantity)
-            }
-        } as Medicine;
+        const newDoc = await getDoc(doc(db, 'medicines', docRef.id));
+        
+        return formatMedicineDoc(newDoc);
 
     } catch (error) {
         console.error("Error adding medicine to Firestore: ", error);
@@ -96,23 +84,25 @@ export async function addMedicineToFirestore(payload: NewMedicine): Promise<Medi
 // ========================================================
 export async function updateMedicineInFirestore(id: string, payload: UpdateMedicine): Promise<Partial<Medicine>> {
      try {
-        const medicineDoc = doc(db, 'medicines', id);
+        const medicineDocRef = doc(db, 'medicines', id);
 
         const updatedPayload: Record<string, any> = { ...payload };
 
-        // Add a new history entry
+        const originalDoc = await getDoc(medicineDocRef);
+        if (!originalDoc.exists()) {
+            throw new Error("Medicine not found");
+        }
+        const originalData = originalDoc.data() as Medicine;
+        
         const changes = Object.entries(payload).map(([key, value]) => {
-            if(value !== undefined) {
-                 return `${key} updated`;
+            if (value !== undefined && originalData[key as keyof Medicine] !== value) {
+                return `${key} changed`;
             }
             return null;
         }).filter(Boolean).join(', ');
         
         if (changes) {
-            const originalDoc = (await getDocs(query(medicinesCollection))).docs.find(d => d.id === id);
-            const originalData = originalDoc?.data();
-            const existingHistory = originalData?.history || [];
-
+            const existingHistory = originalData.history || [];
             updatedPayload.history = [
                 ...existingHistory,
                 {
@@ -123,22 +113,11 @@ export async function updateMedicineInFirestore(id: string, payload: UpdateMedic
             ];
         }
 
+        await updateDoc(medicineDocRef, updatedPayload);
 
-        await updateDoc(medicineDoc, updatedPayload);
-
-        // Simulate on-chain confirmation
-        updateDoc(medicineDoc, { onChain: false });
-        setTimeout(() => {
-            updateDoc(medicineDoc, { onChain: true });
-        }, 1500);
-
-        return { 
-            ...payload, 
-            stock: payload.quantity ? {
-                quantity: payload.quantity,
-                status: getStockStatus(payload.quantity)
-            } : undefined
-        };
+        const updatedDoc = await getDoc(medicineDocRef);
+        
+        return formatMedicineDoc(updatedDoc);
 
     } catch (error) {
         console.error("Error updating medicine in Firestore: ", error);

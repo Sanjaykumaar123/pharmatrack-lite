@@ -6,7 +6,7 @@ import { db } from '../firebase';
 import mockData from '../../../MOCK_DATA.json';
 import type { Medicine } from '@/types/medicine';
 
-const getStockStatus = (quantity: number): Medicine['stock']['status'] => {
+const getStockStatus = (quantity: number): Medicine['stockStatus'] => {
     if (quantity <= 0) return 'Out of Stock';
     if (quantity <= 50) return 'Low Stock';
     return 'In Stock';
@@ -31,7 +31,8 @@ export async function seedDatabase() {
             description: medicine.description,
             supplyChainStatus: medicine.supplyChainStatus,
             history: medicine.history || [],
-            quantity: medicine.quantity // Keep the top-level quantity for Firestore
+            quantity: medicine.quantity, // Keep the top-level quantity for Firestore
+            listingStatus: 'Approved' // Assume all mock data is approved
         };
 
         batch.set(docRef, data);
@@ -40,8 +41,10 @@ export async function seedDatabase() {
     try {
         await batch.commit();
         console.log("Database seeded successfully!");
+        return { success: true, message: "Database seeded successfully!" };
     } catch (error) {
         console.error("Error seeding database: ", error);
-        throw new Error("Failed to seed database.");
+        return { success: false, message: "Failed to seed database." };
     }
 }
+
