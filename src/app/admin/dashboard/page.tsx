@@ -96,20 +96,25 @@ export default function AdminDashboardPage() {
         </Card>
         </Link>
 
-        <Card className="h-full bg-muted/40 border-dashed">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>System Analytics</CardTitle>
-              <LineChart className="h-6 w-6 text-muted-foreground" />
-            </CardHeader>
-            <CardContent className="flex-grow">
-              <CardDescription>
-                  Access detailed analytics and generate reports on inventory turnover, stock levels, and supply chain efficiency.
-              </CardDescription>
-            </CardContent>
-             <CardFooter>
-               <Button disabled variant="secondary">Coming Soon</Button>
-            </CardFooter>
-        </Card>
+        <Link href="/admin/analytics" className="group">
+          <Card className="h-full hover:border-primary/50 hover:shadow-lg transition-all flex flex-col">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle>System Analytics</CardTitle>
+                <LineChart className="h-6 w-6 text-primary" />
+              </CardHeader>
+              <CardContent className="flex-grow">
+                <CardDescription>
+                    Access detailed analytics and generate reports on inventory turnover, stock levels, and supply chain efficiency.
+                </CardDescription>
+              </CardContent>
+              <CardFooter>
+                <Button>
+                    View Analytics
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Button>
+              </CardFooter>
+          </Card>
+        </Link>
       </div>
     </div>
   );
